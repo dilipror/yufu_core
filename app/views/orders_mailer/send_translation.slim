@@ -1,0 +1,58 @@
+table.header style="width: 960px; height: 150px; margin: auto; background: url(#{root_url}#{image_url('header_bg.png')})"
+  tr
+    td style="width: 50px"
+    td
+      a.main_icon href=root_url style="background: url(#{root_url}#{image_url('logo_small.png')}) no-repeat; height: 83px; width: 131px; display: block"
+    td style="font-size: 30px; text-align: right;margin-left: 250px;font-family: 'Open Sans', sans-serif; padding-top: 30px;padding-right: 10px;line-height: 1;"
+      = raw(I18n.t(:slogan))
+table.main_text style="width: 960px; margin: auto;"
+  tr
+    td style="width: 20px"
+    td
+      p style="margin-top: 20px; color: #c65aa2; font-size: 25px; font-family: 'Open Sans', sans-serif;"
+        = I18n.t('mailer.proceed_registration')
+  tr
+    td style="width: 20px"
+    td
+      p style="font-size: 17px; font-family: 'Open Sans', sans-serif;"
+        = I18n.t('mailer.registration_mail_body')
+  tr style="height: 20px"
+  tr
+    td style="width: 20px"
+    td
+      = I18n.t('frontend.order.is_finished')
+table.footer style="margin: auto; width: 960px; background: url(#{root_url}#{image_url('footer.png')}); height: 36px;"
+  tr
+    td style="width: 20px"
+    td style="padding-top: 13px"
+      span style="line-height: 35px; color: #ffffff; font-size: 14px; font-family: 'Open Sans', sans-serif;"
+        = I18n.t('mailer.yufu_phone')
+    td style="padding-top: 13px"
+      a style="text-decoration: none; line-height: 35px; color: #ffffff; font-size: 14px; font-family: 'Open Sans', sans-serif;" href="tel:408 341 0600" 408.341.0600
+    td style="padding-top: 13px"
+      span style="line-height: 35px; color: #ffffff; font-size: 14px; font-family: 'Open Sans', sans-serif;"
+        = I18n.t('mailer.email')
+    td style="padding-top: 13px"
+      a style="text-decoration: none; line-height: 35px; color: #ffffff; font-size: 14px; font-family: 'Open Sans', sans-serif;" href="mailto: contacts@yufu.net" contacts@yufu.net
+    td style="padding-top: 13px; width: 450px"
+table.additional style="margin: auto; width: 960px;"
+  tr
+    td
+      a href="#" style="text-decoration: none; padding: 0 5px 0 5px; color: #924fab; font-size: 12px; border-right: 1px #924fab solid"
+        = I18n.t('mailer.terms')
+    td
+      a href="#" style="text-decoration: none; padding: 0 5px 0 5px;color: #924fab; font-size: 12px; border-right: 1px #924fab solid"
+        = I18n.t('mailer.privacy')
+    td
+      a href="#" style="text-decoration: none; padding: 0 5px 0 5px;color: #924fab; font-size: 12px"
+        = I18n.t('mailer.unsubscribe')
+    td style="width: 500px"
+    td
+      span style="color: #924fab; font-size: 12px;"
+        = I18n.t("mailer.connect_with_us")
+    td style="height: 22px;  width: 22px; background-position: 0 0px;margin-right: 5px;margin-left: 5px;background: url(#{root_url}#{image_url('mail_icons.png')}) no-repeat;"
+      a href="#" style="display: block; height: 100%; width: 100%"
+    td style="height: 22px; display: inline-block; width: 22px; background-position: 0 0px;margin-right: 5px;margin-left: 5px;background: url(#{root_url}#{image_url('mail_icons.png')}) -25px 0 no-repeat;"
+      a href="#" style="display: block; height: 100%; width: 100%"
+    td style="height: 22px; display: inline-block; width: 22px; background-position: 0 0px;margin-right: 5px;margin-left: 5px;background: url(#{root_url}#{image_url('mail_icons.png')}) -51px 0 no-repeat;"
+      a href="#" style="display: block; height: 100%; width: 100%"

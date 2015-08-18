@@ -1,0 +1,13 @@
+亲爱的 <%= @client %>,
+
+温馨提示,由于付款未成功,您的口译服务订单已取消。
+
+如果您未成功付款, 仍需此项服务, 请您点击以下链接重新下单:
+
+<%= link_to new_verbal_order_url, 'Place new order' %>
+
+如有疑问,请点击以下链接:
+
+<%= link_to dashboard_url, 'My dashboard' %>
+
+如有不便,敬请谅解!

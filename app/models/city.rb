@@ -1,0 +1,48 @@
+class City
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  field :name, localize: true
+  field :position, type: Integer
+
+  belongs_to :language
+  belongs_to :province
+  # belongs_to :senior, class_name: 'Profile::Translator'
+
+  has_many :city_approves, class_name: 'CityApprove'
+  has_one :office
+
+  default_scope -> {asc :name}
+
+  scope :with_approved_translators, -> {
+    cities_ids = []
+    Profile::Translator.approved.each do |pr|
+      cities_ids += pr.city_approves.approved.distinct(:city_id)
+    end
+    City.where :id.in => cities_ids
+  }
+  scope :available_for,  -> (translator) {
+    ids = translator.city_approves.approved.distinct :city_id
+    City.where :id.in => ids
+  }
+
+  scope :supported, -> {
+    city_ids = CityApprove.approved.distinct :city_id
+    City.where :id.in => city_ids
+  }
+
+  def supported?
+    city_approves.approved.without_surcharge.count > 0
+  end
+  alias :is_supported :supported?
+
+  def supported_with_surcharge?
+    city_approves.approved.with_surcharge.count > 0
+  end
+  alias :is_supported_with_surcharge :supported_with_surcharge?
+
+  def language_ids
+    translator_ids = city_approves.approved.distinct :translator_id
+    Profile::Service.approved.where(:translator_id.in => translator_ids).distinct :language_id
+  end
+end

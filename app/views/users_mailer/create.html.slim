@@ -1,0 +1,6 @@
+= mail_layout do |p|
+  = p.h1 I18n.t('mailer.proceed_registration')
+  = p.p I18n.t('mailer.registration_mail_body')
+  - if @need_send_password
+    = p.p(I18n.t('mailer.your_password') + @user.password.to_s)
+  = p.round_link I18n.t('mailer.click_it'), confirmation_url(@user, confirmation_token: @user.confirmation_token), image_url('round_link.png')

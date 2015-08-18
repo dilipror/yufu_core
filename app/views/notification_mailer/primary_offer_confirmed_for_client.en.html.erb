@@ -1,0 +1,25 @@
+Dear <%= @client %>,
+<br/>
+We are glad to inform you, that your order for an interpretation service has been confirmed!
+
+Now you can get familiar with your order details, as well as get acquainted with your primary
+
+interpreter.
+<br/>
+In a few hours you will also receive a contact information of your backup interpreter. Backup
+
+interpreter will serve you in case of contingency.
+<br/>
+Your order details
+
+<%= @order_details %>
+<br/>
+Your interpreter
+
+<%= @interpreter %>
+<br/>
+If you wish to ask a question, please follow the link below:
+
+<%= link_to dashboard_url, 'My dashboard' %>
+<br/>
+Thank you for choosing Yufu.net!

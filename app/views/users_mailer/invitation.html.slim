@@ -1,0 +1,20 @@
+
+= mail_header
+#wrap style=('margin: auto; width: 700px;')
+  p
+    b #{@to_address}
+  p style=('text-indent: 50px;')
+    =  I18n.t 'mailer.invitation_email.i'
+    | ,
+    i  #{@agent_name}
+    i  #{@agent_surname}
+    | .
+    =   I18n.t 'mailer.invitation_email.foreword'
+  p style=('text-indent: 50px;') #{@invite_text}
+  h1 style=("text-align: center;")
+    a href="http://#{Rails.application.config.host}/invites/#{@invite_id}" style=("text-decoration: none; color: #800080")
+      = I18n.t 'mailer.invitation_email.sign_up'
+  h3
+    b
+      i = I18n.t 'mailer.invitation_email.join_us'
+  p style=('float: right;') #{@on_behalf}
