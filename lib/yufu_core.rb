@@ -14,11 +14,13 @@ require 'humanize/lots'
 
 require 'devise/orm/mongoid'
 require 'autoinc'
+require 'paperclip'
 require 'mongoid_paperclip'
 require 'state_machine'
 require 'mongoid/token'
 require 'mongoid_auto_increment'
 require 'active_model_serializers'
+
 
 module YufuCore
 end

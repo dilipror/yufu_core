@@ -33,4 +33,5 @@ Gem::Specification.new do |s|
   s.add_dependency "eu_central_bank"
   s.add_dependency "slim-rails"
   s.add_dependency "mongoid_auto_increment"
+  s.add_dependency "paperclip", "< 4.3"
 end

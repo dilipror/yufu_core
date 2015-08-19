@@ -24,4 +24,8 @@ class Localization
   def self.get_current
     find_by name: I18n.locale.to_s
   end
+
+  def self.default
+    find_or_create_by name: 'en'
+  end
 end

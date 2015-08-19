@@ -6,6 +6,7 @@ gem 'bson'
 gem 'mongoid-autoinc', require: 'autoinc'
 gem 'mongoid_auto_increment'
 
+gem 'paperclip', '< 4.3'
 gem 'mongoid-paperclip', require: 'mongoid_paperclip'
 gem 'will_paginate_mongoid'
 gem 'enumerize'
