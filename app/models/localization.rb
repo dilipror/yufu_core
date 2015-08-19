@@ -1,7 +1,7 @@
 class Localization
   include Mongoid::Document
 
-  #AVAILABLE_NAMES = (Rails.application.config.i18n.available_locales.map &:to_s)
+  AVAILABLE_NAMES = (Rails.application.config.i18n.available_locales.map &:to_s)
 
 
   field :name
@@ -12,7 +12,7 @@ class Localization
 
   scope :enabled, -> {where enable: true}
 
-#  validates :name, presence: true, uniqueness: true, inclusion: AVAILABLE_NAMES
+  validates :name, presence: true, uniqueness: true, inclusion: AVAILABLE_NAMES
   validates :language, presence: true, uniqueness: true
 
   delegate :name, :is_for_profile, to: :language, prefix: true

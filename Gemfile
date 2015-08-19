@@ -12,6 +12,8 @@ gem 'enumerize'
 gem 'mongoid_token'
 
 gem 'devise'
+gem 'cancancan'
+gem 'iso-639'
 
 gem 'active_model_serializers'
 gem 'oj'
@@ -23,8 +25,7 @@ gem 'money-rails'
 gem 'eu_central_bank'
 
 gem 'rails', '~>4.0.2'
-
-
+gem 'slim-rails'
 
 group :test, :development do
   # gem 'spreewald'

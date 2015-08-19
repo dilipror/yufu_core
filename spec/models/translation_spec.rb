@@ -9,13 +9,6 @@ RSpec.describe Translation, :type => :model do
     it {is_expected.not_to be_empty}
   end
 
-  describe '.new' do
-    subject{Translation.new('ready', :ru, 'redis', '', '')}
-    it {is_expected.to be_a Translation}
-    it 'creates value as translation key in requested locale' do
-      expect(subject.value).to eq(I18n.t('ready', locale: :ru))
-    end
-  end
 
   describe '#save' do
 

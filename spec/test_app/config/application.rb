@@ -23,6 +23,20 @@ module TestApp
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
+    config.i18n.available_locales = [:af, :ar, :az, :bg, :bn, :bs, :ca, :cs, :cy, :da, :de, :el, :en, :eo, :es, :et,
+                                     :eu, :fa, :fi, :fr, :gl, :he, :hi, :hr, :hu, :id, :is, :it, :ja, :km, :kn, :ko, :lo,
+                                     :lt, :lv, :mk, :mn, :ms, :nb, :ne, :nl, :nn, :or, :pl, :pt, :rm, :ro, :ru, :sk, :sl,
+                                     :sr, :sv, :sw, :ta, :th, :tl, :tr, :uk, :ur, :uz, :vi, :wo,
+                                     'zh-CN', 'zh-HK', 'zh-TW', 'zh-YUE']
+
+    config.host = 'localhost:3000'
+    config.action_mailer.default_url_options = { host: config.host }
+    config.action_mailer.asset_host = 'http://localhost:3000'
+
+
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {:address => "localhost", :port => 1025}
+    ActionMailer::Base.default from: 'Yufu <postmaster@mg.yufu.net>'
   end
 end
 
