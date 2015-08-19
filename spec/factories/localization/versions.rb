@@ -1,6 +1,6 @@
 FactoryGirl.define do
-  factory :localization_version do
-    association :version_number
+  factory :localization_version, class: Localization::Version do
+    association :version_number, factory: :localization_version_number
     association :localization
   end
 end
