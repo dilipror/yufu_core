@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "devise"
   s.add_dependency "cancancan"
   s.add_dependency "iso-639"
-  s.add_dependency "active_model_serializers"
+  s.add_dependency "active_model_serializers", "0.9.0"
   s.add_dependency "oj"
   s.add_dependency "state_machine"
   s.add_dependency "sidekiq"

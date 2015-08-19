@@ -25,6 +25,22 @@ class Localization::Version
     event :approve do
       transition :commited => :approved
     end
+
+    before_transition on: :approve do |version|
+      if version.localization.language.name == 'en'
+        chinese_lang_ids = Language.chinese.distinct :id
+        Localization.where(:language_id.in =>  chinese_lang_ids).each do |l|
+          Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
+        end
+      elsif version.localization.language.is_chinese?
+        black_liskt_ids = []
+        black_liskt_ids << Language.chinese.distinct(:id)
+        black_liskt_ids << Language.where(name: 'en').first.try(:id)
+        Localization.where(:language_id.nin =>  black_liskt_ids).each do |l|
+          Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
+        end
+      end
+    end
   end
 
   def self.current(localization)

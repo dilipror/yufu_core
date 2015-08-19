@@ -33,6 +33,10 @@ class Language
 
   delegate :written_price, :verbal_price,  to: :languages_group, allow_nil: true
 
+  scope :not_chinese, -> {where is_chinese: false}
+  scope :chinese,     -> {where is_chinese: true}
+
+
   #fitering
   def self.filter_name(name)
     where(name: /.*#{name}.*/i)
