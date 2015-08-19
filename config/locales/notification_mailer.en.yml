@@ -1,0 +1,47 @@
+en:
+  notification_mailer:
+    new_order_for_translator:
+      subject: New order
+    primary_offer_confirmed:
+      subject: confirmation accepted
+    cancel_int_1week:
+      subject: Order cancellation
+    cancel_int_2weeks:
+      subject: Order cancellation
+    cancel_int_norefund:
+      subject: Order cancellation
+    inter_invoice_cancel:
+      subject: Order cancellation
+    order_over_1000:
+      subject: Payment Information
+    order_notification:
+      subject: New order
+    primary_offer_confirmed_for_client:
+      subject: Your order details
+    reminder_invoice:
+      subject: Reminder about payment
+    service_recalled_int:
+      subject: Service recalled
+    signup_reminder:
+      subject: Reminder about confirmation
+    trans_invoice:
+      subject: Payment informaion
+    trans_invoice_cancel:
+      subject: Order cancellation
+    trans_invoice_reminder:
+      subject: Reminder about payment
+    trans_norefund:
+      subject: Order cancellation
+    trans_cancel_immed:
+      subject: Order cancellation
+    trans_confirm:
+      subject: Order canfirmation
+    translation_completed:
+      subject: Translation completed
+    warning_interp:
+      subject: Warning
+    reminder_for_backup_interpreter:
+      subject: Order reconfirmation
+    reminder_to_the_client:
+      subject: Meeting reminder
+

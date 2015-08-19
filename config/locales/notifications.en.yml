@@ -1,0 +1,12 @@
+en:
+  notifications:
+    new_messages: New message
+    processing_order: Your order is processed by an interpreter
+    ready_for_processing: New order is available to you
+    order_closed: Order you assigned is closed
+    new_order: New order
+    correcting_order: Order is on correcting state
+    control_order: Order is on quality control state
+    done_order: Order is finished
+    change_status_main_intrp: change status
+    appointment_with_interpreter: Appointment with interpreter

@@ -1,0 +1,315 @@
+en:
+  mongoid:
+
+    main_menu:
+      log_out: Logout
+      profiles: Profiles
+      translators: Translators
+      city_approves: City approves
+      service_approves: Service approves
+      languages: Languages
+
+    state_machine_human_name:
+      open: open
+      reopened: open
+      in_progress: open
+      replied: replied
+      closed: closed
+    filter:
+      filters: Filters
+    is_approved: Is approved
+
+    models:
+      service:
+        one: Service
+        other: Services
+      invoice:
+        one: Invoice
+        other: Invoices
+      order:
+        one: Order
+        other: Orders
+      banner:
+        one: Banner
+        other: Banners
+      localization:
+        one: Localization
+        other: Localization
+      message:
+        one: Message
+        other: Messages
+      order/verbal:
+        one: Oral Translation
+        other: Oral Translations
+      order/written:
+        :one: Translation
+        :other: Written Translations
+      order/local_expert:
+        one: Local Expert
+        other: Local Experts
+      profile/base:
+        one: Profile
+        other: Profiles
+      profile/client:
+        one: Client
+        other: Clients
+      profile/translator/base:
+        one: Translator
+        other: Translators
+      profile/translator:
+        one: Translator
+        other: Translators
+      support/ticket:
+        one: Ticket
+        other: Tickets
+      support/theme:
+        one: Theme
+        other: Themes
+      vacancy:
+        one: Vacancy
+        other: Vacancies
+      country:
+        one: Country
+        other: Countries
+    attributes:
+      created_at: Created at
+      updated_at: Updatef at
+      first_name: First Name
+      last_name: Last Name
+      middle_name: Middle Name
+
+      invoice:
+        number: Number
+        cost: Cost
+        description: Description
+        state: State
+
+
+      banner:
+        width: Width         
+        height: Height
+        src: The code to insert
+        name: The Name
+        image: Image
+      localization:
+        name: Name
+        enable: Publicly available
+      message:
+        body: Text        
+        sender: The Sender
+        recipient: Recipient
+      order/base:
+        id: Order No.
+        cost: The Cost Of
+        state: Status
+        owner: Owner
+        subject: Subject
+        partners_client: Client partner
+      order/verbal:
+        level: Level
+        location: City
+        reservation_dates_begin: Begin date
+        reservation_dates_end: End date
+        days: Days
+        language: Language
+        do_not_want_native_chinese: I had not like to have Chinese nation interpreter
+      order/written:
+        original_language: The main translation language
+        translation_language: Language translation
+        translation_type: Type of translation
+        words_number: Number of words
+        file: file for translation
+        get_translation: Pick up a money transfer
+        get_original: Retrieving the original
+      order/local_expert:
+        services_pack_name: Service
+         
+      order/get_translation:
+        email: Email
+        additional: Advanced
+         
+      order/get_original:
+        name: The name of the recipient
+        address: The address of the recipient
+        index: Zip code
+         
+      partners_client:
+        orders_count: Number of orders
+         
+      profile/translator/base:
+        phone: Phone
+        skype: Skype
+        qq: QQ number
+        wechat: Wechat
+        phone: Phone
+        additional_email: Additional email
+        additional_phone: Additional phone
+      profile/base:
+        name: FIRST AND LAST NAME
+        country: Country
+        company_name: Name of the company
+        company_address: Address of the company
+      profile/translator:
+        translators: Translators
+        translator: Translator
+        first_name: First name
+        last_name: Last name
+        email: Email
+        state: State
+        birthday: Birthday
+        sex: Sex
+        name_in_pinyin: Name in pinyin
+        identification_number: Identification number
+        surname_in_pinyin: Surname in pinyin
+        years_out_of_China: Years out of China
+        avatar: Avatar
+        service:
+          services: Services
+          language: Language
+          level: Level
+          verbal_approve: Verbal approve
+          written_approve: Written approve
+          email: Translator's email
+          receive_local_expert: Receive order for local expert
+          want_be_a_senior: Want be a senior
+          is_senior: Is senior
+        city_approve:
+          city_approves: City approves
+          city: City
+          province: Province
+          city_with_surcharge: City with surcharge
+          with_surcharge: With surcharge
+        steps:
+          step_language: Step language
+          native_language: Native language
+          citizenship: Citizenship
+          profile_language: Profile language
+          step_service: Step service
+          cities: Cities
+          cities_with_surcharge: Cities with surcharge
+          direcitons: Direcitons
+          hsk_level: HSK level
+          step_personal: Step personal
+          step_contact: Step contact
+          step_education: Step education
+          educations: Educations
+          grade: Grade
+          university: University
+          country: Country
+          major: Major
+          documents: Documents
+        total_approve: Total approve
+        nearby_cities: Neighboring cities
+        nearby_cities_with_surcharge: Neighbouring towns with payment
+      profile/translator/company:
+        contacts_person: First name last name (contact person)
+        company_uid: Registration number
+        name: Name of the company
+        email: Email
+        additional_email: Secondary e-mail address
+        location: City
+        address: Address
+        years_in_business: How many years in business
+        service_phone: Service mobile phone number
+      support/ticket:
+        subject: Subject
+        user: Owner
+        text: Description
+        comments: Comments
+        attachments: Attachments
+        theme: Theme
+        state: State
+        body: Body
+        assigned_to: Assigned To
+        order: Order
+      support/theme:
+        name: Name
+        new_theme: New Theme
+        actions: Actions
+      user:
+        name: FIRST AND LAST NAME
+        avatar: Avatar
+        country: Country
+        company_name: Name of the company
+        company_address: Address of the company
+        first_name: The Name
+        last_name: Last Name
+        middle_name: Middle Name
+        password: Password
+        confirm_password: Confirm password
+        role: Role
+        groups: Groups
+        permissions: Permissions
+        remember_me: Remember me
+        duplicate_messages_on_email: Duplicate messages by Email
+        duplicate_messages_on_sms: Duplicate messages by SMS
+        send_notification_on_email: Send notifications by email
+        send_notification_on_sms: Send sms
+        duplicate_messages_on_additional_email: Duplicate messages on additional email
+        duplicate_notifications_on_additional_email: Duplicate notifications on additional email
+        phone: Phone
+        email: Email
+        name_in_pinyin: Name in pinyain
+        surname_in_pinyin: Surname in pinyin
+        invitation_text: Invitation text
+        client:
+          company_name: Company
+          company_uid: Registration number
+          company_address: Company address
+          country: Country
+          skype: Skype
+          viber: Viber
+          wechat: Wechat
+          additional_phone: Additional phone
+          additional_email: Additional email
+        invitations:
+          registration_title: pass registration
+          not_registered: not registered
+          registered: registered
+        new_user: New User
+
+      admin:
+        avatar: Avatar
+        email: Email
+        permissions: Permissions
+        actions: Actions
+        new_admin: New Admin
+
+      group:
+        name: Name
+        group: Group
+        groups: Groups
+        users: Users
+        permissions: Permissions
+        actions: Actions
+      language:
+        language: Language
+        languages: Languages
+        name: Name
+        senior: Senior email
+        l_group: Language group
+
+    errors:
+      messages:
+        password_is_not_new: You must choose a new password
+         
+
+
+
+
+  state_machines:
+    support/ticket:
+      state:
+        open: open
+        in_progress: in progress
+        closed: closed
+        reopen: reopen
+        paing: paing
+        wait_offer: wait offer
+        additional_paying: additional paying
+        in_progress: in progress
+        close: close
+        rated: rated
+        correcting: correcting
+        quality_control: quality control
+        sent_to_client: sent to client
