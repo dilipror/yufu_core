@@ -43,6 +43,10 @@ class Localization::Version
     end
   end
 
+  def editable?
+    !(%w(commit approve).include? state)
+  end
+
   def self.current(localization)
     approved.where(localization_id: localization.id).desc(:version_number_id)
   end
