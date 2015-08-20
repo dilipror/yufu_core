@@ -5,6 +5,7 @@ require 'statistic/banners'
 require 'statistic/invites'
 require 'statistic/link'
 require 'searchers/order/verbal_searcher'
+require 'i18n/backend/mongoid'
 
 require 'hash_extension'
 

@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe Translation, :type => :model do
+RSpec.describe TranslationOld, :type => :model do
 
 
 
   describe '.keys' do
-    subject{Translation.keys}
+    subject{TranslationOld.keys}
     it {is_expected.not_to be_empty}
   end
 
@@ -21,13 +21,13 @@ RSpec.describe Translation, :type => :model do
     let(:city) {create :city, name: 'Moscow'}
 
     context 'storage id mongo' do
-      let(:translation) {Translation.new "City.name.#{city.id}", :ru, 'mongo', 'Moscow', 'Москва'}
+      let(:translation) {TranslationOld.new "City.name.#{city.id}", :ru, 'mongo', 'Moscow', 'Москва'}
       # (key, locale, storage, org, vl)
       it {expect{subject}.to change{city.reload.name_translations['ru']}.to('Москва')}
     end
 
     context 'storage id redis' do
-      let(:translation) {Translation.new :directions_list, :ru, 'redis', '', 'q'}
+      let(:translation) {TranslationOld.new :directions_list, :ru, 'redis', '', 'q'}
       it {expect{subject}.to change{I18n.t :directions_list, locale: :ru}.to ('q')}
     end
   end

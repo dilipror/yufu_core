@@ -3,11 +3,11 @@ class Localization
 
   AVAILABLE_NAMES = (Rails.application.config.i18n.available_locales.map &:to_s)
 
-
   field :name
   field :enable, type: Mongoid::Boolean, default: false
 
   belongs_to :language
+  has_many :localization_versions, class_name: 'Localization::Version'
   has_and_belongs_to_many :users
 
   scope :enabled, -> {where enable: true}
