@@ -4,8 +4,11 @@ class Localization::Version
 
   belongs_to :version_number, class_name: 'Localization::VersionNumber'
   belongs_to :localization
+  has_many :translations, dependent: :destroy
 
   scope :approved, -> {where state: 'approved'}
+
+  delegate :name, :number, to: :version_number
 
   validates_presence_of :version_number, :localization
 
@@ -37,7 +40,13 @@ class Localization::Version
           Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
         end
       end
+      version.translations.model_localizers.each &:localize_model
+      true
     end
+  end
+
+  def editable?
+    !(%w(commited approved).include? state)
   end
 
   def self.current(localization)

@@ -3,6 +3,7 @@ class Localization::VersionNumber
   include Mongoid::Timestamps
 
   field :name
+  has_many :localization_versions, class_name: 'Localization::Version', dependent: :destroy
 
   auto_increment :number
 
