@@ -7,11 +7,11 @@ require "yufu_core/version"
 Gem::Specification.new do |s|
   s.name        = "yufu_core"
   s.version     = YufuCore::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of YufuCore."
-  s.description = "TODO: Description of YufuCore."
+  s.authors     = ["Your name"]
+  s.email       = ["Your email"]
+  s.homepage    = "111"
+  s.summary     = "Summary of YufuCore."
+  s.description = "Description of YufuCore."
 
   s.files = Dir["{app,config,db,lib}/**/*", "spec/factories/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
