@@ -1,5 +1,6 @@
 module Yufu
   class TranslationProxy
+    include ActiveModel::Serializable
     EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
                     flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
                      admin.misc.filter_date_format ).join('|')}/
@@ -22,6 +23,14 @@ module Yufu
 
     def value
       @translation.try(:value) || I18n.t(@key, locale: @locale)
+    end
+
+    def original
+      I18n.t @key
+    end
+
+    def read_attribute_for_serialization(key)
+      send key
     end
 
     def self.all(version)
@@ -75,5 +84,7 @@ module Yufu
       end
       @@keys
     end
+
+
   end
 end

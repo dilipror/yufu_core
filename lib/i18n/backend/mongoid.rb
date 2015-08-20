@@ -46,8 +46,26 @@ module I18n
         localization = Localization.where(name: locale).first
         key = normalize_flat_keys(locale, key, scope, options[:separator])
         return nil if localization.nil?
+        from_models = try_from_models(key, locale)
+        return from_models if from_models.present?
         approved_version_ids = Localization::Version.approved.where(localization: localization).distinct :id
         Translation.where(key: key, :version_id.in => approved_version_ids).desc(:version_id).first.try(:value)
+      end
+
+      def try_from_models(key, locale)
+        key = key.gsub('_', '::')
+        decoded_key = key.split('.')
+        klass = decoded_key[0]
+        field = decoded_key[1]
+        id    = decoded_key[2]
+        if Object.const_defined?(klass)
+          klass.constantize.where(id: id).first.try field
+        else
+          nil
+        end
+      rescue
+        nil
+
       end
     end
   end
