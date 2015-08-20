@@ -38,8 +38,6 @@ class TranslationOld
 
   def read_attribute_for_serialization(key)
     send key
-
-
   end
 
   def self.all(target_locale)
