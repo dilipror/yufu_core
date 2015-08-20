@@ -9,7 +9,7 @@ class UserSerializer < ActiveModel::Serializer
   has_many :invites, :permissions
 
   def referral_link_url
-    @object.referral_link.url
+    @object.referral_link.try(:url)
   end
 
   def is_admin
