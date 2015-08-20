@@ -9,6 +9,7 @@ module Profile
     belongs_to :country
     has_many :orders, class_name: 'Order::Base', inverse_of: :owner
 
-    validates_presence_of :wechat, :country, :phone, :first_name, :last_name, if: :persisted?
+    validates_presence_of :identification_number, :country, :first_name, :last_name, if: :persisted?
+    validates_presence_of :company_uid, :company_address, if: lambda {|obj| !obj.read_attribute(:company_name).blank?}
   end
 end

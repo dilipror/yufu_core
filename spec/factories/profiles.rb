@@ -27,6 +27,7 @@ FactoryGirl.define do
     association :user
     first_name 'name'
     last_name 'name 2'
-    wechat 'weq'
+    identification_number '0101010'
+    association :country
   end
 end

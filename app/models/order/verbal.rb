@@ -286,6 +286,10 @@ module Order
           end
         end
       end
+      if include_near_city && there_are_translator_with_surcharge?
+        eu_bank = ExchangeBank.instance
+        res << {cost: eu_bank.exchange(5000, 'USD', Currency.current_currency), description: I18n.t('mongoid.surcharge')}
+      end
       over_comment.gsub! /\+$/, ''
       over_comment += " ) #{I18n.t('hours')}"
       if overtime > 0

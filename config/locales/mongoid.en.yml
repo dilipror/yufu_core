@@ -1,6 +1,8 @@
 en:
   mongoid:
 
+    surcharge: Surcharge
+
     main_menu:
       log_out: Logout
       profiles: Profiles
