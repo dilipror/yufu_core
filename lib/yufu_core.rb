@@ -6,6 +6,7 @@ require 'statistic/invites'
 require 'statistic/link'
 require 'searchers/order/verbal_searcher'
 require 'i18n/backend/mongoid'
+require 'yufu/translation_proxy'
 
 require 'hash_extension'
 

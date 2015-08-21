@@ -1,5 +1,5 @@
 class Profile::Steps::ServiceSerializer < Profile::Steps::BaseSerializer
-  attributes :id, :hsk_level, :cities, :cities_with_surcharge, :directions
+  attributes :id, :hsk_level, :cities, :cities_with_surcharge, :directions, :chinese_description
 
   has_many :services
 

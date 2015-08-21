@@ -6,6 +6,7 @@ module Profile
 
       field :hsk_level, type: Integer
       field :is_updated, type: Mongoid::Boolean, default: false
+      field :chinese_description
 
       has_and_belongs_to_many :cities,                class_name: 'City'
       has_and_belongs_to_many :cities_with_surcharge, class_name: 'City'

@@ -1,6 +1,4 @@
 class NotificationMailer < ActionMailer::Base
-  helper ApplicationHelper
-
   def new_order_for_translator(user)
     mail to: user.email
   end

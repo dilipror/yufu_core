@@ -4,7 +4,8 @@ class UserSerializer < ActiveModel::Serializer
              :duplicate_messages_on_email, :duplicate_messages_on_sms, :send_notification_on_email,
              :send_notification_on_sms, :balance, :first_name, :last_name, :middle_name, :role, :is_authorized_translator,
              :can_change_role, :sign_in_count, :duplicate_messages_on_additional_email, :duplicate_notifications_on_additional_email,
-             :invitation_texts, :referral_link_url, :billing, :profile_translator_id, :profile_client_id, :is_admin, :registered_as
+             :invitation_texts, :referral_link_url, :billing, :profile_translator_id, :profile_client_id, :is_admin, :registered_as,
+             :can_approve_localization
 
   has_many :invites, :permissions
 

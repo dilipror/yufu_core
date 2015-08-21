@@ -8,6 +8,8 @@ class Localization::Version
 
   scope :approved, -> {where state: 'approved'}
 
+  delegate :name, :number, to: :version_number
+
   validates_presence_of :version_number, :localization
 
   state_machine initial: :new do
@@ -39,8 +41,13 @@ class Localization::Version
         end
       end
       version.translations.model_localizers.each &:localize_model
+      I18nJsExportWorker.perform_async
       true
     end
+  end
+
+  def editable?
+    !(%w(commited approved).include? state)
   end
 
   def self.current(localization)

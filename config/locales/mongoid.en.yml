@@ -96,10 +96,12 @@ en:
       localization:
         name: Name
         enable: Publicly available
-      message:
-        body: Text        
-        sender: The Sender
-        recipient: Recipient
+
+      localization/version:
+        number: Number
+        name: Name
+        state: Status
+
       order/base:
         id: Order No.
         cost: The Cost Of

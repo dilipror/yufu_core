@@ -13,6 +13,7 @@ class Translation
   belongs_to :version, class_name: 'Localization::Version'
 
   scope :model_localizers, ->{where is_model_localization: true }
+  scope :not_model_localizers, ->{where is_model_localization: false }
 
   validates_presence_of :version
 
