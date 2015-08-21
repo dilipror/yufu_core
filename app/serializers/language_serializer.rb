@@ -7,6 +7,6 @@ class LanguageSerializer < ActiveModel::Serializer
   end
 
   def language_group
-	@object.languages_group.name
+	  @object.languages_group.name
   end
 end
