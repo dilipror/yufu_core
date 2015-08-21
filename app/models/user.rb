@@ -143,6 +143,12 @@ class User
   end
   alias :can_manage_localizations :can_manage_localizations?
 
+
+  def can_approve_localization?
+    localizations.where(name: 'en').any?
+  end
+  alias :can_approve_localization :can_approve_localization?
+
   def need_change_password?
     !self.is_a?(Admin) && self.sign_in_count <= 1
   end

@@ -15,10 +15,11 @@ module Yufu
 
     @@keys = Set.new
 
-    def initialize(key, translation, locale = 'en')
+    def initialize(key, translation, locale = 'en', version = nil)
       @key = key
       @translation = translation
       @locale = locale
+      @version = version
     end
 
     def value
@@ -29,6 +30,10 @@ module Yufu
       I18n.t @key
     end
 
+    def version_id
+      @version.try :id
+    end
+
     def read_attribute_for_serialization(key)
       send key
     end
@@ -37,7 +42,7 @@ module Yufu
       result = []
       keys.each do |k|
         translation = version.translations.where(key: k).first
-        result << TranslationProxy.new(k, translation, version.localization.name)
+        result << TranslationProxy.new(k, translation, version.localization.name, version)
       end
       result
     end

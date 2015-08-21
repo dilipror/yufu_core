@@ -41,6 +41,7 @@ class Localization::Version
         end
       end
       version.translations.model_localizers.each &:localize_model
+      I18nJsExportWorker.perform_async
       true
     end
   end
