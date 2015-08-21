@@ -75,7 +75,7 @@ module Yufu
           key = record[0]
           value = record[2]
           if value != I18n.t(key, locale: version.localization.name)
-            tr = version.translation.find_or_initialize_by key: key
+            tr = version.translations.find_or_initialize_by key: key
             tr.value = value
             tr.save!
           end
