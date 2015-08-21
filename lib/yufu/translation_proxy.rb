@@ -57,6 +57,33 @@ module Yufu
       end
     end
 
+    def self.to_csv(version, options = {})
+      CSV.generate(options) do |csv|
+        csv << ['key', I18n.locale, version.localization.name]
+        all(version).each do |tr|
+          csv << [tr.key, tr.original, tr.value]
+        end
+      end
+    end
+
+    def self.import(file_data, version)
+      if file_data != ""
+        text = Base64.decode64(file_data['data:text/csv;base64,'.length .. -1])
+        arr_of_arrs = CSV.parse(text)
+
+        arr_of_arrs.drop(1).each do |record|
+          key = record[0]
+          value = record[2]
+          if value != I18n.t(key, locale: version.localization.name)
+            tr = version.translation.find_or_initialize_by key: key
+            tr.value = value
+            tr.save!
+          end
+        end
+        true
+      end
+    end
+
     def self.keys
       return @@keys unless @@keys.empty?
       TranslationProxy.reset_keys
