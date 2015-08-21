@@ -27,7 +27,7 @@ module TestApp
                                      :eu, :fa, :fi, :fr, :gl, :he, :hi, :hr, :hu, :id, :is, :it, :ja, :km, :kn, :ko, :lo,
                                      :lt, :lv, :mk, :mn, :ms, :nb, :ne, :nl, :nn, :or, :pl, :pt, :rm, :ro, :ru, :sk, :sl,
                                      :sr, :sv, :sw, :ta, :th, :tl, :tr, :uk, :ur, :uz, :vi, :wo,
-                                     'zh-CN', 'zh-HK', 'zh-TW', 'zh-YUE']
+                                     'zh-CN', 'zh-HK', 'zh-TW', 'zh-YUE', 'cn-pseudo']
 
     config.host = 'localhost:3000'
     config.action_mailer.default_url_options = { host: config.host }
