@@ -1,3 +1,4 @@
+require 'active_model/serializable'
 module Yufu
   class TranslationProxy
     include ActiveModel::Serializable

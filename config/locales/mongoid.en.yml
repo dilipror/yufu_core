@@ -73,6 +73,10 @@ en:
       country:
         one: Country
         other: Countries
+      user:
+        one: User
+        other: Users
+
     attributes:
       created_at: Created at
       updated_at: Updatef at
