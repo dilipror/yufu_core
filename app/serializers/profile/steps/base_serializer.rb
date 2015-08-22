@@ -6,6 +6,6 @@ class Profile::Steps::BaseSerializer < ActiveModel::Serializer
   end
 
   def profile_id
-    @object.translator.token
+    @object.translator.id
   end
 end
