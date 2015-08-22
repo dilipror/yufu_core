@@ -17,11 +17,11 @@ RSpec.describe Support::Ticket, :type => :model do
     
   end
 
-  describe '#process' do
+  describe '#processing' do
     let(:user){create :user}
     let(:ticket){create :ticket}
 
-    subject{ticket.process user}
+    subject{ticket.processing user}
 
     it{expect{subject}.to change{ticket.reload.state}.to eq 'in_progress'}
     it{expect{subject}.to change{ticket.reload.assigned_to}.to eq user}

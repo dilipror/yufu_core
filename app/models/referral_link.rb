@@ -6,6 +6,6 @@ class ReferralLink
   has_many :transactions,  class_name: 'Transaction', as: :is_commission_from
 
   def url
-    referral_link_url self
+    "#{Rails.application.config.try(:host)}/referral_links/#{id}"
   end
 end

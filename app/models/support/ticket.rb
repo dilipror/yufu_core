@@ -51,7 +51,7 @@ module Support
       state :expert_in_progress
       state :expert_replied
 
-      event :process do
+      event :processing do
         transition [:open, :reopened] => :in_progress
       end
 
@@ -80,7 +80,7 @@ module Support
       end
     end
 
-    def process(user)
+    def processing(user)
       self.assigned_to = user
       super user
     end
