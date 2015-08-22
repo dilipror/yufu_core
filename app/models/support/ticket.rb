@@ -13,6 +13,7 @@ module Support
 
     belongs_to :theme, class_name: 'Support::Theme'
     belongs_to :user, inverse_of: :my_tickets
+    belongs_to :expert, class_name: 'User', inverse_of: :expert_tickets
     belongs_to :assigned_to, class_name: 'User', inverse_of: :assigned_tickets
 
     has_one :order, class_name: 'Order::Base'
@@ -81,6 +82,11 @@ module Support
 
     def process(user)
       self.assigned_to = user
+      super user
+    end
+
+    def expert_process(user)
+      self.expert = user
       super user
     end
 
