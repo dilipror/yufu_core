@@ -134,7 +134,7 @@ class User
   delegate :url, to: :referral_link, prefix: true, allow_nil: true
 
   def authorized_translator?
-    role.translator? ? profile_translator.authorized? : false
+    role.translator? ? profile_translator.try(:authorized?) : false
   end
 
   alias :is_authorized_translator :authorized_translator?
