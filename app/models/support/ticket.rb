@@ -13,6 +13,7 @@ module Support
 
     belongs_to :theme, class_name: 'Support::Theme'
     belongs_to :user, inverse_of: :my_tickets
+    belongs_to :expert, class_name: 'User', inverse_of: :expert_tickets
     belongs_to :assigned_to, class_name: 'User', inverse_of: :assigned_tickets
 
     has_one :order, class_name: 'Order::Base'
@@ -44,22 +45,49 @@ module Support
     state_machine initial: :open do
       state :in_progress
       state :closed
-      state :reopened
       state :replied
 
-      event :process do
+      state :delegated_to_expert
+      state :expert_in_progress
+      state :expert_replied
+
+      event :processing do
         transition [:open, :reopened] => :in_progress
       end
+
       event :close do
         transition  [:open, :reopened, :in_progress] => :closed
       end
+
       event :reopen do
-        transition :closed => :reopened
+        transition :closed => :open
       end
 
       event :reply do
         transition [:open, :reopened, :in_progress] => :replied
       end
+
+      event :delegate_to_expert do
+        transition [:open, :in_progress] => :delegated_to_expert
+      end
+
+      event :expert_process do
+        transition :delegated_to_expert => :expert_in_progress
+      end
+
+      event :expert_reply do
+        transition :expert_in_progress => :expert_replied
+      end
+    end
+
+    def processing(user)
+      self.assigned_to = user
+      super user
+    end
+
+    def expert_process(user)
+      self.expert = user
+      super user
     end
 
     def has_new_comments_for?(user)

@@ -31,16 +31,16 @@ class Localization::Version
 
     before_transition on: :approve do |version|
       if version.localization.name == 'en'
-        chinese_lang_ids = Language.chinese.distinct :id
-        Localization.where(:language_id.in =>  chinese_lang_ids).each do |l|
-          Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
-        end
+        pseudo_china = Localization.find_or_create_by name: 'cn-pseudo'
+        Localization::Version.find_or_create_by localization_id: pseudo_china.id,
+                                                version_number_id: version.version_number.id
       elsif version.localization.language.is_chinese?
-        Localization.where(:language_id.nin => Language.chinese.distinct(:id), :name.ne => 'en').each do |l|
+        Localization.where(:name.nin => %w(en cn-pseudo)).each do |l|
           Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
         end
       end
       version.translations.model_localizers.each &:localize_model
+      I18nJsExportWorker.perform_async
       true
     end
   end

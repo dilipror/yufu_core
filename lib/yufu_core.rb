@@ -22,6 +22,7 @@ require 'state_machine'
 require 'mongoid/token'
 require 'mongoid_auto_increment'
 require 'active_model_serializers'
+require 'enumerize'
 
 
 module YufuCore

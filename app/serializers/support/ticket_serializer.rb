@@ -1,6 +1,6 @@
 class Support::TicketSerializer < ActiveModel::Serializer
   attributes :id, :subject, :text, :comment_ids, :number, :theme_id, :human_state_name, :state, :has_new_comments,
-             :assigned_to_id, :user_id, :order_id
+             :assigned_to_id, :user_id, :order_id, :state_events, :expert_id, :watcher_ids
 
   has_many :embedded_attachments
 

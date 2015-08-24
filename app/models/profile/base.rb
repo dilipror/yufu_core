@@ -3,6 +3,7 @@ module Profile
     include Mongoid::Document
     include Mongoid::Timestamps
     include Mongoid::Token
+    include Mongoid::Autoinc
 
     delegate :first_name, :middle_name, :last_name, :chinese_name, :chinese_name=, :first_name=, :last_name=,
              :middle_name=, :email, :avatar,
@@ -14,6 +15,8 @@ module Profile
 
     field :total_approve, type: Boolean, default: false
     field :_type
+    field :number, type: Integer
+    increments :number
 
     belongs_to :profile_language, class_name: 'Language'
     belongs_to :user
@@ -25,13 +28,8 @@ module Profile
       user.save
     end
 
-    def to_param
-      token
-    end
-
     def can_update?
       new? || reopen?
     end
-    token length: 9, contains: :alpha_lower
   end
 end

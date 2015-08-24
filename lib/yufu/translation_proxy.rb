@@ -1,3 +1,4 @@
+require 'active_model/serializable'
 module Yufu
   class TranslationProxy
     include ActiveModel::Serializable
@@ -15,10 +16,11 @@ module Yufu
 
     @@keys = Set.new
 
-    def initialize(key, translation, locale = 'en')
+    def initialize(key, translation, locale = 'en', version = nil)
       @key = key
       @translation = translation
       @locale = locale
+      @version = version
     end
 
     def value
@@ -29,6 +31,10 @@ module Yufu
       I18n.t @key
     end
 
+    def version_id
+      @version.try :id
+    end
+
     def read_attribute_for_serialization(key)
       send key
     end
@@ -37,7 +43,7 @@ module Yufu
       result = []
       keys.each do |k|
         translation = version.translations.where(key: k).first
-        result << TranslationProxy.new(k, translation, version.localization.name)
+        result << TranslationProxy.new(k, translation, version.localization.name, version)
       end
       result
     end
@@ -49,6 +55,33 @@ module Yufu
         t.save
       else
         false
+      end
+    end
+
+    def self.to_csv(version, options = {})
+      CSV.generate(options) do |csv|
+        csv << ['key', I18n.locale, version.localization.name]
+        all(version).each do |tr|
+          csv << [tr.key, tr.original, tr.value]
+        end
+      end
+    end
+
+    def self.import(file_data, version)
+      if file_data != ""
+        text = Base64.decode64(file_data['data:text/csv;base64,'.length .. -1])
+        arr_of_arrs = CSV.parse(text)
+
+        arr_of_arrs.drop(1).each do |record|
+          key = record[0]
+          value = record[2]
+          if value != I18n.t(key, locale: version.localization.name)
+            tr = version.translations.find_or_initialize_by key: key
+            tr.value = value
+            tr.save!
+          end
+        end
+        true
       end
     end
 

@@ -11,7 +11,7 @@ RSpec.describe Localization::Version, type: :model do
       let(:localization){Localization.default}
       before(:each) do
         chinese = create :language, is_chinese: true
-        create :localization, language: chinese, name: 'zh-CN'
+        create :localization, language: chinese, name: 'cn-pseudo'
         version
       end
       it 'creates version for chinese' do
@@ -20,7 +20,7 @@ RSpec.describe Localization::Version, type: :model do
     end
 
     context 'approve chinese' do
-      let(:localization) {create :localization, language: create(:language, is_chinese: true), name: 'zh-CN'}
+      let(:localization) {create :localization, language: create(:language, is_chinese: true), name: 'cn-pseudo'}
       let(:other_locale) { create :localization, name: 'ru'}
 
       it 'creates version for all other locales' do
