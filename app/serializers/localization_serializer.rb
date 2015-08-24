@@ -5,8 +5,5 @@ class LocalizationSerializer < ActiveModel::Serializer
     @object.language.flag.exists? ? @object.language.flag.url(:thumb) : nil
   end
 
-  def id
-    @object.name
-  end
 
 end
