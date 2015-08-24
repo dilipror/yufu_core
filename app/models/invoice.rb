@@ -5,7 +5,7 @@ class Invoice
   extend Enumerize
 
   field :cost, type: BigDecimal
-  field :pay_way
+  # field :pay_way
   field :pay_company
   field :state
   field :is_paid, default: false
@@ -15,6 +15,7 @@ class Invoice
 
   belongs_to :subject,  class_name: 'Order::Base'
   belongs_to :user
+  belongs_to :pay_way, class_name: 'Gateway::PaymentGateway'
 
   has_many :transactions
   has_many :payments, class_name: 'Order::Payment'
@@ -26,13 +27,13 @@ class Invoice
   # validates_presence_of :description
 
   monetize :cost
-  enumerize :pay_way, in: [:bank, :alipay, :local_balance, :credit_card, :paypal]
+  # enumerize :pay_way, in: [:bank, :alipay, :local_balance, :credit_card, :paypal]
 
   # TODO need use build_client_info
   before_create :create_client_info
   # before_save :pending_invoice
   after_save :check_pay_way#, :pending_invoice
-
+  #
   # validates_presence_of :wechat
   
 
@@ -83,10 +84,10 @@ class Invoice
   end
 
   def check_pay_way
-    if pay_way_changed? && !pay_way.blank? && state == 'paying'
+    if pay_way.present? && state == 'paying'
       PaymentsMailer.send_billing_info(user, self).deliver
-      if pay_way == 'bank'
-        payments.create gateway_class: 'Order::Gateway::Bank', sum: cost
+      if pay_way.gateway_type == 'bank'
+        payments.create gateway_class: 'Order::Gateway::Bank', sum: cost, pay_way: pay_way
       end
     end
   end
