@@ -219,10 +219,11 @@ RSpec.describe Order::Verbal, :type => :model do
 
   describe 'create payment and gateway' do
     let(:order) {create :order_verbal, step: 2}
+    let(:bank) {create :payment_bank}
 
     before(:each) {order.invoices.create cost: 100.0}
 
-    subject{order.update! step: 3, pay_way: 'bank'}
+    subject{order.update! step: 3, pay_way: bank}
 
     it 'expect to create payment' do
       expect{subject}.to change{order.payments.last.class}.to eq(Order::Payment)
@@ -239,11 +240,12 @@ RSpec.describe Order::Verbal, :type => :model do
   end
 
   describe 'change order state' do
+    let(:bank) {create :payment_bank}
     describe 'to paid' do
 
       before(:each) {order.invoices.create cost: 100.0}
 
-      let(:order) {create :order_verbal, step: 3, pay_way:  'bank'}
+      let(:order) {create :order_verbal, step: 3, pay_way: bank}
 
       subject{order.payments.first.update_attribute :state, 'paid'}
 
@@ -256,7 +258,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
       before(:each) {order.invoices.create cost: 100.0}
 
-      let(:order) {create :order_verbal, step: 3, pay_way: 'bank' }
+      let(:order) {create :order_verbal, step: 3, pay_way: bank}
 
       subject{order.payments.first.update_attribute :state, 'paying'}
 

@@ -71,17 +71,19 @@ RSpec.describe Invoice, :type => :model do
   end
 
   describe '#check_pay_way' do
+    let(:bank) {create :payment_bank}
+    let(:local) {create :payment_local_balance}
     subject{invoice}
 
     context 'when pay way is not bank' do
-      let(:invoice) {create :invoice, state: 'paying', pay_way: :local_balance}
+      let(:invoice) {create :invoice, state: 'paying', pay_way: local}
       it 'count payments not changed' do
         expect(invoice.payments.count).to eq 0
       end
     end
 
     context 'when pay way is bank' do
-      let(:invoice) {create :invoice, state: 'paying', pay_way: :bank, cost: 10}
+      let(:invoice) {create :invoice, state: 'paying', pay_way: bank, cost: 10}
       it 'count payments is changed' do
         subject
         expect(invoice.payments.count).to eq 1
