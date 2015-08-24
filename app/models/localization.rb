@@ -1,11 +1,13 @@
 class Localization
   include Mongoid::Document
 
-  AVAILABLE_NAMES = [:af, :ar, :az, :bg, :bn, :bs, :ca, :cs, :cy, :da, :de, :el, :en, :eo, :es, :et,
+  AVAILABLE_NAMES_SYM = [:af, :ar, :az, :bg, :bn, :bs, :ca, :cs, :cy, :da, :de, :el, :en, :eo, :es, :et,
                      :eu, :fa, :fi, :fr, :gl, :he, :hi, :hr, :hu, :id, :is, :it, :ja, :km, :kn, :ko, :lo,
                      :lt, :lv, :mk, :mn, :ms, :nb, :ne, :nl, :nn, :or, :pl, :pt, :rm, :ro, :ru, :sk, :sl,
                      :sr, :sv, :sw, :ta, :th, :tl, :tr, :uk, :ur, :uz, :vi, :wo,
                      'zh-CN', 'zh-HK', 'zh-TW', 'zh-YUE', 'cn-pseudo']
+
+  AVAILABLE_NAMES = Localization::AVAILABLE_NAMES_SYM.map &:to_s
 
   field :name
   field :enable, type: Mongoid::Boolean, default: false
