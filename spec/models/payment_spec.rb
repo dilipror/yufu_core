@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Order::Payment, :type => :model do
 
   describe '#pay' do
-    let(:invoice) {create :invoice, state: 'paying', pay_way: :bank, cost: 10}
+    let(:bank) {create :payment_bank}
+    let(:invoice) {create :invoice, state: 'paying', pay_way: bank, cost: 10}
     let(:payment) {invoice.payments.last}
 
     before(:each) do

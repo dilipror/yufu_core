@@ -3,6 +3,6 @@ class Profile::Steps::PersonalSerializer < Profile::Steps::BaseSerializer
              :surname_in_pinyin, :name_in_pinyin, :avatar_url
 
   def avatar_url
-    @object.avatar.url(:thumb)
+    @object.avatar.try :url, :thumb
   end
 end

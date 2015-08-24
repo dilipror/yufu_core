@@ -18,7 +18,7 @@ module Order
 
     attr_accessor :do_close
     field :step, type: Integer, default: 0
-    field :pay_way
+    # field :pay_way
     # Private orders is available only main office. Translators should not see these
     field :is_private, type: Mongoid::Boolean, default: false
 
@@ -26,6 +26,7 @@ module Order
 
     belongs_to :owner,           class_name: 'Profile::Base'
     belongs_to :assignee,        class_name: 'Profile::Translator'
+    belongs_to :pay_way,         class_name: 'Gateway::PaymentGateway'
 
     # Additional Options
     embeds_one :airport_pick_up, class_name: 'Order::AirportPickUp'
@@ -109,10 +110,10 @@ module Order
 
     def check_pay_way
       if step == 3
-        if pay_way_changed? && !paid? && !pay_way.blank? && state == 'new'
-          case pay_way
+        if !paid? && pay_way.present? && state == 'new'
+          case pay_way.gateway_type
             when 'bank'
-              payments.create gateway_class: 'Order::Gateway::Bank'
+              payments.create gateway_class: 'Order::Gateway::Bank', pay_way: pay_way
               PaymentsMailer.bank_payment(owner).deliver
               self.paying
           end
