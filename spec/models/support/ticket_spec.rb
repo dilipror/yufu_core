@@ -17,6 +17,26 @@ RSpec.describe Support::Ticket, :type => :model do
     
   end
 
+  describe '#processing' do
+    let(:user){create :user}
+    let(:ticket){create :ticket}
+
+    subject{ticket.processing user}
+
+    it{expect{subject}.to change{ticket.reload.state}.to eq 'in_progress'}
+    it{expect{subject}.to change{ticket.reload.assigned_to}.to eq user}
+  end
+
+  describe '#expert_process' do
+    let(:user){create :user}
+    let(:ticket){create :ticket, :delegated}
+
+    subject{ticket.expert_process user}
+
+    it{expect{subject}.to change{ticket.reload.state}.to eq 'expert_in_progress'}
+    it{expect{subject}.to change{ticket.reload.expert}.to eq user}
+  end
+
   describe '#has_new_comments_for' do
     let(:ticket){create :ticket}
     let(:comment){create :comment, ticket: ticket}

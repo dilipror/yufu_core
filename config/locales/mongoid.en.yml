@@ -14,7 +14,7 @@ en:
     state_machine_human_name:
       open: open
       reopened: open
-      in_progress: open
+      in_progress: in progress
       replied: replied
       closed: closed
     filter:
@@ -73,6 +73,10 @@ en:
       country:
         one: Country
         other: Countries
+      user:
+        one: User
+        other: Users
+
     attributes:
       created_at: Created at
       updated_at: Updatef at

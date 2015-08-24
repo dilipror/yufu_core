@@ -98,8 +98,9 @@ class User
   has_many :transactions,  class_name: 'Transaction', as: :is_commission_from
 
   # support
-  has_many :my_tickets, class_name: 'Support::Ticket', inverse_of: :user
+  has_many :my_tickets,       class_name: 'Support::Ticket', inverse_of: :user
   has_many :assigned_tickets, class_name: 'Support::Ticket', inverse_of: :assigned_to
+  has_many :expert_tickets,   class_name: 'Support::Ticket', inverse_of: :expert
   has_and_belongs_to_many :watched_tickets, class_name: 'Support::Ticket', inverse_of: :watchers
 
   has_many :orders, class_name: 'Order::Base', inverse_of: :partner
