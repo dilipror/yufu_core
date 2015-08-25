@@ -85,7 +85,7 @@ table#pink rules="all" style="border: 1px; border-color: #984806;"
         td colspan="2"
           = I18n.t("billing.#{@invoice.subject.try(:_type).try(:underscore)}")
         td
-          = @invoice.pay_way
+          = @invoice.pay_way.name
         td
           = @invoice.created_at.strftime('%Y-%d-%m')
       tr style="color: gray; height: 30px"
