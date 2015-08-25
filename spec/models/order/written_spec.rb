@@ -10,13 +10,17 @@ RSpec.describe Order::Written, type: :model do
 
 
   # let(:languages_groups){create :languages_group}
-
   describe '#original_price' do
+
+    before(:each) do
+      ExchangeBank.update_rates
+    end
+
     let(:language){create :language}
     let(:chinese){create :language, is_chinese: true}
     let(:order){create :order_written, state: :new, translation_type: 'translate',
                        original_language: language, translation_language: chinese,
-                       order_type: language.languages_group.written_prices.first.written_type}
+                       order_type: language.languages_group.written_prices.last.written_type}
 
     subject{order.original_price}
     it{is_expected.to be_a BigDecimal}
@@ -24,19 +28,111 @@ RSpec.describe Order::Written, type: :model do
   end
 
   describe '#base_lang_cost' do
-    it 'return base lang price' do
-      expect(order.base_lang_cost(lang)).to eq(1000)
+
+    before (:each) do
+      Price::Written.any_instance.stub(:value).and_return(1000)
+      Price::Written.any_instance.stub(:value_ch).and_return(800)
+      order.original_language.stub(:is_chinese).and_return(is_chinese)
+    end
+
+    context 'original is chinese' do
+
+      let(:is_chinese){true}
+
+      before(:each){order.stub(:count_on_words?).and_return(true)}
+
+      it 'return base lang price' do
+        expect(order.base_lang_cost(lang)).to eq(800)
+      end
+
+    end
+
+    context 'original is not chinese' do
+
+      let(:is_chinese){false}
+
+      it 'return base lang price' do
+        expect(order.base_lang_cost(lang)).to eq(1000)
+      end
+
     end
   end
 
   describe '#lang_price' do
 
-    it 'return language price with markup' do
-      expect(order.lang_price(lang)).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, Currency.current_currency))
+    before(:each){order.stub(:count_on_words?).and_return(true)}
+
+    before(:each) do
+      ExchangeBank.update_rates
+    end
+    context 'cases' do
+      before(:each) do
+        order.stub(:quantity_for_translate).and_return(words_count)
+        order.original_language.stub(:is_chinese).and_return(is_chinese)
+      end
+
+      subject{order.lang_price(lang)}
+
+      context 'document translation' do
+
+        before(:each){order.stub(:count_on_words?).and_return(false)}
+
+        let(:words_count){1}
+        let(:is_chinese){true}
+
+        it {is_expected.to eq(Currency.exchange_to_f(1000, Currency.current_currency))}
+
+      end
+
+      context 'less than 500 not chinese' do
+        let(:is_chinese){false}
+        let(:words_count){450}
+
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 500, Currency.current_currency))}
+
+      end
+
+      context 'less than 1000 chinese' do
+
+        let(:is_chinese){true}
+        let(:words_count){700}
+
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 800, Currency.current_currency))}
+
+      end
+
+      context 'more than 800 chinese' do
+
+        let(:is_chinese){true}
+        let(:words_count){1000}
+
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
+
+      end
+
+      context 'more than 500 not chinese' do
+
+        let(:is_chinese){false}
+        let(:words_count){600}
+
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 600, Currency.current_currency))}
+
+      end
     end
 
-    it 'return language price with markup in RUB' do
-      expect(order.lang_price(lang, 'RUB')).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, 'RUB'))
+    before(:each) do
+      order.stub(:base_lang_cost).and_return(1000)
+      order.stub(:quantity_for_translate).and_return(900)
+    end
+
+    context 'currency' do
+      it 'return language price with markup' do
+        expect(order.lang_price(lang)).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, Currency.current_currency))
+      end
+
+      it 'return language price with markup in RUB' do
+        expect(order.lang_price(lang, 'RUB')).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, 'RUB'))
+      end
     end
 
   end
@@ -257,20 +353,20 @@ RSpec.describe Order::Written, type: :model do
 
     context 'translate' do
 
-      let(:order){create :order_written, translation_type: 'translate', quantity_for_translate: 100}
+      let(:order){create :order_written, translation_type: 'translate', quantity_for_translate: 1200}
 
       before(:each) do
         order.stub(:base_lang_cost).and_return 10
       end
 
       it ('only one') {expect(subject.count).to eq(1)}
-      it ('cost') {expect(subject[0][:cost]).to eq(1000)}
+      it ('cost') {expect(subject[0][:cost]).to eq(12000)}
 
     end
 
     context 'translate and correct' do
 
-      let(:order){create :order_written, translation_type: 'translate_and_correct', quantity_for_translate: 100}
+      let(:order){create :order_written, translation_type: 'translate_and_correct', quantity_for_translate: 1200}
 
       before(:each) do
         order.stub(:base_lang_cost).and_return 10
@@ -278,8 +374,8 @@ RSpec.describe Order::Written, type: :model do
       end
 
       it ('two') {expect(subject.count).to eq(2)}
-      it ('cost') {expect(subject[0][:cost]).to eq(1000)}
-      it ('cost') {expect(subject[1][:cost]).to eq(330)}
+      it ('cost') {expect(subject[0][:cost]).to eq(12000)}
+      it ('cost') {expect(subject[1][:cost]).to eq(3960)}
 
     end
 
