@@ -17,6 +17,7 @@ module Order
     field :level
     field :greeted_at, type: Time
     field :meeting_in
+    field :additional_info
 
     belongs_to :location, class_name: 'City'
     belongs_to :translator_native_language, class_name: 'Language'
