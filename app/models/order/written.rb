@@ -153,10 +153,11 @@ module Order
     end
 
     def lang_price(lang, currency = nil)
-      if quantity_for_translate > border_quantity_for_translate
-        base_price = base_lang_cost(lang) * (quantity_for_translate || 0)
+      words_count = (quantity_for_translate || 0)
+      if words_count > border_quantity_for_translate
+        base_price = base_lang_cost(lang) * words_count
       else
-        if quantity_for_translate > 0
+        if words_count > 0
           base_price = base_lang_cost(lang) * border_quantity_for_translate
         else
           base_price = 0
@@ -197,7 +198,8 @@ module Order
 
     def base_lang_cost(lang)
       group = lang.languages_group
-      group.written_prices.find_by(written_type_id: order_type.id).value
+      value_name = original_language.is_chinese ? :value_ch : :value
+      group.written_prices.find_by(written_type_id: order_type.id).send value_name
     end
 
     def paying_items

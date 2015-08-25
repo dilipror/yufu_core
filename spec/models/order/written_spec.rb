@@ -24,8 +24,31 @@ RSpec.describe Order::Written, type: :model do
   end
 
   describe '#base_lang_cost' do
-    it 'return base lang price' do
-      expect(order.base_lang_cost(lang)).to eq(1000)
+
+    before (:each) do
+      Price::Written.any_instance.stub(:value).and_return(1000)
+      Price::Written.any_instance.stub(:value_ch).and_return(800)
+      order.original_language.stub(:is_chinese).and_return(is_chinese)
+    end
+
+    context 'original is chinese' do
+
+      let(:is_chinese){true}
+
+      it 'return base lang price' do
+        expect(order.base_lang_cost(lang)).to eq(800)
+      end
+
+    end
+
+    context 'original is not chinese' do
+
+      let(:is_chinese){false}
+
+      it 'return base lang price' do
+        expect(order.base_lang_cost(lang)).to eq(1000)
+      end
+
     end
   end
 
