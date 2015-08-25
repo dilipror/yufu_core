@@ -16,7 +16,7 @@ module Yufu
 
     @@keys = Set.new
 
-    def initialize(key, translation, locale = 'en', version = nil)
+    def initialize(key, translation, locale = 'en', version = nil, value = nil)
       @key = key
       @translation = translation
       @locale = locale

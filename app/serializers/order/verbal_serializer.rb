@@ -2,7 +2,7 @@ class Order::VerbalSerializer < Order::BaseSerializer
   attributes :id, :include_near_city, :goal, :location_name, :reservation_dates_count, :location_id,
              :want_native_chinese, :can_confirm, :can_update, :level, :language_id,
              :there_are_translator, :greeted_at, :meeting_in, :can_send_secondary_offer, :can_send_primary_offer,
-             :offer_status, :offers, :do_not_want_native_chinese
+             :offer_status, :offers, :do_not_want_native_chinese, :additional_info
 
   has_one :main_language_criterion
   has_one :airport_pick_up
