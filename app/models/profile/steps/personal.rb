@@ -6,9 +6,8 @@ module Profile
       extend Enumerize
 
       field :years_out_of_china, type: Integer
-      field :status
 
-      enumerize :status, in: ['Free Worker', 'Translator', 'Student', 'Teacher', 'Other']
+      belongs_to :status, class_name: 'Profile::Ocupation'
 
       delegate :first_name, :first_name=, :last_name, :last_name=, :birthday, :birthday=, :name_in_pinyin, :name_in_pinyin=,
                :identification_number, :identification_number=, :sex, :sex=, :avatar, :avatar=, :surname_in_pinyin, :surname_in_pinyin=,
