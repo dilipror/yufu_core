@@ -34,7 +34,7 @@ class Localization::Version
         pseudo_china = Localization.find_or_create_by name: 'cn-pseudo'
         Localization::Version.find_or_create_by localization_id: pseudo_china.id,
                                                 version_number_id: version.version_number.id
-      elsif version.localization.language.is_chinese?
+      elsif version.localization.name == 'cn-pseudo'
         Localization.where(:name.nin => %w(en cn-pseudo)).each do |l|
           Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
         end
