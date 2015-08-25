@@ -48,6 +48,14 @@ module Yufu
       result
     end
 
+    def self.only_updated(version)
+      translations = version.version_number.localization_versions
+                         .where(localization: Localization.default).first.translations
+      translations.map do |t|
+        TranslationProxy.new t.key, t, version.localization.name, version
+      end
+    end
+
     def self.update(key, value, version)
       if version.editable?
         t = version.translations.find_or_initialize_by key: key
