@@ -10,7 +10,6 @@ RSpec.describe Order::Written, type: :model do
 
 
   # let(:languages_groups){create :languages_group}
-
   describe '#original_price' do
 
     before(:each) do
@@ -21,7 +20,7 @@ RSpec.describe Order::Written, type: :model do
     let(:chinese){create :language, is_chinese: true}
     let(:order){create :order_written, state: :new, translation_type: 'translate',
                        original_language: language, translation_language: chinese,
-                       order_type: language.languages_group.written_prices.first.written_type}
+                       order_type: language.languages_group.written_prices.last.written_type}
 
     subject{order.original_price}
     it{is_expected.to be_a BigDecimal}
@@ -39,6 +38,8 @@ RSpec.describe Order::Written, type: :model do
     context 'original is chinese' do
 
       let(:is_chinese){true}
+
+      before(:each){order.stub(:count_on_words?).and_return(true)}
 
       it 'return base lang price' do
         expect(order.base_lang_cost(lang)).to eq(800)
@@ -58,51 +59,65 @@ RSpec.describe Order::Written, type: :model do
   end
 
   describe '#lang_price' do
+
+    before(:each){order.stub(:count_on_words?).and_return(true)}
+
     before(:each) do
       ExchangeBank.update_rates
     end
     context 'cases' do
-    before(:each) do
-      order.stub(:quantity_for_translate).and_return(words_count)
-      order.original_language.stub(:is_chinese).and_return(is_chinese)
-    end
+      before(:each) do
+        order.stub(:quantity_for_translate).and_return(words_count)
+        order.original_language.stub(:is_chinese).and_return(is_chinese)
+      end
 
-    subject{order.lang_price(lang)}
+      subject{order.lang_price(lang)}
 
-    context 'less than 500 not chinese' do
-      let(:is_chinese){false}
-      let(:words_count){450}
+      context 'document translation' do
 
-      it {is_expected.to eq(Currency.exchange_to_f(1000 * 500, Currency.current_currency))}
+        before(:each){order.stub(:count_on_words?).and_return(false)}
 
-    end
+        let(:words_count){1}
+        let(:is_chinese){true}
 
-    context 'less than 1000 chinese' do
+        it {is_expected.to eq(Currency.exchange_to_f(1000, Currency.current_currency))}
 
-      let(:is_chinese){true}
-      let(:words_count){700}
+      end
 
-      it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
+      context 'less than 500 not chinese' do
+        let(:is_chinese){false}
+        let(:words_count){450}
 
-    end
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 500, Currency.current_currency))}
 
-    context 'more than 800 chinese' do
+      end
 
-      let(:is_chinese){true}
-      let(:words_count){1000}
+      context 'less than 1000 chinese' do
 
-      it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
+        let(:is_chinese){true}
+        let(:words_count){700}
 
-    end
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 800, Currency.current_currency))}
 
-    context 'more than 500 not chinese' do
+      end
 
-      let(:is_chinese){false}
-      let(:words_count){600}
+      context 'more than 800 chinese' do
 
-      it {is_expected.to eq(Currency.exchange_to_f(1000 * 600, Currency.current_currency))}
+        let(:is_chinese){true}
+        let(:words_count){1000}
 
-    end
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
+
+      end
+
+      context 'more than 500 not chinese' do
+
+        let(:is_chinese){false}
+        let(:words_count){600}
+
+        it {is_expected.to eq(Currency.exchange_to_f(1000 * 600, Currency.current_currency))}
+
+      end
     end
 
     before(:each) do
