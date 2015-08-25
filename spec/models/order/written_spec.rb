@@ -12,6 +12,11 @@ RSpec.describe Order::Written, type: :model do
   # let(:languages_groups){create :languages_group}
 
   describe '#original_price' do
+
+    before(:each) do
+      ExchangeBank.update_rates
+    end
+
     let(:language){create :language}
     let(:chinese){create :language, is_chinese: true}
     let(:order){create :order_written, state: :new, translation_type: 'translate',
@@ -72,12 +77,12 @@ RSpec.describe Order::Written, type: :model do
 
     end
 
-    context 'less than 800 chinese' do
+    context 'less than 1000 chinese' do
 
       let(:is_chinese){true}
       let(:words_count){700}
 
-      it {is_expected.to eq(Currency.exchange_to_f(1000 * 800, Currency.current_currency))}
+      it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
 
     end
 
@@ -333,20 +338,20 @@ RSpec.describe Order::Written, type: :model do
 
     context 'translate' do
 
-      let(:order){create :order_written, translation_type: 'translate', quantity_for_translate: 100}
+      let(:order){create :order_written, translation_type: 'translate', quantity_for_translate: 1200}
 
       before(:each) do
         order.stub(:base_lang_cost).and_return 10
       end
 
       it ('only one') {expect(subject.count).to eq(1)}
-      it ('cost') {expect(subject[0][:cost]).to eq(1000)}
+      it ('cost') {expect(subject[0][:cost]).to eq(12000)}
 
     end
 
     context 'translate and correct' do
 
-      let(:order){create :order_written, translation_type: 'translate_and_correct', quantity_for_translate: 100}
+      let(:order){create :order_written, translation_type: 'translate_and_correct', quantity_for_translate: 1200}
 
       before(:each) do
         order.stub(:base_lang_cost).and_return 10
@@ -354,8 +359,8 @@ RSpec.describe Order::Written, type: :model do
       end
 
       it ('two') {expect(subject.count).to eq(2)}
-      it ('cost') {expect(subject[0][:cost]).to eq(1000)}
-      it ('cost') {expect(subject[1][:cost]).to eq(330)}
+      it ('cost') {expect(subject[0][:cost]).to eq(12000)}
+      it ('cost') {expect(subject[1][:cost]).to eq(3960)}
 
     end
 

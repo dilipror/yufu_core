@@ -136,7 +136,7 @@ module Order
     # end
 
     def original_price(currency = nil)
-      coef = translation_type == 'translate_and_correct' ? (1+Price.get_increase_percent(real_translation_language, level)/100) : 1
+      coef = translation_type == 'translate_and_correct' ? (Price.get_increase_percent(real_translation_language, level)/100) : 1
       if real_translation_language.nil?
         return 0
       else
@@ -167,7 +167,7 @@ module Order
     end
 
     def border_quantity_for_translate
-      original_language.is_chinese ? 800 : 500
+      original_language.is_chinese ? 1000 : 500
     end
 
     def close_cash_flow
