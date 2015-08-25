@@ -7,6 +7,9 @@ require 'statistic/link'
 require 'searchers/order/verbal_searcher'
 require 'i18n/backend/mongoid'
 require 'yufu/translation_proxy'
+require 'yufu/add_versions_to_i18n_patch'
+require 'yufu/mongoid_fields_localized_patch'
+require 'yufu/mongoid_fields_patch'
 
 require 'hash_extension'
 
