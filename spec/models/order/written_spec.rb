@@ -30,13 +30,66 @@ RSpec.describe Order::Written, type: :model do
   end
 
   describe '#lang_price' do
-
-    it 'return language price with markup' do
-      expect(order.lang_price(lang)).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, Currency.current_currency))
+    before(:each) do
+      ExchangeBank.update_rates
+    end
+    context 'cases' do
+    before(:each) do
+      order.stub(:quantity_for_translate).and_return(words_count)
+      order.original_language.stub(:is_chinese).and_return(is_chinese)
     end
 
-    it 'return language price with markup in RUB' do
-      expect(order.lang_price(lang, 'RUB')).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, 'RUB'))
+    subject{order.lang_price(lang)}
+
+    context 'less than 500 not chinese' do
+      let(:is_chinese){false}
+      let(:words_count){450}
+
+      it {is_expected.to eq(Currency.exchange_to_f(1000 * 500, Currency.current_currency))}
+
+    end
+
+    context 'less than 800 chinese' do
+
+      let(:is_chinese){true}
+      let(:words_count){700}
+
+      it {is_expected.to eq(Currency.exchange_to_f(1000 * 800, Currency.current_currency))}
+
+    end
+
+    context 'more than 800 chinese' do
+
+      let(:is_chinese){true}
+      let(:words_count){1000}
+
+      it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
+
+    end
+
+    context 'more than 500 not chinese' do
+
+      let(:is_chinese){false}
+      let(:words_count){600}
+
+      it {is_expected.to eq(Currency.exchange_to_f(1000 * 600, Currency.current_currency))}
+
+    end
+    end
+
+    before(:each) do
+      order.stub(:base_lang_cost).and_return(1000)
+      order.stub(:quantity_for_translate).and_return(900)
+    end
+
+    context 'currency' do
+      it 'return language price with markup' do
+        expect(order.lang_price(lang)).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, Currency.current_currency))
+      end
+
+      it 'return language price with markup in RUB' do
+        expect(order.lang_price(lang, 'RUB')).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, 'RUB'))
+      end
     end
 
   end

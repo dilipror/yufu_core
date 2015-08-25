@@ -153,8 +153,20 @@ module Order
     end
 
     def lang_price(lang, currency = nil)
-      base_price = base_lang_cost(lang) * (quantity_for_translate || 0)
+      if quantity_for_translate > border_quantity_for_translate
+        base_price = base_lang_cost(lang) * (quantity_for_translate || 0)
+      else
+        if quantity_for_translate > 0
+          base_price = base_lang_cost(lang) * border_quantity_for_translate
+        else
+          base_price = 0
+        end
+      end
       Currency.exchange_to_f(base_price, currency)
+    end
+
+    def border_quantity_for_translate
+      original_language.is_chinese ? 800 : 500
     end
 
     def close_cash_flow
