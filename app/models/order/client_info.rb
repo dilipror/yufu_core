@@ -29,7 +29,7 @@ module Order
     end
 
 
-    validate :company_params, :wechat_param
+    validate :company_params#, :wechat_param
 
     # def identification_number
     #   # 'ogo'
@@ -49,11 +49,11 @@ module Order
       present? && invoice.subject.step == 3
     end
 
-    def wechat_param
-      if wechat.blank?
-        errors.add 'wechat', 'is_blank'
-      end
-    end
+    # def wechat_param
+    #   if wechat.blank?
+    #     errors.add 'wechat', 'is_blank'
+    #   end
+    # end
 
     def company_params
       unless company_uid.blank? && company_name.blank? && company_address.blank?

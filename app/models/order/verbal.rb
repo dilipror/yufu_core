@@ -15,7 +15,7 @@ module Order
     field :do_not_want_native_chinese, type: Mongoid::Boolean, default: false
     field :update_time, type: DateTime
     field :level
-    field :greeted_at, type: Time
+    field :greeted_at, type: DateTime
     field :meeting_in
     field :additional_info
 
