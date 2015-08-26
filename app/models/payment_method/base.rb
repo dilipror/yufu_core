@@ -5,6 +5,8 @@ module PaymentMethod
 
     field :is_active, type: Mongoid::Boolean, default: false
 
+    belongs_to :currency
+
     embedded_in :billing
     embeds_one :billing_address, class_name: 'PaymentMethod::BillingAddress', cascade_callbacks: true
 
@@ -13,6 +15,10 @@ module PaymentMethod
     def owner?(user)
       return false if billing.user.nil?
       user == billing.user
+    end
+
+    def available_currencies_ids
+
     end
 
   end

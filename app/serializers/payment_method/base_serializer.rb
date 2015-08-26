@@ -1,5 +1,5 @@
 class PaymentMethod::BaseSerializer < ActiveModel::Serializer
-  attributes :id, :billing_id, :_type, :is_active
+  attributes :id, :billing_id, :_type, :is_active, :currency_id
 
   has_one :billing_address
 

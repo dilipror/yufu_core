@@ -5,4 +5,11 @@ module PaymentMethod
     validates_presence_of :email
 
   end
+  #
+  # def available_currencies
+  #   res = []
+  #   res << Currency.find_by(iso_code: 'GBP')
+  #   res
+  # end
+
 end
