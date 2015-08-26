@@ -49,10 +49,23 @@ module Yufu
     end
 
     def self.only_updated(version)
-      translations = version.version_number.localization_versions
-                         .where(localization: Localization.default).first.translations
-      translations.map do |t|
-        TranslationProxy.new t.key, t, version.localization.name, version
+      if version.english?
+        version.translations.map do |t|
+          TranslationProxy.new t.key, t, version.localization.name, version
+        end
+      else
+        last_approved_version_number = version.localization.localization_versions
+                                           .approved.where(:id.lte => version.id).desc(:id).first.try :version_number_id
+        last_approved_version_number ||= 0
+        available_version_numbers = Localization::VersionNumber.where(:number.gte => last_approved_version_number,
+                                                                      :number.lte => version.version_number.number)
+                                                               .distinct :id
+
+        version_ids = Localization::Version.approved.where(:version_number_id.in => available_version_numbers)
+                          .distinct :id
+        Translation.where(:version_id.in => version_ids).distinct(:key).map do |k|
+          TranslationProxy.new k, version.translations.where(key: k).first, version.localization.name, version
+        end
       end
     end
 

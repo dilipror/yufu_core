@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :translation do
-    key 'key'
+    sequence(:key){|n| "key-#{n}"}
     value 'value'
     association :version, factory: :localization_version
   end
