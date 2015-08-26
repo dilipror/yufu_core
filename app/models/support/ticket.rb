@@ -64,11 +64,11 @@ module Support
       end
 
       event :reply do
-        transition [:open, :reopened, :in_progress] => :replied
+        transition [:expert_replied, :open, :reopened, :in_progress] => :replied
       end
 
       event :delegate_to_expert do
-        transition [:open, :in_progress] => :delegated_to_expert
+        transition [:open, :in_progress, :expert_replied] => :delegated_to_expert
       end
 
       event :expert_process do

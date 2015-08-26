@@ -17,6 +17,9 @@ en:
       in_progress: in progress
       replied: replied
       closed: closed
+      delegated_to_expert: Delegated to Expert
+      expert_in_progress: Expert is processing
+      expert_replied: Has Expert's reply
     filter:
       filters: Filters
     is_approved: Is approved
