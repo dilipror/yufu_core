@@ -136,7 +136,7 @@ module Order
     # end
 
     def original_price(currency = nil)
-      coef = translation_type == 'translate_and_correct' ? (1+Price.get_increase_percent(real_translation_language, level)/100) : 1
+      coef = translation_type == 'translate_and_correct' ? (Price.get_increase_percent(real_translation_language, level)/100) : 1
       if real_translation_language.nil?
         return 0
       else
@@ -152,9 +152,30 @@ module Order
       real_translation_language.nil? ? 0 : lang_price(real_translation_language, currency) * Price.get_increase_percent(real_translation_language, level)
     end
 
+    def count_on_words?
+      order_type.type_name == 'text'
+    end
+
     def lang_price(lang, currency = nil)
-      base_price = base_lang_cost(lang) * (quantity_for_translate || 0)
+      count = (quantity_for_translate || 0)
+      if count_on_words?
+        if count > border_quantity_for_translate
+          base_price = base_lang_cost(lang) * count
+        else
+          if count > 0
+            base_price = base_lang_cost(lang) * border_quantity_for_translate
+          else
+            base_price = 0
+          end
+        end
+      else
+        base_price = base_lang_cost(lang) * count
+      end
       Currency.exchange_to_f(base_price, currency)
+    end
+
+    def border_quantity_for_translate
+      original_language.is_chinese ? 800 : 500
     end
 
     def close_cash_flow
@@ -185,7 +206,8 @@ module Order
 
     def base_lang_cost(lang)
       group = lang.languages_group
-      group.written_prices.find_by(written_type_id: order_type.id).value
+      value_name = original_language.is_chinese && count_on_words? ? :value_ch : :value
+      group.written_prices.find_by(written_type_id: order_type.id).send value_name
     end
 
     def paying_items

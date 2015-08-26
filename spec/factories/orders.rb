@@ -38,7 +38,7 @@ FactoryGirl.define do
     level 'document'
     association :original_language, factory: :language
     association :translation_language, factory: :language
-    quantity_for_translate 23
+    quantity_for_translate 1200
     order_type {create(:written_type)}
   end
 
