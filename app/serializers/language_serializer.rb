@@ -3,7 +3,8 @@ class LanguageSerializer < ActiveModel::Serializer
              :has_senior, :available_level_ids, :senior_id, :language_group
 
   def available_level_ids
-    @object.available_levels
+    # @object.available_levels
+    []
   end
 
   def language_group
