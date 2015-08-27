@@ -28,8 +28,10 @@ class Ability
       can [:manage], Profile::Education do |education|
         education.owner? user
       end
-      can :manage, PaymentMethod::Base do |payment_method|
+
+      can [:update, :destroy], PaymentMethod::Base do |payment_method|
         payment_method.owner? user
+        # true
       end
 
       can :create, Order::Written::WorkReport do |report|
