@@ -94,8 +94,9 @@ class Language
   end
   alias :has_senior :has_senior?
 
-  def available_levels
-    Profile::Service.approved.where(language_id: id).distinct :level
+  def available_levels(city_id = nil)
+    translators_ids = CityApprove.where(city_id: city_id).distinct :translator_id
+    Profile::Service.approved.where(language_id: id, :translator_id.in => translators_ids).distinct :level
   end
 
   protected
