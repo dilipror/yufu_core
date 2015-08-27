@@ -7,6 +7,7 @@ class Localization::Version
   has_many :translations, dependent: :destroy
 
   scope :approved, -> {where state: 'approved'}
+  scope :not_approved, -> {ne :state =>  'approved'}
 
   delegate :name, :number, to: :version_number
 
@@ -43,6 +44,10 @@ class Localization::Version
       I18nJsExportWorker.perform_async
       true
     end
+  end
+
+  def english?
+    localization.name == 'en'
   end
 
   def editable?
