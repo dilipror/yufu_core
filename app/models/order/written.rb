@@ -135,12 +135,12 @@ module Order
     #   Price.without_markup price currency
     # end
 
+
     def original_price(currency = nil)
-      coef = translation_type == 'translate_and_correct' ? (Price.get_increase_percent(real_translation_language, level)/100) : 1
       if real_translation_language.nil?
         return 0
       else
-        BigDecimal.new lang_price(real_translation_language, currency)*coef, 2
+        translation_type == 'translate_and_correct' ? price_correct : price_translate
       end
     end
 
@@ -150,6 +150,14 @@ module Order
 
     def price_correct(currency = nil)
       real_translation_language.nil? ? 0 : lang_price(real_translation_language, currency) * Price.get_increase_percent(real_translation_language, level)
+    end
+
+    def price_translate_currency(currency = nil)
+      Currency.exchange_to_f price_translate, currency
+    end
+
+    def price_correct_currency(currency = nil)
+      Currency.exchange_to_f price_correct, currency
     end
 
     def count_on_words?
@@ -171,7 +179,7 @@ module Order
       else
         base_price = base_lang_cost(lang) * count
       end
-      Currency.exchange_to_f(base_price, currency)
+      base_price
     end
 
     def border_quantity_for_translate
@@ -212,9 +220,9 @@ module Order
 
     def paying_items
       res = []
-      res << {cost: price_translate('CNY'), description: I18n.t('order.written.translate')}
+      res << {cost: price_translate, description: I18n.t('order.written.translate')}
       if translation_type == 'translate_and_correct'
-        res << {cost: price_correct('CNY') - price_translate('CNY'), description: I18n.t('order.written.correct')}
+        res << {cost: price_correct - price_translate, description: I18n.t('order.written.correct')}
       end
       res
     end

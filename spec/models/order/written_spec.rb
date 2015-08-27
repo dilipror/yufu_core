@@ -129,10 +129,6 @@ RSpec.describe Order::Written, type: :model do
       it 'return language price with markup' do
         expect(order.lang_price(lang)).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, Currency.current_currency))
       end
-
-      it 'return language price with markup in RUB' do
-        expect(order.lang_price(lang, 'RUB')).to eq(Currency.exchange_to_f(1000 * order.quantity_for_translate, 'RUB'))
-      end
     end
 
   end
