@@ -116,6 +116,7 @@ class User
 
   scope :without_admins, -> {where _type: 'User'}
   scope :unconfirmed, -> {where confirmed_at: nil}
+  default_scope -> {desc :id}
 
   #check that new  password is not equals to old
   # validate :new_password, if: -> {password.present? && encrypted_password_was.present?}
