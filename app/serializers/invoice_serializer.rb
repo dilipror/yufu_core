@@ -1,11 +1,13 @@
 class InvoiceSerializer < ActiveModel::Serializer
-  attributes :id, :pay_company, :cost, :state, :subject_id, :number, :description, :subject_type
+  attributes :id, :cost, :state, :subject_id, :number, :description, :subject_type,
+             :need_invoice_copy
   #TODO:  Временно выпилил subject_type, так как на фронте связь не полиморфная.
   # Надо решить эту проблему.
   #
   # временно вернул subject_type, так как его отсутствие ломает инвойс к ебеням
   has_many :items
   has_one :pay_way
+  has_one :pay_company
 
   def subject_type
 
