@@ -9,5 +9,4 @@ class Billing
   accepts_nested_attributes_for :payment_methods, allow_destroy: true
 
   belongs_to :user
-
 end
