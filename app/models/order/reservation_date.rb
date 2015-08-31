@@ -34,6 +34,13 @@ module Order
       return nil
     end
 
+    def simple_price_for_hours(hours)
+      return 0 unless is_confirmed
+      return 0 if order_verbal.language.nil? || order_verbal.level.nil?
+      day_cost = order_verbal.language.verbal_price(level)
+      day_cost * hours
+    end
+
     def original_price_without_overtime
       return original_price if hours <= 8
       day_cost = order_verbal.language.verbal_price(level)
@@ -52,7 +59,7 @@ module Order
       day_cost = order_verbal.language.verbal_price(level)
       price = day_cost * 8
       price += (hours - 8) * day_cost * 1.5   if hours > 8
-      price = (8 - hours) * day_cost * 1.5    if hours < 8
+      price =  hour * day_cost * 1.5    if hours < 8
       # hours <= 8 ?  day_cost * hours : day_cost * 8 + 1.5 * day_cost * (hours - 8)
       price
     end

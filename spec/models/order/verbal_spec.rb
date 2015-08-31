@@ -624,6 +624,77 @@ RSpec.describe Order::Verbal, :type => :model do
       Language.any_instance.stub(:verbal_price).and_return(10)
     end
 
+    context 'first day with greeted_at' do
+
+      let(:order){create :order_verbal, greeted_at_hour: greeted_at_hour, greeted_at_minute: greeted_at_minute, reservation_dates: [(build :order_reservation_date, hours: hours, date: '2015-10-01')]}
+
+      context 'in time' do
+        let(:greeted_at_hour){8}
+        let(:greeted_at_minute){16}
+        let(:hours){8}
+
+        it {expect(subject[0][:cost]).to eq(80)}
+        it {expect(subject[1]).to be_nil}
+      end
+
+      context 'in time with overtime' do
+        let(:greeted_at_hour){8}
+        let(:greeted_at_minute){16}
+        let(:hours){10}
+
+        it {expect(subject[0][:cost]).to eq(80)}
+        it {expect(subject[1][:cost]).to eq(30)}
+      end
+
+      context 'all before' do
+        let(:greeted_at_hour){0}
+        let(:greeted_at_minute){16}
+        let(:hours){4}
+
+        it {expect(subject[0][:cost]).to eq(60)}
+        it {expect(subject[1]).to be_nil}
+      end
+
+      context 'all after' do
+        let(:greeted_at_hour){22}
+        let(:greeted_at_minute){16}
+        let(:hours){8}
+
+        it {expect(subject[0][:cost]).to eq(120)}
+        it {expect(subject[1]).to be_nil}
+      end
+
+      context 'partially before' do
+        let(:greeted_at_hour){6}
+        let(:greeted_at_minute){15}
+        let(:hours){8}
+
+        it {expect(subject[0][:cost]).to eq(70)}
+        it {expect(subject[1][:cost]).to eq(15)}
+      end
+
+      context 'partially after' do
+        let(:greeted_at_hour){14}
+        let(:greeted_at_minute){15}
+        let(:hours){10}
+
+        it {expect(subject[0][:cost]).to eq(70)}
+        it {expect(subject[1][:cost]).to eq(45)}
+      end
+
+      context 'partially before and after' do
+        context 'partially before' do
+          let(:greeted_at_hour){6}
+          let(:greeted_at_minute){15}
+          let(:hours){16}
+
+          it {expect(subject[0][:cost]).to eq(80)}
+          it {expect(subject[1][:cost]).to eq(120)}
+        end
+      end
+
+    end
+
     it 'first item' do
       expect(subject[0][:cost]).to eq(80)
       expect(subject[0][:description]).to eq('For date 2015-10-01 8 hours')

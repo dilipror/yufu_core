@@ -9,11 +9,12 @@ module Mongoid
 
       private
       def lookup_with_documents(object, document = nil)
+        value = nil
         if I18n.config.locale_version.present?
-          I18n.t "#{self.options[:klass].to_s.gsub('::', '_')}.#{self.name}.#{document.id}", default: lookup(object)
-        else
-          lookup(object)
+          value = Translation.where(key: "#{self.options[:klass].to_s.gsub('::', '_')}.#{self.name}.#{document.id}",
+                                    version_id: I18n.config.locale_version.id).first.try(:value)
         end
+        value || lookup(object)
       end
     end
   end

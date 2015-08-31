@@ -96,6 +96,7 @@ class User
   # billing
   has_one :billing, dependent: :destroy
   has_many :transactions,  class_name: 'Transaction', as: :is_commission_from
+  has_many :withdrawals, dependent: :nullify
 
   # support
   has_many :my_tickets,       class_name: 'Support::Ticket', inverse_of: :user
@@ -116,6 +117,7 @@ class User
 
   scope :without_admins, -> {where _type: 'User'}
   scope :unconfirmed, -> {where confirmed_at: nil}
+  default_scope -> {desc :id}
 
   #check that new  password is not equals to old
   # validate :new_password, if: -> {password.present? && encrypted_password_was.present?}
