@@ -25,12 +25,16 @@ class Withdrawal
     end
 
     before_transition on: :execute do |withdrawal|
-      if withdrawal.user.balance > withdrawal.sum
+      if withdrawal.possible?
         transaction = withdrawal.credit_transactions.create debit: withdrawal.user, sum: withdrawal.sum
         transaction.execute
       else
         false
       end
     end
+  end
+
+  def possible?
+    user.balance > sum
   end
 end
