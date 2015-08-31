@@ -274,16 +274,26 @@ module Order
       begins_work_hour = [7, greeted_at_hour].max
       ends_work_hour = [21, greeted_at_hour+rd.hours].min
       work_hours = [ends_work_hour - begins_work_hour, 8].min
-      rd.simple_price_for_hours work_hours
+      coef = rd.hours < 8 ? 1.5 : 1
+      if work_hours > 0
+        rd.simple_price_for_hours(work_hours) * coef
+      else
+        0
+      end
     end
 
     def first_day_overtime(rd)
+      coef = rd.hours < 8 ? 1.5 : 1
+      rd.simple_price_for_hours(overtime_hours(rd)) * 1.5 * coef
+    end
+
+    def overtime_hours(rd)
       begins_work_hour = [7, greeted_at_hour].max
       ends_work_hour = [21, greeted_at_hour+rd.hours].min
       extra_hours = [0, ends_work_hour - begins_work_hour - 8].max
       extra_hours_before = [0, [greeted_at_hour + rd.hours, 7].min - greeted_at_hour].max
       extra_hours_after = [0, greeted_at_hour + rd.hours - [21, greeted_at_hour].max].max
-      rd.simple_price_for_hours(extra_hours + extra_hours_before + extra_hours_after) * 1.5
+      extra_hours + extra_hours_before + extra_hours_after
     end
 
     def paying_items
@@ -291,15 +301,15 @@ module Order
       overtime = 0
       over_comment = '('
       reservation_dates.each do |rd|
-        if greeted_at_hour.present? && greeted_at_minute.present? and rd == reservation_dates.first
+        if greeted_at_hour.present? && rd == reservation_dates.first
           begins_work_hour = [7, greeted_at_hour].max
           ends_work_hour = [21, greeted_at_hour+rd.hours].min
           work_hours = [ends_work_hour - begins_work_hour, 8].min
           overtime += first_day_overtime(reservation_dates.first)
-          comment = " 8 #{I18n.t('hours')}"
-          if work_hours < 8
-            comment = " #{work_hours} #{I18n.t('hours')} * 1.5"
+          if overtime
+            over_comment += " #{overtime_hours(rd)} +"
           end
+          comment = " 8 #{I18n.t('hours')}"
           lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
           if work_hours > 0
             res << {cost: first_day_work_time(reservation_dates.first), description: "#{lalelo}. #{I18n.t('for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}

@@ -637,6 +637,16 @@ RSpec.describe Order::Verbal, :type => :model do
         it {expect(subject[1]).to be_nil}
       end
 
+
+      context 'in time x 2' do
+        let(:greeted_at_hour){8}
+        let(:greeted_at_minute){16}
+        let(:hours){4}
+
+        it {expect(subject[0][:cost]).to eq(60)}
+        it {expect(subject[1]).to be_nil}
+      end
+
       context 'in time with overtime' do
         let(:greeted_at_hour){8}
         let(:greeted_at_minute){16}
@@ -651,7 +661,7 @@ RSpec.describe Order::Verbal, :type => :model do
         let(:greeted_at_minute){16}
         let(:hours){4}
 
-        it {expect(subject[0][:cost]).to eq(60)}
+        it {expect(subject[0][:cost]).to eq(90)}
         it {expect(subject[1]).to be_nil}
       end
 
