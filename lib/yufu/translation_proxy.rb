@@ -118,13 +118,13 @@ module Yufu
           back.send :init_translations
           I18n.backend.send(:translations).each do |locale, hash|
             hash.flatten_hash.each do |k, v|
-              @@keys << k unless EXCEPTED_KEYS === k
+              @@keys << k.to_s unless EXCEPTED_KEYS === k
             end
           end
         end
       end
 
-      @@keys += Translation.distinct(:key)
+      @@keys += Translation.distinct(:key).map(&:to_s)
 
       MONGO_MODELS.each do |temp|
         t = temp.split('.')
@@ -133,7 +133,7 @@ module Yufu
         # klass
         que.each do |k|
           key = klass.gsub('::', '_') + '.' + t[1] + '.' + k[0]
-          @@keys << key
+          @@keys << key.to_s
         end
       end
       @@keys

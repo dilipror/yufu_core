@@ -96,6 +96,7 @@ class User
   # billing
   has_one :billing, dependent: :destroy
   has_many :transactions,  class_name: 'Transaction', as: :is_commission_from
+  has_many :withdrawals, dependent: :nullify
 
   # support
   has_many :my_tickets,       class_name: 'Support::Ticket', inverse_of: :user

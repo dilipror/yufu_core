@@ -47,10 +47,8 @@ module I18n
         key = normalize_flat_keys(locale, key, scope, options[:separator])
         return nil if localization.nil?
 
-        if I18n.config.try(:locale_version).nil?
-          from_models = try_from_models(key, locale)
-          return from_models if from_models.present?
-        end
+        from_models = try_from_models(key, locale)
+        return from_models if from_models.present?
 
         value = nil
 
