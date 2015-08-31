@@ -67,10 +67,10 @@ class User
   field :phone
 
   # Settings
-  field :duplicate_messages_on_email,                    type: Mongoid::Boolean, default: false
+  field :duplicate_messages_on_email,                    type: Mongoid::Boolean, default: true
   field :duplicate_messages_on_sms,                      type: Mongoid::Boolean, default: false
   field :send_notification_on_email,                     type: Mongoid::Boolean, default: true
-  field :send_notification_on_sms,                       type: Mongoid::Boolean, default: false
+  field :send_notification_on_sms,                       type: Mongoid::Boolean, default: true
   field :duplicate_messages_on_additional_email,         type: Mongoid::Boolean, default: false
   field :duplicate_notifications_on_additional_email,    type: Mongoid::Boolean, default: false
 
