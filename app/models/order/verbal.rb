@@ -15,7 +15,8 @@ module Order
     field :do_not_want_native_chinese, type: Mongoid::Boolean, default: false
     field :update_time, type: DateTime
     field :level
-    field :greeted_at, type: DateTime
+    field :greeted_at_hour, type: Integer
+    field :greeted_at_minute, type: Integer
     field :meeting_in
     field :additional_info
 
@@ -269,21 +270,52 @@ module Order
       self.create_and_execute_transaction owner.user, Office.head, price
     end
 
+    def first_day_work_time(rd)
+      begins_work_hour = [7, greeted_at_hour].max
+      ends_work_hour = [21, greeted_at_hour+rd.hours].min
+      work_hours = [ends_work_hour - begins_work_hour, 8].min
+      rd.simple_price_for_hours work_hours
+    end
+
+    def first_day_overtime(rd)
+      begins_work_hour = [7, greeted_at_hour].max
+      ends_work_hour = [21, greeted_at_hour+rd.hours].min
+      extra_hours = [0, ends_work_hour - begins_work_hour - 8].max
+      extra_hours_before = [0, [greeted_at_hour + rd.hours, 7].min - greeted_at_hour].max
+      extra_hours_after = [0, greeted_at_hour + rd.hours - [21, greeted_at_hour].max].max
+      rd.simple_price_for_hours(extra_hours + extra_hours_before + extra_hours_after) * 1.5
+    end
+
     def paying_items
       res = []
       overtime = 0
       over_comment = '('
       reservation_dates.each do |rd|
-        if rd.original_price_without_overtime > 0
+        if greeted_at_hour.present? && greeted_at_minute.present? and rd == reservation_dates.first
+          begins_work_hour = [7, greeted_at_hour].max
+          ends_work_hour = [21, greeted_at_hour+rd.hours].min
+          work_hours = [ends_work_hour - begins_work_hour, 8].min
+          overtime += first_day_overtime(reservation_dates.first)
           comment = " 8 #{I18n.t('hours')}"
-          if rd.hours < 8
-            comment = " #{rd.hours} #{I18n.t('hours')} * 1.5"
+          if work_hours < 8
+            comment = " #{work_hours} #{I18n.t('hours')} * 1.5"
           end
           lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
-          res << {cost: rd.original_price_without_overtime, description: "#{lalelo}. #{I18n.t('for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
-          overtime += rd.overtime_price
-          if rd.hours > 8
-            over_comment += " #{rd.hours - 8} +"
+          if work_hours > 0
+            res << {cost: first_day_work_time(reservation_dates.first), description: "#{lalelo}. #{I18n.t('for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
+          end
+        else
+          if rd.original_price_without_overtime > 0
+            comment = " 8 #{I18n.t('hours')}"
+            if rd.hours < 8
+              comment = " #{rd.hours} #{I18n.t('hours')} * 1.5"
+            end
+            lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
+            res << {cost: rd.original_price_without_overtime, description: "#{lalelo}. #{I18n.t('for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
+            overtime += rd.overtime_price
+            if rd.hours > 8
+              over_comment += " #{rd.hours - 8} +"
+            end
           end
         end
       end
