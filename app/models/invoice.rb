@@ -6,19 +6,23 @@ class Invoice
 
   field :cost, type: BigDecimal
   # field :pay_way
-  field :pay_company
+  # field :pay_company
   field :state
   field :is_paid, default: false
   field :description
+  field :need_invoice_copy, type: Boolean, default: false
 
   auto_increment :number
 
   belongs_to :subject,  class_name: 'Order::Base'
   belongs_to :user
+  belongs_to :pay_company, class_name: 'Company'
   belongs_to :pay_way, class_name: 'Gateway::PaymentGateway'
 
   has_many :transactions
   has_many :payments, class_name: 'Order::Payment'
+
+  has_and_belongs_to_many :taxes
 
   embeds_one :client_info, class_name: 'Order::ClientInfo', cascade_callbacks: true
   embeds_many :items, class_name: 'Invoice::Item', cascade_callbacks: true
@@ -32,7 +36,7 @@ class Invoice
   # TODO need use build_client_info
   before_create :create_client_info
   # before_save :pending_invoice
-  after_save :check_pay_way#, :pending_invoice
+  after_save :update_taxes, :check_pay_way#, :pending_invoice
   #
   # validates_presence_of :wechat
   
@@ -103,7 +107,7 @@ class Invoice
     build_client_info
   end
 
-  def cost
+  def cost_without_taxes
     if items.empty?
       attr = read_attribute :cost
       result = attr || subject.try(:original_price) || '0.0'
@@ -113,6 +117,21 @@ class Invoice
     end
   end
 
+  def cost
+    cost_without_taxes + amount_tax
+    # if items.empty?
+    #   attr = read_attribute :cost
+    #   result = attr || subject.try(:original_price) || '0.0'
+    #
+    #   result += amount_tax result unless result.is_a? String   #добавляет к стоимости инвойса сумму налогов
+    #
+    #   result.is_a?(BigDecimal) ? result : BigDecimal.new(result.to_s)
+    # else
+    #   result = items.sum :cost
+    #   result + amount_tax(result) unless result.is_a? String   #добавляет к стоимости инвойса сумму налогов
+    # end
+  end
+
   def regenerate
     items.delete_all
     unless subject.nil?
@@ -120,6 +139,40 @@ class Invoice
         items.create cost: it[:cost], description: it[:description]
       end
     end
+  end
+
+  def amount_tax(invoice_cost = nil)
+    cost = cost_without_taxes
+    amount_tax = 0
+    taxes.each do |tax|
+      amount_tax += cost * tax.tax / 100
+    end
+    amount_tax
+  end
+
+  def update_taxes
+    if client_info.country.present? && pay_company.present? && pay_way.present?
+      write_attribute :taxes, nil
+      # taxes.delete_all
+      get_taxes.each do |tax|
+        tmp = Tax.find tax
+        taxes << tmp
+      end
+    end
+  end
+
+  def get_taxes(country_id = client_info.country.id, company_id = pay_company.id, payway_id = pay_way.id, need_copy = need_invoice_copy)#, company_id, payment_gateway_id, need_copy)
+    # cntr_id = country_id ||
+    copy_tax = []
+    if (need_copy == 'true' || need_copy == true) && Company.find(company_id).currency.iso_code == 'CNY'
+      copy_tax << Tax.find_by(original_is_needed: true).id#.distinct(:id)
+    end
+
+    payway = Gateway::PaymentGateway.find(payway_id).taxes.distinct :id
+    comp = Tax.where(company_id: company_id, original_is_needed: false).distinct :id
+    cntr = Country.find(country_id).taxes.distinct :id
+
+    comp & cntr & payway | copy_tax
   end
 
 end

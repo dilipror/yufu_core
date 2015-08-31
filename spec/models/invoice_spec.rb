@@ -131,4 +131,84 @@ RSpec.describe Invoice, :type => :model do
     end
   end
 
+  describe '#amount_tax' do
+    let!(:cny) {Currency.create name: 'Chinese Yuan', iso_code: 'CNY', symbol: '¥'}
+    let!(:gbp) {Currency.create name: 'Pound Sterling', iso_code: 'GBP', symbol: '£'}
+
+    let(:gbp_company) {create :gbp_company, currency: Currency.find_by(iso_code: 'GBP')}
+    let(:cny_company) {create :cny_company, currency: Currency.find_by(iso_code: 'CNY')}
+
+    let(:bank) {create(:payment_bank)}
+    let(:local_balance) {create(:payment_local_balance)}
+
+    let!(:tax_gbp1) {create :tax_uk_vat, company: gbp_company, payment_gateways: [bank, local_balance]}
+    let!(:tax_gbp2) {create :tax_busness, company: gbp_company, payment_gateways: [bank, local_balance]}
+    let!(:tax_cny1) {create :tax_add_surch, company: cny_company, payment_gateways: [bank]}
+    let!(:tax_cny2) {create :tax_add_bus_tax, company: cny_company, payment_gateways: [bank, local_balance]}
+
+    subject{invoice.amount_tax}
+
+    context 'when no one tax' do
+      let(:invoice){create :invoice, items: [(build :invoice_item, cost: 1000, description: 'meth')]}
+      it{is_expected.to eq 0}
+    end
+
+    context 'when there are UK VAT tax' do
+      let!(:country) {create :country, taxes: [tax_gbp1]}
+      let(:order_verbal) {create :order_verbal}
+      let(:invoice){create :invoice, items: [(build :invoice_item, cost: 1000, description: 'meth')],
+                           pay_company: tax_gbp1.company, pay_way: tax_gbp1.payment_gateways.first,
+                           subject: order_verbal}
+      before :each do
+        invoice.client_info.update_attributes country: country
+        invoice.save
+      end
+
+      it{is_expected.to eq 200}
+    end
+
+    context 'when there are Busness tax' do
+      let!(:country) {create :country, taxes: [tax_gbp2]}
+      let(:order_verbal) {create :order_verbal}
+      let(:invoice){create :invoice, items: [(build :invoice_item, cost: 1000, description: 'meth')],
+                           pay_company: tax_gbp2.company, pay_way: tax_gbp2.payment_gateways.first,
+                           subject: order_verbal}
+      before :each do
+        invoice.client_info.update_attributes country: country
+        invoice.save
+      end
+
+      it{is_expected.to eq 100}
+    end
+
+    context 'when there are Additional tax surcharge' do
+      let!(:country) {create :country, taxes: [tax_cny1]}
+      let(:order_verbal) {create :order_verbal}
+      let(:invoice){create :invoice, items: [(build :invoice_item, cost: 1000, description: 'meth')],
+                           pay_company: tax_cny1.company, pay_way: tax_cny1.payment_gateways.first,
+                           subject: order_verbal}
+      before :each do
+        invoice.pay_way.taxes << tax_cny1
+        invoice.client_info.update_attributes country: country
+        invoice.save
+      end
+
+      it{is_expected.to eq 100}
+    end
+
+    context 'when there are Additional business tax' do
+      let!(:country) {create :country, taxes: [tax_cny2]}
+      let(:order_verbal) {create :order_verbal}
+      let(:invoice){create :invoice, items: [(build :invoice_item, cost: 1000, description: 'meth')],
+                           pay_company: tax_cny2.company, pay_way: tax_cny2.payment_gateways.last,
+                           subject: order_verbal, need_invoice_copy: true}
+      before :each do
+        invoice.client_info.update_attributes country: country
+        invoice.save
+      end
+
+      it{is_expected.to eq 30}
+    end
+  end
+
 end
