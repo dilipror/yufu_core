@@ -45,7 +45,7 @@ module Profile
     
 
     def present_written_translate_type
-      if written_approves && written_translate_type.nil?
+      if written_approves && written_translate_type.blank?
         errors[:written_approves] << "can't be true when written_translate_type is empty"
       end
     end
