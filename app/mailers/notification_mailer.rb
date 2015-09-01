@@ -138,7 +138,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   def order_details(order)
-    "#{order.location} - #{order.language}, #{order.meeting_in} - #{order.greeted_at}"
+    "#{order.location} - #{order.language}, #{order.meeting_in} - #{order.greeted_at_hour}:#{order.greeted_at_minute}"
   end
 
   def interpreter(order)
