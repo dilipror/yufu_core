@@ -129,6 +129,7 @@ class User
   after_create :create_referral_link, :create_banners, :create_billing
   after_create :create_profile_client,     if: 'profile_client.nil?'
   after_create :create_profile_translator, if: 'profile_translator.nil?'
+  after_create :create_default_invitation_texts
 
 
   token length: 9, contains: :alphanumeric
@@ -173,6 +174,19 @@ class User
 
   def promoted_get?(order)
     order.agents.include? self
+  end
+
+
+  def create_default_invitation_texts
+    invitation_texts << InvitationText.create(text: I18n.t('mailer.invitation_email.invite_text_client'),
+                                              name: I18n.t('mailer.invitation_email.name_invite_text_client'))
+
+    invitation_texts << InvitationText.create(text: I18n.t('mailer.invitation_email.invite_text_translator'),
+                                              name: I18n.t('mailer.invitation_email.name_invite_text_translator'))
+
+    invitation_texts << InvitationText.create(text: I18n.t('mailer.invitation_email.invite_text_partner'),
+                                              name: I18n.t('mailer.invitation_email.name_invite_text_partner'))
+
   end
 
   private

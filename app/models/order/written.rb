@@ -215,7 +215,7 @@ module Order
     def base_lang_cost(lang)
       group = lang.languages_group
       value_name = original_language.is_chinese && count_on_words? ? :value_ch : :value
-      group.written_prices.find_by(written_type_id: order_type.id).send value_name
+      group.written_prices.find_by(written_type_id: order_type.id).send(value_name) || 0
     end
 
     def paying_items
