@@ -544,17 +544,17 @@ RSpec.describe Order::Verbal, :type => :model do
 
     it 'first item' do
       expect(subject[0][:cost]).to eq(80)
-      expect(subject[0][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. For date 2015-10-01 8 hours")
+      expect(subject[0][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-01 8 translation missing: en.frontend.order.verbal.hours")
     end
 
     it 'second item' do
       expect(subject[1][:cost]).to eq(80)
-      expect(subject[1][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. For date 2015-10-02 8 hours")
+      expect(subject[1][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-02 8 translation missing: en.frontend.order.verbal.hours")
     end
 
     it 'third item' do
       expect(subject[2][:cost]).to eq(80)
-      expect(subject[2][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. For date 2015-10-03 8 hours")
+      expect(subject[2][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-03 8 translation missing: en.frontend.order.verbal.hours")
     end
 
   end
