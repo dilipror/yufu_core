@@ -7,7 +7,7 @@ RSpec.describe Yufu::TranslationProxy do
     subject{Yufu::TranslationProxy.update 'key', 'new value', version}
 
     context 'translation is presented' do
-      let(:translation){create :translation, version: version}
+      let(:translation){create :translation, version: version, key: 'key'}
       before(:each){translation}
 
       it{expect{subject}.not_to change{Translation.count}}
