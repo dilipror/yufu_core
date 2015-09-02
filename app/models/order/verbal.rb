@@ -309,19 +309,19 @@ module Order
           if overtime
             over_comment += " #{overtime_hours(rd)} +"
           end
-          comment = " 8 #{I18n.t('hours')}"
+          comment = " 8 #{I18n.t('frontend.order.verbal.hours')}"
           lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
           if work_hours > 0
-            res << {cost: first_day_work_time(reservation_dates.first), description: "#{lalelo}. #{I18n.t('for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
+            res << {cost: first_day_work_time(reservation_dates.first), description: "#{lalelo}. #{I18n.t('frontend.order.verbal.for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
           end
         else
           if rd.original_price_without_overtime > 0
-            comment = " 8 #{I18n.t('hours')}"
+            comment = " 8 #{I18n.t('frontend.order.verbal.hours')}"
             if rd.hours < 8
-              comment = " #{rd.hours} #{I18n.t('hours')} * 1.5"
+              comment = " #{rd.hours} #{I18n.t('frontend.order.verbal.hours')} * 1.5"
             end
             lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
-            res << {cost: rd.original_price_without_overtime, description: "#{lalelo}. #{I18n.t('for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
+            res << {cost: rd.original_price_without_overtime, description: "#{lalelo}. #{I18n.t('frontend.order.verbal.for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
             overtime += rd.overtime_price
             if rd.hours > 8
               over_comment += " #{rd.hours - 8} +"
@@ -334,9 +334,9 @@ module Order
         res << {cost: eu_bank.exchange(5000, 'USD', Currency.current_currency), description: I18n.t('mongoid.surcharge')}
       end
       over_comment.gsub! /\+$/, ''
-      over_comment += " ) #{I18n.t('hours')}"
+      over_comment += " ) #{I18n.t('frontend.order.verbal.hours')}"
       if overtime > 0
-        res << {cost: overtime, description: "#{I18n.t('overtime')} #{over_comment} * 1.5"}
+        res << {cost: overtime, description: "#{I18n.t('frontend.order.verbal.overtime')} #{over_comment} * 1.5"}
       end
       res
     end
