@@ -91,7 +91,7 @@ class Invoice
     if pay_way.present? && state == 'paying'
       PaymentsMailer.send_billing_info(user, self).deliver
       if pay_way.gateway_type == 'bank'
-        payments.create gateway_class: 'Order::Gateway::Bank', sum: cost, pay_way: pay_way
+        payments.create gateway_class: 'Order::Gateway::Bank', sum: cost, pay_way: pay_way, order: subject
       end
     end
   end
