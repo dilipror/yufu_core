@@ -1,10 +1,12 @@
 class NotificationMailer < ActionMailer::Base
+  include Yufu::I18nMailerScope
+
   def new_order_for_translator(user)
     mail to: user.email
   end
 
   def reminder_for_backup_interpreter_24(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope)
   end
 
   def reminder_for_main_interpreter_36(user)

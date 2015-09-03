@@ -2,6 +2,15 @@ en:
   notification_mailer:
     reminder_for_backup_interpreter_24:
       subject: Order reconfirmation
+      body: |
+        aaaaaaaaaaa
+
+
+
+        zzzzz
+
+        xxxxx
+
     reminder_for_main_interpreter_36:
       subject: Order reconfirmation
     reminder_to_the_client_48:
