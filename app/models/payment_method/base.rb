@@ -12,6 +12,8 @@ module PaymentMethod
 
     accepts_nested_attributes_for :billing_address
 
+    validates_presence_of :currency_id
+
     def owner?(user)
       return false if billing.user.nil?
       user == billing.user

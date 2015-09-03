@@ -1,3 +1,3 @@
 class PaymentMethod::AlipaySerializer < PaymentMethod::BaseSerializer
-  attributes  :alipay_id, :phone
+  attributes  :alipay_id
 end

@@ -1,6 +1,11 @@
 module PaymentMethod
   class EuBank < Base
+    extend Enumerize
+
     field :email
+    field :bank_name
+
+    enumerize :bank_name, in: ['SEPA EU  Bank', 'Other Banks', 'Chinese Bank']
 
     validates_presence_of :email
     # field :account_holder

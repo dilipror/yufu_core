@@ -1,17 +1,8 @@
 module PaymentMethod
   class Alipay < Base
     field :alipay_id
-    field :phone
 
-    validates_presence_of :alipay_id, :phone
-
-    # validate :check_params
-    #
-    # def check_params
-    #   if alipay_id.nil? && phone.nil?
-    #     errors.add 'params', 'is_black'
-    #   end
-    # end
+    validates_presence_of :alipay_id
 
   end
 end

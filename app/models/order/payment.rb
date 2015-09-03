@@ -23,12 +23,17 @@ module Order
       state :paid
       state :partial_paid
 
-      event :paid do
+      event :to_pay do
         transition [:paying, :partial_paid] => :paid
       end
 
-      event :partial_paid do
+      event :to_partial_pay do
         transition paying: :partial_paid
+      end
+
+      before_transition on: :to_pay do |payment|
+        payment.pay
+        payment.difference_to_user
       end
 
     end
@@ -44,15 +49,19 @@ module Order
     end
 
     def self.filter_email(email)
-      # Order::Payment.all
       user_ids = User.where(email: /.*#{email}.*/).distinct :id
       profile_ids = Profile::Base.where(:user_id.in => user_ids).distinct :id
       order_ids = Order::Base.where(:owner_id.in => profile_ids).distinct :id
-      # invoice_ids = Invoice.where(:subject_id.in => order_ids).distinct :id
       where :order_id.in => order_ids
-      # order_ids = Order::Base.where()
     end
 
+    def difference_to_user
+      diff = partial_sum - sum
+      if diff
+        write_attribute :balance, diff
+        Transaction.create(sum: diff, debit: self, credit: invoice.user).execute
+      end
+    end
 
     def pay
       write_attribute :balance, sum
@@ -63,12 +72,12 @@ module Order
       end
     end
 
-    def make_a_payment(partial_sum)
+    def partial_pay(partial_sum)
       write_attribute :partial_sum, self.partial_sum + partial_sum
       if self.partial_sum >= sum
-        paid
+        to_pay
       else
-        partial_paid
+        to_partial_pay
       end
       true
     end
