@@ -1,0 +1,7 @@
+<%=raw I18n.t('mailer.notification_mailer.secondary_offer_confirmed_for_client.dear') %> &nbsp; <%= @client %>
+<%=raw I18n.t('mailer.notification_mailer.secondary_offer_confirmed_for_client.main_part') %>
+<%= @backup_interpreter %>
+<%=raw I18n.t('mailer.notification_mailer.secondary_offer_confirmed_for_client.question') %>
+
+<%= link_to dashboard_url, I18n.t('mailer.notification_mailer.dashboard_link') %>
+<%=raw I18n.t('mailer.notification_mailer.secondary_offer_confirmed_for_client.thank_you') %>

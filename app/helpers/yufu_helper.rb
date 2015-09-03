@@ -30,6 +30,16 @@ module YufuHelper
     end
   end
 
+  def mail_with_params(key, params)
+    res = I18n.t(key)
+
+    params.each_with_index do |param, i|
+      res.gsub! "#param_#{i+1}", param
+    end
+
+    raw res
+  end
+
   def supported_locales
     Localization.all.map {|l| l.name.to_sym}
   end

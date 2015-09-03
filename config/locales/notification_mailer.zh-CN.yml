@@ -1,0 +1,57 @@
+zh-CN:
+  notification_mailer:
+    reminder_for_backup_interpreter_24:
+      subject: 再次确认订单
+    reminder_for_main_interpreter_36:
+      subject: 再次确认订单
+    reminder_to_the_client_48:
+      subject: 会议提醒
+    secondary_offer_confirmed:
+      subject: 认证通过
+    secondary_offer_confirmed_for_client:
+      subject: 您的备选译员
+    new_order_for_translator:
+      subject: 新命令
+    primary_offer_confirmed:
+      subject: 接受确认
+    cancel_int_1week:
+      subject: 订单取消
+    cancel_int_2weeks:
+      subject: 订单取消
+    cancel_int_norefund:
+      subject: 订单取消
+    inter_invoice_cancel:
+      subject: 订单取消
+    order_over_1000:
+      subject: 付款信息
+    order_notification:
+      subject: 新命令
+    primary_offer_confirmed_for_client:
+      subject: 您的订单详细信息
+    reminder_invoice:
+      subject: 提醒有关付款
+    service_recalled_int:
+      subject: 提醒有关付款
+    signup_reminder:
+      subject: 业务回顾
+    trans_invoice:
+      subject: 提醒有关确认
+    trans_invoice_cancel:
+      subject: 支付咨询无论
+    trans_invoice_reminder:
+      subject: 提醒有关付款
+    trans_norefund:
+      subject: 支付咨询无论
+    trans_cancel_immed:
+      subject: 支付咨询无论
+    trans_confirm:
+      subject: 订单确认
+    translation_completed:
+      subject: 翻译完成
+    warning_interp:
+      subject: 警示
+    reminder_for_backup_interpreter:
+      subject: 再次确认订购
+    reminder_to_the_client:
+      subject: 会议提醒
+
