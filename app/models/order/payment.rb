@@ -50,9 +50,14 @@ module Order
 
     def self.filter_email(email)
       user_ids = User.where(email: /.*#{email}.*/).distinct :id
-      profile_ids = Profile::Base.where(:user_id.in => user_ids).distinct :id
-      order_ids = Order::Base.where(:owner_id.in => profile_ids).distinct :id
-      where :order_id.in => order_ids
+      invoice_ids = Invoice.where(:user_id.in => user_ids)
+      where :invoice_id.in => invoice_ids
+
+
+      # user_ids = User.where(email: /.*#{email}.*/).distinct :id
+      # profile_ids = Profile::Base.where(:user_id.in => user_ids).distinct :id
+      # order_ids = Order::Base.where(:owner_id.in => profile_ids).distinct :id
+      # where :order_id.in => order_ids
     end
 
     def difference_to_user

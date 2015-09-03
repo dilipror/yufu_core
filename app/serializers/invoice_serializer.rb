@@ -1,6 +1,6 @@
 class InvoiceSerializer < ActiveModel::Serializer
   attributes :id, :cost, :state, :subject_id, :number, :description, :subject_type,
-             :need_invoice_copy
+             :need_invoice_copy, :user_id
   #TODO:  Временно выпилил subject_type, так как на фронте связь не полиморфная.
   # Надо решить эту проблему.
   #

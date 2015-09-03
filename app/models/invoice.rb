@@ -2,6 +2,8 @@ class Invoice
   include Mongoid::Document
   include Mongoid::Timestamps
   include Monetizeable
+  include Filterable
+
   extend Enumerize
 
   field :cost, type: BigDecimal
@@ -82,6 +84,18 @@ class Invoice
       transition pending: :new
     end
   end
+
+  # filtering
+  def self.filter_state(state)
+    where state: state
+  end
+
+  def self.filter_email(email)
+    user_ids = User.where(email: /.*#{email}.*/).distinct :id
+    where :user_id.in => user_ids
+  end
+
+
 
   def self.hack_mailer
     NotificationMailer.new_order_for_translator(User.first).deliver
