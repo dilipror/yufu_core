@@ -21,9 +21,8 @@ module Profile
     belongs_to :profile_language, class_name: 'Language'
     belongs_to :user
 
-    validates_presence_of :wechat, if: -> {user.role == :translator && :persisted?}
-
     validates_presence_of :user
+    validates_presence_of :wechat, if: -> {persisted? && user.role == :translator}
     validates_format_of :additional_email, :with => /(\A[^-][\w+\-.]*)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,  if: -> {additional_email.present?}
 
     after_save if: -> {user.changed? && !user.confirmed_at.nil?} do

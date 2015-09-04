@@ -45,7 +45,7 @@ class Order::Verbal::TranslatorsQueue
 
   def self.create_senior_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a?(Order::Verbal)
-    if order.language.senior.nil?
+    if order.language.try(:senior).nil?
       nil
     else
       Order::Verbal::TranslatorsQueue.create order_verbal: order, translators: [order.language.senior], lock_to: lock_to

@@ -144,11 +144,11 @@ class NotificationMailer < ActionMailer::Base
   end
 
   def interpreter(order)
-    "#{order.assignee.first_name} #{order.assignee.last_name}"
+    "#{order.assignee.try(:first_name)} #{order.assignee.try(:last_name)}"
   end
 
   def backup_interpreter(order)
-    "#{order.secondary_offer.translator.first_name} #{order.secondary_offer.translator.last_name}"
+    "#{order.secondary_offer.try(:translator).try(:first_name)} #{order.secondary_offer.try(:translator).try(:last_name)}"
   end
 
 end
