@@ -1,5 +1,17 @@
 en:
   notification_mailer:
+    reminder_for_backup_interpreter_24:
+      subject: Order reconfirmation
+      body: "FUCK !!!!!!"
+
+    reminder_for_main_interpreter_36:
+      subject: Order reconfirmation
+    reminder_to_the_client_48:
+      subject: Meeting reminder
+    secondary_offer_confirmed:
+      subject: Confirmation accepted
+    secondary_offer_confirmed_for_client:
+      subject: Your backup interpreter
     new_order_for_translator:
       subject: New order
     primary_offer_confirmed:
