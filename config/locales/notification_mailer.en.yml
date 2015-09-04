@@ -2,15 +2,7 @@ en:
   notification_mailer:
     reminder_for_backup_interpreter_24:
       subject: Order reconfirmation
-      body: |
-        Dear Interpreter,<br>
-        We kindly inform you, that your status has been changed into main interpreter!<br>
-        In 24 hours you have an appointment with a client!<br>
-        Please reconfirm your accessibility for this order within 12 hours starting from this moment!<br>
-        In case we don’t get your reconfirmation, your appointment for this order will be canceled.<br>
-        For order reconfirmation, please follow the link below:<br>
-        #{dashboard_link}<br>
-        Thank you for cooperation!<br>
+      body: "%{dashboard_link}"
 
     reminder_for_main_interpreter_36:
       subject: Order reconfirmation
