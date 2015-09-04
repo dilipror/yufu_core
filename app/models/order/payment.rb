@@ -1,7 +1,9 @@
 module Order
   class Payment
     include Mongoid::Document
+    include Mongoid::Timestamps
     include Accountable
+    include Filterable
 
     after_save :check_if_paid
     after_create :payment_gateway
@@ -11,8 +13,55 @@ module Order
     belongs_to :pay_way, class_name: 'Gateway::PaymentGateway'
 
     field :sum, type: Float
-    field :state, default: 'paying'
+    field :partial_sum, type: Float, default: 0.0
+    # field :state#, default: 'paying'
     field :gateway_class
+
+    state_machine initial: :paying do
+
+      state :paying
+      state :paid
+      state :partial_paid
+
+      event :to_pay do
+        transition [:paying, :partial_paid] => :paid
+      end
+
+      event :to_partial_pay do
+        transition paying: :partial_paid
+      end
+
+      before_transition on: :to_pay do |payment|
+        payment.pay
+        payment.difference_to_user
+      end
+
+    end
+
+    # filtering
+    def self.filter_state(state)
+      where state: state
+    end
+
+    def self.filter_payment_method(method)
+      gateway_ids = ::Gateway::PaymentGateway.where(gateway_type: method).distinct :id
+      where :pay_way.in => gateway_ids
+    end
+
+    def self.filter_email(email)
+      user_ids = User.where(email: /.*#{email}.*/).distinct :id
+      profile_ids = Profile::Base.where(:user_id.in => user_ids).distinct :id
+      order_ids = Order::Base.where(:owner_id.in => profile_ids).distinct :id
+      where :order_id.in => order_ids
+    end
+
+    def difference_to_user
+      diff = partial_sum - sum
+      if diff
+        write_attribute :balance, diff
+        Transaction.create(sum: diff, debit: self, credit: invoice.user).execute
+      end
+    end
 
     def pay
       write_attribute :balance, sum
@@ -23,12 +72,14 @@ module Order
       end
     end
 
-    def paid
-      update_attribute :state, 'paid'
-    end
-
-    def unpaid
-      update_attribute :state, 'paying'
+    def partial_pay(partial_sum)
+      write_attribute :partial_sum, self.partial_sum + partial_sum
+      if self.partial_sum >= sum
+        to_pay
+      else
+        to_partial_pay
+      end
+      true
     end
 
     private
