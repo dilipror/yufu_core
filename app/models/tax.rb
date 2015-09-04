@@ -2,7 +2,7 @@ class Tax
   include Mongoid::Document
 
   field :name, localize: true
-  field :tax
+  field :tax, type: Float
   field :original_is_needed, type: Boolean
 
   has_and_belongs_to_many :countries

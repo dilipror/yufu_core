@@ -220,9 +220,9 @@ module Order
 
     def paying_items
       res = []
-      res << {cost: price_translate, description: I18n.t('order.written.translate')}
+      res << {cost: price_translate, description: I18n.t('order.writt.translate')}
       if translation_type == 'translate_and_correct'
-        res << {cost: price_correct - price_translate, description: I18n.t('order.written.correct')}
+        res << {cost: price_correct - price_translate, description: I18n.t('order.writt.correct')}
       end
       res
     end

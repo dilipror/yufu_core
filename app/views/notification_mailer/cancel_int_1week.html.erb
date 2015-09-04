@@ -1,0 +1,8 @@
+<%=raw I18n.t('mailer.notification_mailer.cancel_int_1week.dear') %> &nbsp; <%= @client %>
+<%=raw I18n.t('mailer.notification_mailer.cancel_int_1week.main_part') %>
+<%= @backup_interpreter %>
+<%=raw I18n.t('mailer.notification_mailer.cancel_int_1week.question') %>
+
+<%= link_to dashboard_url, I18n.t('mailer.notification_mailer.dashboard_link') %>
+<%=raw I18n.t('mailer.notification_mailer.cancel_int_1week.apologize') %>
+<%= raw I18n.t('body')%>

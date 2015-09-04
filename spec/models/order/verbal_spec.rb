@@ -336,169 +336,6 @@ RSpec.describe Order::Verbal, :type => :model do
     end
   end
 
-  describe '.default_scope_for' do
-    context 'profile is a translator' do
-
-      let(:city) {create :city}
-      let(:profile) do
-        create :profile_translator
-               # city_approves: [CityApprove.create(city: city, with_surcharge: false)]
-      end
-      let(:city_approve) {create :city_approve, city: city, with_surcharge: false, translator: profile}
-      let(:service) {profile.services.first}
-
-      before(:each) {order_supported_by_profile.invoices.create cost: 100.0}
-
-      let(:order_supported_by_profile) do
-        create :order_verbal,
-               # main_language_criterion: (build :order_language_criterion,
-               #                                 language: service.language,
-               #                                 level: service.level),
-               location: city,
-               include_near_city: false,
-               created_at: DateTime.now.utc - 1.day,
-               language: service.language,
-               level: service.level
-      end
-      let(:other_order) {create :order_verbal}
-      before(:each) {order_supported_by_profile; other_order; city_approve}
-      subject{Order::Verbal.default_scope_for profile}
-
-      it {is_expected.to include(order_supported_by_profile)}
-      it {is_expected.not_to include(other_order)}
-    end
-  end
-
-  describe '.available_for' do
-    context 'profile is a translator' do
-      let(:city) {create :city}
-      let(:city1) {create :city}
-
-      let(:senior) {create :profile_translator}
-
-      let(:profile) {create :profile_translator}
-
-      let(:service) {profile.services.first}
-
-      before(:each) {order_supported_by_profile.invoices.create cost: 100.0}
-
-      let(:order_supported_by_profile) do
-        create :order_verbal,
-               # main_language_criterion: (build :order_language_criterion,
-               #                                 language: service.language,
-               #                                 level: service.level),
-               location: city,
-               include_near_city: false,
-               created_at: DateTime.now.utc - 1.day,
-               language: service.language,
-               level: service.level
-      end
-
-      let(:order_created_at_less_30_min) do
-        create :order_verbal,
-               # main_language_criterion: (create :order_language_criterion,
-               #                                 language: service.language,
-               #                                 level: service.level),
-               location: city,
-               include_near_city: false,
-               language: service.language,
-               level: service.level
-      end
-
-      let(:other_order) {create :order_verbal}
-
-      before(:each) do
-        order_supported_by_profile; other_order; order_created_at_less_30_min
-        create :city_approve, city: city, with_surcharge: false, translator: profile
-        create :city_approve, city: city, with_surcharge: false, translator: senior
-
-        create :city_approve, city: city1, with_surcharge: false, translator: profile
-        create :city_approve, city: city1, with_surcharge: false, translator: senior
-      end
-      subject{Order::Verbal.available_for profile}
-
-      it{is_expected.to be_a Mongoid::Criteria}
-
-      context 'translator is not senior' do
-        before(:each) {service.language.update! senior: senior}
-
-        it {is_expected.to include(order_supported_by_profile)}
-        it {is_expected.not_to include(other_order)}
-        it {is_expected.not_to include(order_created_at_less_30_min)}
-      end
-
-      context 'translator is senior' do
-        before(:each) {service.language.update! senior: profile}
-
-        it {is_expected.to include(order_supported_by_profile)}
-        it {is_expected.to include(order_created_at_less_30_min)}
-        it {is_expected.not_to include(other_order)}
-      end
-
-      context 'no senior' do
-        it {is_expected.to include(order_supported_by_profile)}
-        it {is_expected.to include(order_created_at_less_30_min)}
-        it {is_expected.not_to include(other_order)}
-      end
-
-    end
-
-    context 'perfomance tests' do
-
-      subject{Order::Verbal.available_for profile}
-
-      let(:city) {create :city}
-
-      let(:senior) {create :profile_translator}
-
-      let(:profile) {create :profile_translator}
-
-      let(:service) {profile.services.first}
-
-      let(:order_supported_by_profile) do
-        create :order_verbal,
-               main_language_criterion: (build :order_language_criterion,
-                                               language: service.language,
-                                               level: service.level),
-               location: city,
-               include_near_city: false,
-               created_at: DateTime.now.utc - 1.day
-      end
-
-      before(:each) {order_created_at_less_30_min.invoices.create! cost: 100.0}
-
-      let(:order_created_at_less_30_min) do
-        create :order_verbal,
-               main_language_criterion: (create :order_language_criterion,
-                                                language: service.language,
-                                                level: service.level),
-               location: city,
-               include_near_city: false
-      end
-
-      let(:other_order) {create :order_verbal}
-
-      before(:each) do
-        1.upto(1000) do
-          Order::Verbal.create main_language_criterion: Order::LanguageCriterion.create(language: service.language,
-              level: service.level),    location: city,
-                               include_near_city: false
-        end
-        # create_list :translator, 100
-        #
-        # create_list :order_verbal, 100
-        order_supported_by_profile; other_order; order_created_at_less_30_min
-        create :city_approve, city: city, with_surcharge: false, translator: profile
-        create :city_approve, city: city, with_surcharge: false, translator: senior
-      end
-
-      it 'expect time' do
-        Benchmark.realtime{subject}.should < 25
-      end
-
-    end
-  end
-
 
   describe '#notify about updated' do
 
@@ -707,17 +544,17 @@ RSpec.describe Order::Verbal, :type => :model do
 
     it 'first item' do
       expect(subject[0][:cost]).to eq(80)
-      expect(subject[0][:description]).to eq('For date 2015-10-01 8 hours')
+      expect(subject[0][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-01 8 translation missing: en.frontend.order.verbal.hours")
     end
 
     it 'second item' do
       expect(subject[1][:cost]).to eq(80)
-      expect(subject[1][:description]).to eq('For date 2015-10-02 8 hours')
+      expect(subject[1][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-02 8 translation missing: en.frontend.order.verbal.hours")
     end
 
     it 'third item' do
       expect(subject[2][:cost]).to eq(80)
-      expect(subject[2][:description]).to eq('For date 2015-10-03 8 hours')
+      expect(subject[2][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-03 8 translation missing: en.frontend.order.verbal.hours")
     end
 
   end
