@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = YufuCore::VERSION
   s.authors     = ["Your name"]
   s.email       = ["Your email"]
-  s.homepage    = "111"
+  s.homepage    = "http://yufu.net"
   s.summary     = "Summary of YufuCore."
   s.description = "Description of YufuCore."
 
