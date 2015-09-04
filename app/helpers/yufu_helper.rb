@@ -31,13 +31,13 @@ module YufuHelper
   end
 
   def mail_with_params(key, params)
-    res = I18n.t(key)
-
-    params.each_with_index do |param, i|
-      res.gsub! "#param_#{i+1}", param
-    end
-
-    raw res
+    # res = I18n.t(key)
+    #
+    # params.each_with_index do |param, i|
+    #   res.gsub! "#param_#{i+1}", param
+    # end
+    #
+    # raw res
   end
 
   def supported_locales

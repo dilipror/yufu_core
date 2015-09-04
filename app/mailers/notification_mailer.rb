@@ -1,136 +1,136 @@
 class NotificationMailer < ActionMailer::Base
   include Yufu::I18nMailerScope
+  include ActionView::Helpers::UrlHelper
+  include Devise::Controllers::UrlHelpers
 
   def new_order_for_translator(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url ))
   end
 
   def reminder_for_backup_interpreter_24(user)
-    mail to: user.email, body: I18n.t('.body', scope: scope)
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url ))
   end
 
   def reminder_for_main_interpreter_36(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url ))
   end
 
   def reminder_to_the_client_48(user, order)
-    @client = client(user)
-    @order_details = order_details(order)
-    @interpreter = interpreter(order)
-    @backup_interpreter = backup_interpreter(order)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      order_details: order_details(order), interpreter: interpreter(order), backup_interpreter: backup_interpreter(order))
   end
 
   # Doc's name backup-accepted
   def secondary_offer_confirmed(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url ))
   end
 
   # Doc's name backup-int-for-client
   def secondary_offer_confirmed_for_client(user, offer)
-    @client = user.full_name
-    @backup_interpreter = offer.translator.user.full_name
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: user.full_name, backup_interpreter: offer.translator.user.full_name,
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def cancel_int_1week(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: user.full_name,
+                                      balance: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def cancel_int_2weeks(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: user.full_name,
+                                      balance: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def cancel_int_norefund(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: user.full_name)
   end
 
   def inter_invoice_cancel(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      new_verbal_order: (link_to I18n.t('notification_mailer.new_order'), new_verbal_order_url),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def order_over_1000(user, order)
-    @client = client(user)
-    @order_details = order_details(order)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      details: order_details(order),dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url) )
   end
 
   # Doc's name main-inter-accepted
   def primary_offer_confirmed(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def order_notification(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   # Doc's name primary-int
   def primary_offer_confirmed_for_client(user, offer)
-    @client = user.full_name
-    @order_details = order_details(offer.order)
-    @interpreter = offer.translator.user.full_name
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      order_details: order_details(offer.order), interpreter: interpreter(offer.order),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def reminder_invoice(user, order)
-    @client = client(user)
-    @order_details = order_details(order)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      order_details: order_details(order),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def service_recalled_int(user)
-    @user = user
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope)
   end
 
   def signup_reminder(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      confirmation_url: (link_to I18n.t('notification_mailer.log_in'), confirmation_url(user, confirmation_token: user.confirmation_token) ))
   end
 
   def trans_invoice(user, order)
-    @client = client(user)
-    @order_details = order_details(order)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      order_details: order_details(order),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def trans_invoice_cancel(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      new_verbal_order: (link_to I18n.t('notification_mailer.new_order'), new_verbal_order_url),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def trans_invoice_reminder(user, order)
-    @client = client(user)
-    @order_details = order_details(order)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      order_details: order_details(order),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def trans_norefund(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      balance_url: (link_to I18n.t('notification_mailer.balance'), balance_url),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def trans_cancel_immed(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      balance_url: (link_to I18n.t('notification_mailer.balance'), balance_url),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def trans_confirm(user, order)
-    @client = client(user)
-    @order_details = order_details(order)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      order_details: order_details(order),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def translation_completed(user)
-    @client = client(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   def warning_interp(user)
-    mail to: user.email
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
   private
@@ -148,7 +148,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   def backup_interpreter(order)
-    "#{order.secondary_offer.translator.first_name} #{order.secondary_offer.last_name}"
+    "#{order.secondary_offer.translator.first_name} #{order.secondary_offer.translator.last_name}"
   end
 
 end
