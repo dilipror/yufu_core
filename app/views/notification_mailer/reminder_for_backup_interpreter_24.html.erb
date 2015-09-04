@@ -1,1 +1,1 @@
-<%= I18n.t '.body' %>
+<%= raw I18n.t '.body', {dashboard_link: (link_to dashboard_url, I18n.t('mailer.notification_mailer.dashboard_link'))} %>
