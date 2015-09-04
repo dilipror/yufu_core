@@ -4,6 +4,7 @@ module Support
     include Mongoid::Timestamps
 
     field :text
+    field :is_public, type: Boolean, default: false
 
     belongs_to :author, class_name: 'User'
     belongs_to :ticket, class_name: 'Support::Ticket'
@@ -14,6 +15,8 @@ module Support
     accepts_nested_attributes_for :embedded_attachments
 
     default_scope -> {asc :created_at}
+
+    scope :public, -> {where is_public: true}
 
     validates_presence_of :author, :ticket, :text
 

@@ -24,6 +24,30 @@ class Invite
     Invite.where :id.in => ids
   }
 
+  def to_address
+    if first_name || last_name || middle_name
+      "#{I18n.t 'mailer.invitation_email.to_address'} #{first_name} #{middle_name} #{last_name}!"
+    else
+      I18n.t 'mailer.invitation_email.to_address_plural'
+    end
+  end
+
+  def agent_name
+    overlord.first_name
+  end
+
+  def agent_surname
+    overlord.last_name
+  end
+
+  def on_behalf
+    if first_name
+      "#{I18n.t 'mailer.invitation_email.on_behalf'} #{agent_name}"
+    else
+      "#{I18n.t 'mailer.invitation_email.on_behalf'} #{overlord.email}"
+    end
+  end
+
   def pass_registration?
     vassal.present?
   end
