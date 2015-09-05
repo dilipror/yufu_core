@@ -37,8 +37,6 @@ module Order
     has_many :invoices,    inverse_of: :subject
 
     belongs_to :ticket, class_name: 'Support::Ticket'
-    # DEPRECATED?
-    belongs_to :partner, class_name: 'User', inverse_of: :orders
 
     # Agent's
     belongs_to :referral_link
