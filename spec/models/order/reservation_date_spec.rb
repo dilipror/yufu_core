@@ -38,7 +38,7 @@ RSpec.describe Order::ReservationDate, :type => :model do
     context 'overtime' do
       let(:hours){10}
 
-      it {is_expected.to eq(80)}
+      it {is_expected.to eq(100)}
 
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Order::ReservationDate, :type => :model do
     context 'overtime' do
       let(:hours){12}
 
-      it{is_expected.to eq(60)}
+      it{is_expected.to eq((12 - 8) * 10 *0.5)}
     end
 
     context 'controll sum' do

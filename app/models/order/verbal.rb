@@ -282,9 +282,10 @@ module Order
       end
     end
 
-    def first_day_overtime(rd)
+    def first_day_overtime(rd = nil)
+      rd ||= reservation_dates.confirmed.first
       coef = rd.hours < 8 ? 1.5 : 1
-      rd.simple_price_for_hours(overtime_hours(rd)) * 1.5 * coef
+      rd.simple_price_for_hours(overtime_hours(rd)) * 0.5 * coef
     end
 
     def overtime_hours(rd)
@@ -297,49 +298,38 @@ module Order
     end
 
     def paying_items
-      res = []
-      overtime = 0
-      over_comment = '('
-      reservation_dates.each do |rd|
-        if greeted_at_hour.present? && rd == reservation_dates.first
-          begins_work_hour = [7, greeted_at_hour].max
-          ends_work_hour = [21, greeted_at_hour+rd.hours].min
-          work_hours = [ends_work_hour - begins_work_hour, 8].min
-          overtime += first_day_overtime(reservation_dates.first)
-          if overtime
-            over_comment += " #{overtime_hours(rd)} +"
-          end
-          comment = " 8 #{I18n.t('frontend.order.verbal.hours')}"
-          lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
-          if work_hours > 0
-            res << {cost: first_day_work_time(reservation_dates.first), description: "#{lalelo}. #{I18n.t('frontend.order.verbal.for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
-          end
-        else
-          if rd.original_price_without_overtime > 0
-            comment = " 8 #{I18n.t('frontend.order.verbal.hours')}"
-            if rd.hours < 8
-              comment = " #{rd.hours} #{I18n.t('frontend.order.verbal.hours')} * 1.5"
-            end
-            lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
-            res << {cost: rd.original_price_without_overtime, description: "#{lalelo}. #{I18n.t('frontend.order.verbal.for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"}
-            overtime += rd.overtime_price
-            if rd.hours > 8
-              over_comment += " #{rd.hours - 8} +"
-            end
-          end
-        end
-      end
-      if include_near_city && there_are_translator_with_surcharge?
-        eu_bank = ExchangeBank.instance
-        res << {cost: eu_bank.exchange(5000, 'USD', Currency.current_currency), description: I18n.t('mongoid.surcharge')}
-      end
-      over_comment.gsub! /\+$/, ''
-      over_comment += " ) #{I18n.t('frontend.order.verbal.hours')}"
-      if overtime > 0
-        res << {cost: overtime, description: "#{I18n.t('frontend.order.verbal.overtime')} #{over_comment} * 1.5"}
-      end
-      res
+      paying_items_per_day + overtime_paying_items + surcharge_paying_items
     end
 
+    private
+    def paying_items_per_day
+      lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
+      reservation_dates.map do |rd|
+        if rd.hours < 8
+          comment = " #{rd.hours} #{I18n.t('frontend.order.verbal.hours')} * 1.5"
+        else
+          comment = " #{rd.hours}  #{I18n.t('frontend.order.verbal.hours')}"
+        end
+        {
+            cost: rd.original_price_without_overtime,
+            description: "#{lalelo}. #{I18n.t('frontend.order.verbal.for_date')} #{rd.date.strftime('%Y-%m-%d') + comment}"
+        }
+      end
+    end
+
+    def overtime_paying_items
+      overtime = reservation_dates.confirmed.offset(1).inject(0) {|sum, rd| sum + rd.overtime_price}
+      overtime += first_day_overtime
+      [{cost: overtime, description: "#{I18n.t('frontend.order.verbal.overtime')}"}]
+    end
+
+    def surcharge_paying_items
+      if include_near_city && there_are_translator_with_surcharge?
+        eu_bank = ExchangeBank.instance
+        [{cost: eu_bank.exchange(5000, 'USD', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
+      else
+        []
+      end
+    end
   end
 end

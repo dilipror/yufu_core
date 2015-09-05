@@ -413,7 +413,8 @@ RSpec.describe Order::Verbal, :type => :model do
 
     context 'first day with greeted_at' do
 
-      let(:order){create :order_verbal, greeted_at_hour: greeted_at_hour, greeted_at_minute: greeted_at_minute, reservation_dates: [(build :order_reservation_date, hours: hours, date: '2015-10-01')]}
+      let(:order){create :order_verbal, greeted_at_hour: greeted_at_hour, greeted_at_minute: greeted_at_minute,
+                         reservation_dates: [(build :order_reservation_date, hours: hours, date: '2015-10-01')]}
 
       context 'in time' do
         let(:greeted_at_hour){8}
