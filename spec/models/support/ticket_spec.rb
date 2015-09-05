@@ -39,7 +39,7 @@ RSpec.describe Support::Ticket, :type => :model do
 
   describe '#has_new_comments_for' do
     let(:ticket){create :ticket}
-    let(:comment){create :comment, ticket: ticket}
+    let(:comment){create :comment, ticket: ticket, is_public: true}
 
     before(:each){comment}
 
