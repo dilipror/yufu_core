@@ -27,6 +27,8 @@ RSpec.describe Invoice, :type => :model do
 
     subject{invoice.paying}
 
+    before(:each) {invoice.client_info.update_attributes wechat: 'd'}
+
     it 'invoice is paying' do
       subject
       expect(invoice.state).to eq 'paying'
@@ -44,6 +46,7 @@ RSpec.describe Invoice, :type => :model do
 
     before(:each)do
       invoice =  order.invoices.create user: user
+      invoice.client_info.update_attributes wechat: 'd'
       invoice.paying
       invoice.update cost: BigDecimal(100)
     end
@@ -53,6 +56,7 @@ RSpec.describe Invoice, :type => :model do
       let(:user){create :user, balance: BigDecimal(1000)}
       let(:order){create :order_verbal, owner: user.profile_client, state: 'paying'}
       before(:each){Invoice.any_instance.stub(:cost).and_return(BigDecimal(100))}
+
       let(:invoice){order.invoices.first}
 
       it{expect{subject}.to change{invoice.reload.paid?}.to(true)}
@@ -146,10 +150,13 @@ RSpec.describe Invoice, :type => :model do
     let!(:tax_cny1) {create :tax_add_surch, company: cny_company, payment_gateways: [bank]}
     let!(:tax_cny2) {create :tax_add_bus_tax, company: cny_company, payment_gateways: [bank, local_balance]}
 
+    before(:each) {invoice.client_info.update_attributes wechat: 'd'}
+
     subject{invoice.amount_tax}
 
     context 'when no one tax' do
       let(:invoice){create :invoice, items: [(build :invoice_item, cost: 1000, description: 'meth')]}
+
       it{is_expected.to eq 0}
     end
 

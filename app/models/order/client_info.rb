@@ -22,7 +22,7 @@ module Order
     # embedded_in :order_base, class_name: 'Order::Base'
     embedded_in :invoice, class_name: 'Invoice'
 
-    # validates_presence_of :wechat, if: :persisted?
+    validates_presence_of :wechat, if: :persisted?
 
     def invoice
       @__parent
@@ -39,7 +39,7 @@ module Order
     delegate_attributes :last_name, :first_name, :email, :phone, :identification_number, :company_name, :company_uid,
                         :company_address, :skype, :viber, :wechat, to: :invoice
 
-    after_save :append_profile, if: -> {invoice.present? && invoice.subject.owner.present?}
+    after_save :append_profile, if: -> {invoice.present? && invoice.subject.try(:owner).present?}
 
     def country_id
       read_attribute(:country).present? ? read_attribute(:country) : invoice.try(:subject).try(:owner).try(:country).try(:id)
