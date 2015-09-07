@@ -29,7 +29,7 @@ module Notificable
         user.notifications.create message: msg, object: self, mailer: event[:mailer] if user.is_a?(User)
       end
     else
-      user = scope.is_a?(User) ? scope : scope.try(:user)
+      user = scope.is_a?(User) ? scope : (scope.try(:user) || scope.try(:translator).try(:user))
       user.notifications.create message: msg, object: self, mailer: event[:mailer] if user.is_a?(User)
     end
   end

@@ -50,22 +50,22 @@ module Order
     has_notification_about :reminder_for_interpreter_24,
                            observers: -> (order) {order.primary_offer},
                            message: 'notification.change_status_main_intrp',
-                           mailer: -> (user, offer) do
+                           mailer: -> (user, order) do
                              NotificationMailer.reminder_for_backup_interpreter_24 user
                            end
 
-    has_notification_about :reminder_for_interpreter_36,
+    has_notification_about :reminder_for_main_interpreter_36,
                            observers: -> (order) {order.primary_offer},
                            message: 'notification.change_status_main_intrp',
-                           mailer: -> (user, offer) do
-                             NotificationMailer.reminder_for_backup_interpreter_36 user
+                           mailer: -> (user, order) do
+                             NotificationMailer.reminder_for_main_interpreter_36 user
                            end
 
     has_notification_about :reminder_to_the_client_48,
                            observers: -> (order) {order.primary_offer},
                            message: 'notification.appointment_with_interpreter',
-                           mailer: -> (user, offer) do
-                             NotificationMailer.reminder_to_the_client_48 user
+                           mailer: -> (user, order) do
+                             NotificationMailer.reminder_to_the_client_48 user, order
                            end
 
 
@@ -76,6 +76,8 @@ module Order
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion
+
+    scope :paid_orders, -> {where state: :in_progress}
 
     scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) { profile.orders.where :state.in => [:new, :paying] }
@@ -174,6 +176,16 @@ module Order
 
     def first_date
       reservation_dates.order('date acs').first.date
+    end
+
+    def hours_to_meeting
+      if greeted_at_hour
+        add = 1.hour * greeted_at_hour
+      else
+        add = 0
+      end
+
+      ((Time.parse((first_date).to_s) - Time.now + add).to_i / 1.hour).round + 1
     end
 
     def set_main_language_criterion
