@@ -132,8 +132,8 @@ table#pink_two rules="all"  style="border: 1px; border-color: #984806"
     td
       = I18n.t('billing.total_price')
     td
-      = @invoice.cost
-      = Currency.where(iso_code: Currency.current_currency).first.symbol
+      = Currency.exchange @invoice.cost, @invoice.currency.iso_code
+      = @invoice.currency.symbol
 table style="width: 910px;"
   tr
     td style="color: gray; text-align: center; width: 900px; font-size: 14px;"

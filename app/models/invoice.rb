@@ -95,10 +95,12 @@ class Invoice
     where :user_id.in => user_ids
   end
 
-
-
   def self.hack_mailer
     NotificationMailer.new_order_for_translator(User.first).deliver
+  end
+
+  def currency
+    pay_company.try(:currency) || Currency.where(iso_code: Currency.current_currency).first
   end
 
   def check_pay_way
@@ -133,17 +135,6 @@ class Invoice
 
   def cost
     cost_without_taxes + amount_tax
-    # if items.empty?
-    #   attr = read_attribute :cost
-    #   result = attr || subject.try(:original_price) || '0.0'
-    #
-    #   result += amount_tax result unless result.is_a? String   #добавляет к стоимости инвойса сумму налогов
-    #
-    #   result.is_a?(BigDecimal) ? result : BigDecimal.new(result.to_s)
-    # else
-    #   result = items.sum :cost
-    #   result + amount_tax(result) unless result.is_a? String   #добавляет к стоимости инвойса сумму налогов
-    # end
   end
 
   def regenerate

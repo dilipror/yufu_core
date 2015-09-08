@@ -1,5 +1,6 @@
 class User
   include Mongoid::Document
+  include Mongoid::Timestamps::Created
   include Personalized
   include Mongoid::Paperclip
   include Mongoid::Token
@@ -103,8 +104,6 @@ class User
   has_many :assigned_tickets, class_name: 'Support::Ticket', inverse_of: :assigned_to
   has_many :expert_tickets,   class_name: 'Support::Ticket', inverse_of: :expert
   has_and_belongs_to_many :watched_tickets, class_name: 'Support::Ticket', inverse_of: :watchers
-
-  has_many :orders, class_name: 'Order::Base', inverse_of: :partner
 
   has_and_belongs_to_many :localizations
   has_and_belongs_to_many :groups

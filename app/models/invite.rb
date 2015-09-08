@@ -17,6 +17,7 @@ class Invite
   validates_uniqueness_of :email
   validate :uniq_email_in_registered_users, unless: :persisted?
   validate :can_not_edit_accepted_invite
+  validates_presence_of :overlord
 
   scope :clicked, -> {where clicked: true}
   scope :pass_registration, -> {

@@ -10,7 +10,7 @@
     i  #{@invitation.agent_surname}
     | .
     =   I18n.t 'mailer.invitation_email.foreword'
-  p style=('text-indent: 50px;') #{@invitation.invitation_text.text}
+  p style=('text-indent: 50px;') #{@invitation.invitation_text.try(:text)}
   h1 style=("text-align: center;")
     a href="http://#{Rails.application.config.host}/invites/#{@invitation.id}" style=("text-decoration: none; color: #800080")
       = I18n.t 'mailer.invitation_email.sign_up'

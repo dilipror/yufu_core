@@ -8,6 +8,7 @@ module Gateway
     field :tooltip, localize: true
     field :gateway_type
     field :is_active, type: Boolean
+    has_and_belongs_to_many :companies
 
     enumerize :gateway_type , in: [:bank, :alipay, :local_balance, :credit_card, :paypal]
 
