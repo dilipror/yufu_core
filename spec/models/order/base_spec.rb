@@ -65,6 +65,7 @@ RSpec.describe Order::Base, :type => :model do
     let(:order){create :order_verbal, referral_link: user.referral_link}
 
     before(:each) {order.invoices.create! cost: 100.0}
+    before(:each) {order.invoices.last.client_info.update_attributes wechat: 'd'}
 
     subject{order.paid}
 

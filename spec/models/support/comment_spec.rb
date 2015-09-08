@@ -9,7 +9,7 @@ RSpec.describe Support::Comment, :type => :model do
   end
 
   describe '#viewed_by?' do
-    let(:comment){create :comment}
+    let(:comment){create :comment, is_public: true}
     let(:user) {create :user}
 
     before(:each){receipt}

@@ -222,6 +222,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:bank) {create :payment_bank}
 
     before(:each) {order.invoices.create cost: 100.0}
+    before(:each) {order.invoices.last.client_info.update_attributes wechat: 's'}
 
     subject{order.update! step: 3, pay_way: bank}
 
@@ -294,6 +295,8 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:offer) {create :order_offer, order: order, translator: translator}
 
     before(:each) {order.invoices.create cost: 100.0}
+    before(:each) {order.invoices.last.client_info.update_attributes wechat: 's'}
+
 
     subject{order.update airport_pick_up: {departure_city: 'Dushanbe'}}
 

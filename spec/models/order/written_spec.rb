@@ -224,15 +224,20 @@ RSpec.describe Order::Written, type: :model do
       Currency.create iso_code: 'USD'
       Currency.create iso_code: 'CNY'
       Currency.create iso_code: 'EUR'
+      Invoice.all.each do |invoice|
+        invoice.client_info.update_attributes wechat: 's'
+      end
+      invoice.client_info.update_attributes wechat: 'a'
       order.stub(:price){1000}
       client.user.update balance: 10000
       order.invoices.last.stub(:cost){1000}
     }
 
     context 'on paid' do
+
       subject{order.invoices.last.paying; order.invoices.last.paid}
 
-      let(:order){create :order_written, state: :new, translation_type: 'translate', assignee: translator,
+      let!(:order){create :order_written, state: :new, translation_type: 'translate', assignee: translator,
                          original_language: language, translation_language: chinese, owner: client, invoices: [invoice],
                          order_type: language.languages_group.written_prices.first.written_type}
 
