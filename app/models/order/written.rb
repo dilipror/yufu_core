@@ -131,16 +131,26 @@ module Order
       end
     end
 
-    # def cost(currency = nil)
-    #   Price.without_markup price currency
-    # end
-
+    def self.surcharge_for_postage(currency = nil)
+      default = 30
+      if currency
+        Currency.exchange(default, currency).to_f
+      else
+        default
+      end
+    end
 
     def original_price(currency = nil)
       if real_translation_language.nil?
         return 0
       else
-        translation_type == 'translate_and_correct' ? price_correct : price_translate
+
+        post_surcharge = 0
+        if get_original.send_type == 'post'
+          post_surcharge = Order::Written.surcharge_for_postage(currency)
+        end
+
+        (translation_type == 'translate_and_correct' ? price_correct : price_translate) + post_surcharge
       end
     end
 
@@ -224,7 +234,11 @@ module Order
       if translation_type == 'translate_and_correct'
         res << {cost: price_correct - price_translate, description: I18n.t('order.writt.correct')}
       end
-      res
+
+      if get_original.send_type == 'post'
+        res << {cost: Order::Written.surcharge_for_postage, description: I18n.t('order.writt.postage')}
+      end
+        res
     end
 
     private

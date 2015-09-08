@@ -25,6 +25,15 @@ RSpec.describe Order::Written, type: :model do
     subject{order.original_price}
     it{is_expected.to be_a BigDecimal}
     it{is_expected.to eq order.quantity_for_translate * language.languages_group.written_prices.first.value}
+
+    context 'when get_original post' do
+      let(:order){create :order_written, state: :new, translation_type: 'translate',
+                         original_language: language, translation_language: chinese,
+                         order_type: language.languages_group.written_prices.last.written_type}
+      before(:each) {order.get_original.update_attributes(send_type: 'post', name: 'd', address: 's', index: '1')}
+
+      it{is_expected.to eq order.quantity_for_translate * language.languages_group.written_prices.first.value + Order::Written.surcharge_for_postage}
+    end
   end
 
   describe '#base_lang_cost' do
@@ -377,6 +386,23 @@ RSpec.describe Order::Written, type: :model do
       it ('two') {expect(subject.count).to eq(2)}
       it ('cost') {expect(subject[0][:cost]).to eq(12000)}
       it ('cost') {expect(subject[1][:cost]).to eq(3960)}
+
+    end
+
+    context 'surcharge for postage' do
+
+      let(:order){create :order_written, translation_type: 'translate_and_correct', quantity_for_translate: 1200}
+
+      before(:each) do
+        order.stub(:base_lang_cost).and_return 10
+        Price.stub(:get_increase_percent).and_return 1.33
+        order.get_original.update_attributes(send_type: 'post', name: 'd', address: 's', index: '1')
+      end
+
+      it ('three') {expect(subject.count).to eq(3)}
+      it ('cost') {expect(subject[0][:cost]).to eq(12000)}
+      it ('cost') {expect(subject[1][:cost]).to eq(3960)}
+      it ('cost') {expect(subject[2][:cost]).to eq(30)}
 
     end
 
