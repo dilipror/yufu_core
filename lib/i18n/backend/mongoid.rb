@@ -67,7 +67,7 @@ module I18n
         key = key.gsub('_', '::')
         decoded_key = key.split('.')
         klass = decoded_key[0]
-        field = decoded_key[1]
+        field = decoded_key[1].gsub('::', '_')
         id    = decoded_key[2]
         if Object.const_defined?(klass)
           klass.constantize.where(id: id).first.try field
