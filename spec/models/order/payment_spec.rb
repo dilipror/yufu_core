@@ -16,7 +16,7 @@ RSpec.describe Order::Payment, :type => :model do
   describe '#partial_pay' do
     let(:order) {create :order_verbal}
     let(:invoice) {create :invoice, subject: order}
-    let(:payment) {Order::Payment.create sum: 300, partial_sum: 0.0, invoice: invoice}
+    let(:payment) {Order::Payment.create sum: 300, partial_sum: 0.0, invoice: invoice, order: order}
 
     subject{payment.partial_pay 100}
 
@@ -26,6 +26,15 @@ RSpec.describe Order::Payment, :type => :model do
 
     it 'should change partial sum' do
       expect{subject}.to change{payment.partial_sum}.from(0.0).to(100)
+    end
+
+    context 'when partial_pay > sum' do
+      subject{payment.partial_pay 400}
+
+      it 'should change state' do
+        expect{subject}.to change{payment.state}.from('paying').to('paid')
+      end
+
     end
   end
 

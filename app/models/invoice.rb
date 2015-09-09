@@ -170,14 +170,14 @@ class Invoice
     # cntr_id = country_id ||
     copy_tax = []
     if (need_copy == 'true' || need_copy == true)# && Company.find(company_id).currency.iso_code == 'CNY'
-      copy_tax = Tax.where(original_is_needed: true, company_id: company_id).distinct(:id)
+      copy_tax = Tax.where(original_is_needed: true, company_id: company_id, ).distinct(:id)
     end
 
     payway = Gateway::PaymentGateway.find(payway_id).taxes.distinct :id
     comp = Tax.where(company_id: company_id, original_is_needed: false).distinct :id
     cntr = Country.find(country_id).taxes.distinct :id
 
-    comp & cntr & payway | copy_tax
+    comp & cntr & payway | copy_tax & payway & cntr
   end
 
 end

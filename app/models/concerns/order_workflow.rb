@@ -51,11 +51,6 @@ module OrderWorkflow
         order.notify_about_closing
         true
       end
-
-
-      def to_param
-        token
-      end
     end
   end
 end

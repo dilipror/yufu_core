@@ -42,8 +42,6 @@ module Order
     delegate :name, to: :location, prefix: true, allow_nil: true
 
 
-    has_notification_about :ready_for_processing, message: 'notifications.ready_for_processing',
-                           observers: -> (order) { Profile::Translator.support_order(order)}
     has_notification_about :updated, message: 'notifications.order_updated',
                            observers: :subscribers
 
@@ -79,6 +77,7 @@ module Order
 
     scope :paid_orders, -> {where state: :in_progress}
 
+    scope :all_orders,  -> (profile) { default_scope_for(profile).all }
     scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) { profile.orders.where :state.in => [:new, :paying] }
     scope :in_progress, -> (profile) do

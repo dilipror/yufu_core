@@ -28,6 +28,8 @@ gem 'eu_central_bank'
 gem 'rails', '~>4.0.2'
 gem 'slim-rails'
 
+# gem 'i18n-js', '3.0.0.rc8'
+
 group :test, :development do
   # gem 'spreewald'
   gem 'rspec-rails', '~> 3.0.0'

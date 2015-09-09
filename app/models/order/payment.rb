@@ -17,6 +17,8 @@ module Order
     # field :state#, default: 'paying'
     field :gateway_class
 
+    default_scope  -> {desc :id}
+
     state_machine initial: :paying do
 
       state :paying
@@ -35,9 +37,16 @@ module Order
         payment.pay
         payment.difference_to_user
         payment.order.paid
+        true
       end
 
     end
+
+    # def to_pay
+    #   pay
+    #   difference_to_user
+    #   order.paid
+    # end
 
     # filtering
     def self.filter_state(state)
@@ -95,7 +104,7 @@ module Order
     #   end
     #   # if state_changed? && state_was == 'paid' && state == 'paying'
     #   #   order.unpaid
-    #   end
+    #   # end
     #   true
     # end
 

@@ -51,7 +51,6 @@ module Order
 
     scope :for_everyone,-> { where is_private: false }
     scope :private,     -> { where is_private: true }
-    scope :all_orders,  -> (profile) { default_scope_for(profile).all }
     scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) {profile.orders.where :state.in => [:new, :paying]}
     scope :in_progress, -> (profile) do
@@ -64,14 +63,6 @@ module Order
 
     has_notification_about :processing, observers: :owner, message: 'notifications.processing_order'
     has_notification_about :closing, observers: :assignee, message: 'notifications.order_closed'
-    # has_notification_about :paid_primary, observers: :primary_supported_translators, message: 'notifications.new_order'
-    # has_notification_about :paid_secondary, observers: :secondary_supported_translators,
-    #                        message: 'notifications.new_order'
-    # validates_presence_of :pay_way, if: -> (order) {order.step == 3}
-
-    def self.notify_secondary(order)
-      order.notify_about_paid_secondary
-    end
 
     # All user promoted order
     def agents
