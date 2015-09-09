@@ -406,109 +406,41 @@ RSpec.describe Order::Verbal, :type => :model do
 
     before(:each) {order.invoices.create cost: 100.0}
 
-    let(:order){create :order_verbal, reservation_dates: [(build :order_reservation_date, hours: 8, date: '2015-10-01'),
-                                                          (build :order_reservation_date, hours: 10, date: '2015-10-02'),
-                                                          (build :order_reservation_date, hours: 12, date: '2015-10-03')]}
+    let(:order){create :order_verbal, reservation_dates: reservation_dates}
 
     before(:each) do
       Language.any_instance.stub(:verbal_price).and_return(10)
     end
 
-    context 'first day with greeted_at' do
-
-      let(:order){create :order_verbal, greeted_at_hour: greeted_at_hour, greeted_at_minute: greeted_at_minute,
-                         reservation_dates: [(build :order_reservation_date, hours: hours, date: '2015-10-01')]}
-
-      context 'in time' do
-        let(:greeted_at_hour){8}
-        let(:greeted_at_minute){16}
-        let(:hours){8}
-
-        it {expect(subject[0][:cost]).to eq(80)}
-        it {expect(subject[1]).to be_nil}
+    RSpec.shared_examples 'control sum' do
+      it 'expect that total sum is eq sum of dates original prices' do
+        check_sum = order.reservation_dates.offset(1).inject(0) {|sum, date| sum + date.original_price}
+        check_sum += order.reservation_dates.first.original_price_without_overtime
+        check_sum += order.reservation_dates.first.overtime_price is_first_date: true,
+                                                                  work_start_at: order.greeted_at_hour
+        expect(
+            subject.inject(0){|sum, item| sum + item[:cost]}
+        ).to eq(check_sum)
       end
-
-
-      context 'in time x 2' do
-        let(:greeted_at_hour){8}
-        let(:greeted_at_minute){16}
-        let(:hours){4}
-
-        it {expect(subject[0][:cost]).to eq(60)}
-        it {expect(subject[1]).to be_nil}
-      end
-
-      context 'in time with overtime' do
-        let(:greeted_at_hour){8}
-        let(:greeted_at_minute){16}
-        let(:hours){10}
-
-        it {expect(subject[0][:cost]).to eq(80)}
-        it {expect(subject[1][:cost]).to eq(30)}
-      end
-
-      context 'all before' do
-        let(:greeted_at_hour){0}
-        let(:greeted_at_minute){16}
-        let(:hours){4}
-
-        it {expect(subject[0][:cost]).to eq(90)}
-        it {expect(subject[1]).to be_nil}
-      end
-
-      context 'all after' do
-        let(:greeted_at_hour){22}
-        let(:greeted_at_minute){16}
-        let(:hours){8}
-
-        it {expect(subject[0][:cost]).to eq(120)}
-        it {expect(subject[1]).to be_nil}
-      end
-
-      context 'partially before' do
-        let(:greeted_at_hour){6}
-        let(:greeted_at_minute){15}
-        let(:hours){8}
-
-        it {expect(subject[0][:cost]).to eq(70)}
-        it {expect(subject[1][:cost]).to eq(15)}
-      end
-
-      context 'partially after' do
-        let(:greeted_at_hour){14}
-        let(:greeted_at_minute){15}
-        let(:hours){10}
-
-        it {expect(subject[0][:cost]).to eq(70)}
-        it {expect(subject[1][:cost]).to eq(45)}
-      end
-
-      context 'partially before and after' do
-        context 'partially before' do
-          let(:greeted_at_hour){6}
-          let(:greeted_at_minute){15}
-          let(:hours){16}
-
-          it {expect(subject[0][:cost]).to eq(80)}
-          it {expect(subject[1][:cost]).to eq(120)}
-        end
-      end
-
     end
 
-    it 'first item' do
-      expect(subject[0][:cost]).to eq(80)
-      expect(subject[0][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-01 8 translation missing: en.frontend.order.verbal.hours")
+    context 'has over time' do
+      let(:order){create :order_verbal, greeted_at_hour: 3,
+                         reservation_dates: [(build :order_reservation_date, hours: 10, date: '2015-10-01'),
+                                             (build :order_reservation_date, hours: 8, date: '2015-10-02'),
+                                             (build :order_reservation_date, hours: 12, date: '2015-10-03'),
+                                             (build :order_reservation_date, hours: 4, date: '2015-10-04')]}
+      it {expect(subject.count).to eq(order.reservation_dates.count + 1)}
+      include_examples 'control sum'
     end
 
-    it 'second item' do
-      expect(subject[1][:cost]).to eq(80)
-      expect(subject[1][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-02 8 translation missing: en.frontend.order.verbal.hours")
-    end
+    context 'has not overtime' do
+      let(:order){create :order_verbal, greeted_at_hour: 7,
+                         reservation_dates: [(build :order_reservation_date, hours: 8, date: '2015-10-01')]}
 
-    it 'third item' do
-      expect(subject[2][:cost]).to eq(80)
-      expect(subject[2][:description]).to eq("#{order.language.name}, Level - #{order.level}, City - #{order.location.name}. translation missing: en.frontend.order.verbal.for_date 2015-10-03 8 translation missing: en.frontend.order.verbal.hours")
+      it {expect(subject.count).to eq order.reservation_dates.count}
+
+      include_examples 'control sum'
     end
 
   end

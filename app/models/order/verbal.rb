@@ -282,33 +282,6 @@ module Order
       self.create_and_execute_transaction owner.user, Office.head, price
     end
 
-    def first_day_work_time(rd)
-      begins_work_hour = [7, greeted_at_hour].max
-      ends_work_hour = [21, greeted_at_hour+rd.hours].min
-      work_hours = [ends_work_hour - begins_work_hour, 8].min
-      coef = rd.hours < 8 ? 1.5 : 1
-      if work_hours > 0
-        rd.simple_price_for_hours(work_hours) * coef
-      else
-        0
-      end
-    end
-
-    def first_day_overtime(rd = nil)
-      rd ||= reservation_dates.confirmed.first
-      coef = rd.hours < 8 ? 1.5 : 1
-      rd.simple_price_for_hours(overtime_hours(rd)) * 0.5 * coef
-    end
-
-    def overtime_hours(rd)
-      begins_work_hour = [7, greeted_at_hour].max
-      ends_work_hour = [21, greeted_at_hour+rd.hours].min
-      extra_hours = [0, ends_work_hour - begins_work_hour - 8].max
-      extra_hours_before = [0, [greeted_at_hour + rd.hours, 7].min - greeted_at_hour].max
-      extra_hours_after = [0, greeted_at_hour + rd.hours - [21, greeted_at_hour].max].max
-      extra_hours + extra_hours_before + extra_hours_after
-    end
-
     def paying_items
       paying_items_per_day + overtime_paying_items + surcharge_paying_items
     end
@@ -331,8 +304,12 @@ module Order
 
     def overtime_paying_items
       overtime = reservation_dates.confirmed.offset(1).inject(0) {|sum, rd| sum + rd.overtime_price}
-      overtime += first_day_overtime
-      [{cost: overtime, description: "#{I18n.t('frontend.order.verbal.overtime')}"}]
+      overtime += reservation_dates.first.overtime_price is_first_date: true, work_start_at: greeted_at_hour
+      if overtime > 0
+        [{cost: overtime, description: "#{I18n.t('frontend.order.verbal.overtime')}"}]
+      else
+        []
+      end
     end
 
     def surcharge_paying_items

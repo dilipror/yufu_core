@@ -4,7 +4,8 @@ module Yufu
     include ActiveModel::Serializable
     EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
                     flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
-                     admin.misc.filter_date_format ).join('|')}/
+                    admin.misc.filter_date_format date.day_names date.abbr_day_names date.month_names abbr_month_names
+                    date  ).join('|')}/
 
     MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::ServicesPack.name
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
@@ -84,7 +85,7 @@ module Yufu
       CSV.generate(options) do |csv|
         csv << ['key', I18n.locale, version.localization.name]
         all(version).each do |tr|
-          csv << [tr.key, tr.original, tr.value]
+          csv << [tr.key, tr.original.to_s, tr.value.to_s]
         end
       end
     end

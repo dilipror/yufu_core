@@ -169,8 +169,8 @@ class Invoice
   def get_taxes(country_id = client_info.country.id, company_id = pay_company.id, payway_id = pay_way.id, need_copy = need_invoice_copy)#, company_id, payment_gateway_id, need_copy)
     # cntr_id = country_id ||
     copy_tax = []
-    if (need_copy == 'true' || need_copy == true) && Company.find(company_id).currency.iso_code == 'CNY'
-      copy_tax << Tax.find_by(original_is_needed: true).id#.distinct(:id)
+    if (need_copy == 'true' || need_copy == true)# && Company.find(company_id).currency.iso_code == 'CNY'
+      copy_tax = Tax.where(original_is_needed: true, company_id: company_id).distinct(:id)
     end
 
     payway = Gateway::PaymentGateway.find(payway_id).taxes.distinct :id
