@@ -41,6 +41,48 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe 'invites to user not come from link' do
+
+    subject{user.invitation}
+
+    let(:email){'email@example.com'}
+
+    let(:user){create :user, invitation: invite, email: email}
+
+    context 'invite expired' do
+
+      before(:each){create :invite, email: email, expired: true}
+
+      let(:invite){nil}
+
+      it{is_expected.to be_nil}
+
+    end
+
+    context 'invite not expired' do
+
+      let(:new_invite){ create :invite, email: email, expired: false}
+
+      before(:each){new_invite}
+
+      let(:invite){nil}
+
+      it{is_expected.to eq(new_invite)}
+
+    end
+
+    context 'has already invite' do
+
+      before(:each){create :invite, email: email, expired: true}
+
+      let(:invite){create :invite, email: email}
+
+      it{is_expected.to eq(invite)}
+
+    end
+
+  end
+
   # describe 'update password'  do
   #   let(:user) {User.first}
   #
