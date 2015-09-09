@@ -36,7 +36,7 @@ module Order
                           sms: -> (user, offer) do
                             if offer.primary?
                             else
-                              SmsNotification.instance.secondary_offer_confirmed(user)
+                              Yufu::SmsNotification.instance.secondary_offer_confirmed(user)
                             end
                           end
     has_notification_about :confirm_for_client,

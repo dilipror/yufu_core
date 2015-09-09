@@ -13,6 +13,7 @@ require 'yufu/mongoid_fields_patch'
 require 'yufu/i18n_mailer_scope'
 require 'sms_gate'
 require 'yufu/action_sms'
+require 'yufu/sms_notification'
 
 require 'hash_extension'
 

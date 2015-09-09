@@ -42,8 +42,6 @@ module Order
     delegate :name, to: :location, prefix: true, allow_nil: true
 
 
-    has_notification_about :ready_for_processing, message: 'notifications.ready_for_processing',
-                           observers: -> (order) { Profile::Translator.support_order(order)}
     has_notification_about :updated, message: 'notifications.order_updated',
                            observers: :subscribers
 
