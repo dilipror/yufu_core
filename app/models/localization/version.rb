@@ -2,7 +2,7 @@ class Localization::Version
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  after_save :export
+  after_save :export, if: -> {state_changed? && state == 'approved'}
 
   belongs_to :version_number, class_name: 'Localization::VersionNumber'
   belongs_to :localization
