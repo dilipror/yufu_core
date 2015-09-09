@@ -2,6 +2,8 @@ class Localization::Version
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  after_save :export
+
   belongs_to :version_number, class_name: 'Localization::VersionNumber'
   belongs_to :localization
   has_many :translations, dependent: :destroy
@@ -42,8 +44,8 @@ class Localization::Version
       end
       version.translations.model_localizers.each &:localize_model
       # I18nJsExportWorker.perform_async
-      # Localization::Version.export
-      I18n::JS.export
+      # Localization::Version3.export
+      # I18n::JS.export
 
       true
     end
@@ -60,4 +62,9 @@ class Localization::Version
   def self.current(localization)
     approved.where(localization_id: localization.id).desc(:version_number_id)
   end
+
+  def export
+    I18n::JS.export unless Rails.env.test?
+  end
+
 end

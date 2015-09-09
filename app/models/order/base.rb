@@ -51,7 +51,6 @@ module Order
 
     scope :for_everyone,-> { where is_private: false }
     scope :private,     -> { where is_private: true }
-    scope :all_orders,  -> (profile) { default_scope_for(profile).all }
     scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) {profile.orders.where :state.in => [:new, :paying]}
     scope :in_progress, -> (profile) do

@@ -32,6 +32,7 @@ module Order
     embeds_many :work_reports,                       class_name: 'Order::Written::WorkReport', cascade_callbacks: true
     accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments
 
+    scope :all_orders,  -> (profile) { default_scope_for(profile).all }
     scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) { profile.orders.where :state.in => [:new, :paying] }
     scope :in_progress, -> (profile) do
