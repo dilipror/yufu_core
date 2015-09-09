@@ -177,7 +177,7 @@ class Invoice
     comp = Tax.where(company_id: company_id, original_is_needed: false).distinct :id
     cntr = Country.find(country_id).taxes.distinct :id
 
-    comp & cntr & payway | copy_tax & payway
+    comp & cntr & payway | copy_tax & payway & cntr
   end
 
 end
