@@ -5,7 +5,7 @@ module Order
     include Accountable
     include Filterable
 
-    # after_save :check_if_paid
+    after_save :check_if_paid
     after_create :payment_gateway
 
     belongs_to :order, class_name: 'Order::Base', inverse_of: :payments
@@ -34,10 +34,16 @@ module Order
       before_transition on: :to_pay do |payment|
         payment.pay
         payment.difference_to_user
-        payment.order.paid
+        # payment.order.paid
       end
 
     end
+
+    # def to_pay
+    #   pay
+    #   difference_to_user
+    #   order.paid
+    # end
 
     # filtering
     def self.filter_state(state)
@@ -89,15 +95,15 @@ module Order
     end
 
     private
-    # def check_if_paid
-    #   if state_changed? && state == 'paid'
-    #     order.paid
-    #   end
-    #   # if state_changed? && state_was == 'paid' && state == 'paying'
-    #   #   order.unpaid
-    #   end
-    #   true
-    # end
+    def check_if_paid
+      if state_changed? && state == 'paid'
+        order.paid
+      end
+      # if state_changed? && state_was == 'paid' && state == 'paying'
+      #   order.unpaid
+      # end
+      true
+    end
 
     def payment_gateway
       if pay_way.present?
