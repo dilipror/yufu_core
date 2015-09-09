@@ -5,326 +5,326 @@ en:
     new_order: Place new order
     reminder_for_backup_interpreter_24:
       subject: Order reconfirmation
-      body: "Dear Interpreter,<br>
-            We kindly inform you, that your status has been changed into main interpreter!<br>
-            In 24 hours you have an appointment with a client!<br>
-            Please reconfirm your accessibility for this order within 12 hours starting from this moment!<br>
-            In case we don’t get your reconfirmation, your appointment for this order will be canceled.<br>
-            For order reconfirmation, please follow the link below:<br>
-            %{dashboard_link}<br>
-            Thank you for cooperation!<br>
-            Translation & Interpretation services all over China<br>
-            We do it professionally!<br>"
+      body: "Dear Interpreter,\n
+            We kindly inform you, that your status has been changed into main interpreter!\n
+            In 24 hours you have an appointment with a client!\n
+            Please reconfirm your accessibility for this order within 12 hours starting from this moment!\n
+            In case we don’t get your reconfirmation, your appointment for this order will be canceled.\n
+            For order reconfirmation, please follow the link below:\n
+            %{dashboard_link}\n
+            Thank you for cooperation!\n
+            Translation & Interpretation services all over China\n
+            We do it professionally!\n"
 
 
     reminder_for_main_interpreter_36:
       subject: Order reconfirmation
-      body: "Dear Interpreter,<br>
-             We kindly remind you, that in 36 hours you have an appointment with a client!<br>
-             Currently you are main interpreter for this order.<br>
-             Please reconfirm your accessibility for this order within 12 hours starting from this moment!<br>
-             In case we don’t get your reconfirmation, your appointment will be canceled.<br>
-             For order reconfirmation, please follow the link below:<br>
-             %{dashboard_link}<br>
-             Thank you for cooperation!<br>
-             Translation & Interpretation services all over China<br>
+      body: "Dear Interpreter,\n
+             We kindly remind you, that in 36 hours you have an appointment with a client!\n
+             Currently you are main interpreter for this order.\n
+             Please reconfirm your accessibility for this order within 12 hours starting from this moment!\n
+             In case we don’t get your reconfirmation, your appointment will be canceled.\n
+             For order reconfirmation, please follow the link below:\n
+             %{dashboard_link}\n
+             Thank you for cooperation!\n
+             Translation & Interpretation services all over China\n
              We do it professionally!"
     reminder_to_the_client_48:
       subject: Meeting reminder
-      body: "Dear %{client},<br>
-            We kindly remind you, that in 48 hours you have an appointment with your interpreter.<br>
-            Your order details<br>
-            %{order_details}<br>
-            Your interpreter<br>
-            %{interpreter}<br>
-            Your backup interpreter<br>
-            %{backup_interpreter}<br>
-            Thank you for choosing Yufu.net!<br>
-            We do our best to make you feel always satisfied with our service!<br>
-            Translation & Interpretation services all over China<br>
+      body: "Dear %{client},\n
+            We kindly remind you, that in 48 hours you have an appointment with your interpreter.\n
+            Your order details\n
+            %{order_details}\n
+            Your interpreter\n
+            %{interpreter}\n
+            Your backup interpreter\n
+            %{backup_interpreter}\n
+            Thank you for choosing Yufu.net!\n
+            We do our best to make you feel always satisfied with our service!\n
+            Translation & Interpretation services all over China\n
             We do it professionally!"
     secondary_offer_confirmed:
       subject: Confirmation accepted
-      body: "Dear Interpreter,<br>
-            We are glad to inform you, that your confirmation has been accepted!<br>
-            Currently you are backup interpreter for this order.<br>
-            In case main interpreter for this order doesn’t reconfirm his accessibility at least 24 hours before an<br>
-            appointment with a client, you will become main interpreter for this order.<br>
-            For a detailed order information, please follow the link below:<br>
-            %{dashboard_link}<br>
-            Thank you for cooperation!<br>
-            Translation & Interpretation services all over China<br>
-            We do it professionally!<br>"
+      body: "Dear Interpreter,\n
+            We are glad to inform you, that your confirmation has been accepted!\n
+            Currently you are backup interpreter for this order.\n
+            In case main interpreter for this order doesn’t reconfirm his accessibility at least 24 hours before an\n
+            appointment with a client, you will become main interpreter for this order.\n
+            For a detailed order information, please follow the link below:\n
+            %{dashboard_link}\n
+            Thank you for cooperation!\n
+            Translation & Interpretation services all over China\n
+            We do it professionally!\n"
     secondary_offer_confirmed_for_client:
       subject: Your backup interpreter
-      body: "Dear %{client},<br>
-            We are glad to inform you, that your backup interpreter has been approved!<br>
-            Now you can get acquainted with your backup interpreter, who will serve you in case of contingency.<br>
-            %{backup_interpreter}<br>
-            Automatically<br>
-            If you wish to ask a question, please follow the link below:<br>
-            %{dashboard_link}<br>
-            Thank you for choosing Yufu.net!<br>
-            We do our best to make you feel always satisfied with our service!<br>
-            Translation & Interpretation services all over China<br>
+      body: "Dear %{client},\n
+            We are glad to inform you, that your backup interpreter has been approved!\n
+            Now you can get acquainted with your backup interpreter, who will serve you in case of contingency.\n
+            %{backup_interpreter}\n
+            Automatically\n
+            If you wish to ask a question, please follow the link below:\n
+            %{dashboard_link}\n
+            Thank you for choosing Yufu.net!\n
+            We do our best to make you feel always satisfied with our service!\n
+            Translation & Interpretation services all over China\n
             We do it professionally!"
     new_order_for_translator:
       subject: New order
-      body: "Dear Interpreter,<br>
+      body: "Dear Interpreter,\n
 
-             We kindly inform you, that you have got a new order notification!<br>
+             We kindly inform you, that you have got a new order notification!\n
 
-             Please check your Yufu.net dashboard order section as soon as possible and confirm an order, if you <br>
+             Please check your Yufu.net dashboard order section as soon as possible and confirm an order, if you \n
 
-             are available for work.<br>
+             are available for work.\n
 
-             For an order check, please follow the link below:<br>
+             For an order check, please follow the link below:\n
 
-             %{dashboard_link}<br>
+             %{dashboard_link}\n
 
-             We wish you a nice day!<br>
+             We wish you a nice day!\n
 
 
 
-                                                                                                     Translation & Interpretation services all over China<br>
+                                                                                                     Translation & Interpretation services all over China\n
 
                                                                                                                                            We do it professionally!"
     primary_offer_confirmed:
       subject: confirmation accepted
-      body: "Dear Interpreter, <br>
+      body: "Dear Interpreter, \n
 
-                         We are glad to inform you, that your confirmation has been accepted! <br>
+                         We are glad to inform you, that your confirmation has been accepted! \n
 
-                         Currently you are main interpreter for this order.<br>
+                         Currently you are main interpreter for this order.\n
 
-                         36 hours before an appointment with a client, you will receive a reminder for an order <br>
+                         36 hours before an appointment with a client, you will receive a reminder for an order \n
 
-                         confirmation. You shall reconfirm your accessibility within 12 hours after receiving a reminder, <br>
+                         confirmation. You shall reconfirm your accessibility within 12 hours after receiving a reminder, \n
 
-                         otherwise your appointment will be cancelled.<br>
+                         otherwise your appointment will be cancelled.\n
 
-                         If you have confirmed an order, but due to some reasons cannot perform your job, please let us <br>
+                         If you have confirmed an order, but due to some reasons cannot perform your job, please let us \n
 
-                         know in advance!<br>
+                         know in advance!\n
 
-                         For a detailed order information, please follow the link below:<br>
+                         For a detailed order information, please follow the link below:\n
 
-                         %{dashboard_link}<br>
+                         %{dashboard_link}\n
 
-                         Thank you for cooperation!<br>
+                         Thank you for cooperation!\n
 
 
 
-                                                                                                                 Translation & Interpretation services all over China<br>
+                                                                                                                 Translation & Interpretation services all over China\n
 
                                                                                                                                                        We do it professionally!"
     cancel_int_1week:
       subject: Order cancellation
       body: "Dear %{client},
 
-             We kindly inform you, that your order for interpretation services has been successfully cancelled.<br>
+             We kindly inform you, that your order for interpretation services has been successfully cancelled.\n
 
-             Your payment will be refunded according to the terms & conditions of Yufu.net Company that you <br>
+             Your payment will be refunded according to the terms & conditions of Yufu.net Company that you \n
 
-             have read and agreed.<br>
+             have read and agreed.\n
 
-             Since your order has been cancelled 7 or more days before the appointed date of the order, the <br>
+             Since your order has been cancelled 7 or more days before the appointed date of the order, the \n
 
-             amount of your refund constitutes 50% of the payment, but no less than the cost of one working <br>
+             amount of your refund constitutes 50% of the payment, but no less than the cost of one working \n
 
-             day of an interpreter. All bank charges are covered by the client.<br>
+             day of an interpreter. All bank charges are covered by the client.\n
 
-             Remaining amount will be transferred to your Yufu.net balance. The remaining balance you can <br>
+             Remaining amount will be transferred to your Yufu.net balance. The remaining balance you can \n
 
-             withdraw any time or use it for other Yufu.net services payment.<br>
+             withdraw any time or use it for other Yufu.net services payment.\n
 
-             If you wish to check your remaining balance, please follow the link below.<br>
+             If you wish to check your remaining balance, please follow the link below.\n
 
-             %{balance}<br>
+             %{balance}\n
 
-             We sincerely apologize for any inconvenience!<br>
+             We sincerely apologize for any inconvenience!\n
 
-                                   We do our best to make you feel always satisfied with our service!<br>
-                                                                                                 Translation & Interpretation services all over China<br>
+                                   We do our best to make you feel always satisfied with our service!\n
+                                                                                                 Translation & Interpretation services all over China\n
                                                                                                                          We do it professionally!"
     cancel_int_2weeks:
       subject: Order cancellation
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-            We kindly inform you, that your order for interpretation services has been successfully cancelled.<br>
+            We kindly inform you, that your order for interpretation services has been successfully cancelled.\n
 
-            Your payment will be refunded according to the terms & conditions of Yufu.net Company that you<br>
+            Your payment will be refunded according to the terms & conditions of Yufu.net Company that you\n
 
-            have read and agreed.<br>
+            have read and agreed.\n
 
-            Since your order has been cancelled more than 14 days before the appointed date of the order, the<br>
+            Since your order has been cancelled more than 14 days before the appointed date of the order, the\n
 
-            amount of your refund constitutes full amount of the payment, except the cost of one working day.<br>
+            amount of your refund constitutes full amount of the payment, except the cost of one working day.\n
 
-            All bank charges are covered by the client.<br>
+            All bank charges are covered by the client.\n
 
-            Remaining amount will be transferred to your Yufu.net balance. The remaining balance you can<br>
+            Remaining amount will be transferred to your Yufu.net balance. The remaining balance you can\n
 
-            withdraw any time or use it for other Yufu.net services payment.<br>
+            withdraw any time or use it for other Yufu.net services payment.\n
 
-            If you wish to check your remaining balance, please follow the link below.<br>
+            If you wish to check your remaining balance, please follow the link below.\n
 
-             %{balance}<br>
+             %{balance}\n
 
-            We sincerely apologize for any inconvenience!<br>
+            We sincerely apologize for any inconvenience!\n
 
-                                  We do our best to make you feel always satisfied with our service!<br>
+                                  We do our best to make you feel always satisfied with our service!\n
 
-                                                                                                Translation & Interpretation services all over China<br>
+                                                                                                Translation & Interpretation services all over China\n
 
-                                                                                                                        We do it professionally!<br>"
+                                                                                                                        We do it professionally!\n"
     cancel_int_norefund:
       subject: Order cancellation
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-             We kindly inform you, that your order for interpretation services has been successfully cancelled.<br>
+             We kindly inform you, that your order for interpretation services has been successfully cancelled.\n
 
-             Your payment will be refunded according to the terms & conditions of Yufu.net Company that you<br>
+             Your payment will be refunded according to the terms & conditions of Yufu.net Company that you\n
 
-             have read and agreed.<br>
+             have read and agreed.\n
 
-             Since your order has been cancelled less than 7 days before the appointed date of the order, your<br>
+             Since your order has been cancelled less than 7 days before the appointed date of the order, your\n
 
-             payment is not refundable.<br>
+             payment is not refundable.\n
 
-             We sincerely apologize for any inconvenience!<br>
+             We sincerely apologize for any inconvenience!\n
 
-                                   We do our best to make you feel always satisfied with our service!<br>
+                                   We do our best to make you feel always satisfied with our service!\n
 
-                                                                                                 Translation & Interpretation services all over China<br>
+                                                                                                 Translation & Interpretation services all over China\n
 
-                                                                                                                         We do it professionally!<br>"
+                                                                                                                         We do it professionally!\n"
     inter_invoice_cancel:
       subject: Order cancellation
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-             We kindly inform you, that your order for interpreting service has been cancelled due to non-<br>
+             We kindly inform you, that your order for interpreting service has been cancelled due to non-\n
 
-             payment.<br>
+             payment.\n
 
-             If you didn’t get through the payment on time, but still would like to order this service, please<br>
+             If you didn’t get through the payment on time, but still would like to order this service, please\n
 
-             follow the link below for a new order placement:<br>
+             follow the link below for a new order placement:\n
 
-             %{new_verbal_order}<br>
+             %{new_verbal_order}\n
 
-             If you wish to ask a question, please follow the link below:<br>
+             If you wish to ask a question, please follow the link below:\n
 
-             %%{new_verbal_order}<br>
+             %%{new_verbal_order}\n
 
-             We sincerely apologize for any inconvenience!<br>
+             We sincerely apologize for any inconvenience!\n
 
-                                           We do our best to make you feel always satisfied with our service!<br>
+                                           We do our best to make you feel always satisfied with our service!\n
 
-                                                                                                 Translation & Interpretation services all over China<br>
+                                                                                                 Translation & Interpretation services all over China\n
 
-                                                                                                                                      We do it professionally!<br>"
+                                                                                                                                      We do it professionally!\n"
     order_over_1000:
       subject: Payment Information
       body: "Dear %{client},
-             We are glad to inform you, that your order for interpretation services has been accepted!<br>
-             As long as the total amount of your order exceeds 1000 $, we have to ask you to make a payment<br>
-             via bank transfer.<br>
-             Please, make a payment within 7 days starting from this moment. In case the payment is not made<br>
-             on time, your order will be cancelled.<br>
-             You will get a contact information of your interpreter within 24 hours after the payment is made.<br>
-             %{details}<br>
-             Automatically<br>
-             Please, find an invoice in the attachment of this email.<br>
-             If you wish to ask a question, please follow the link below:<br>
-             %{dashboard_link}<br>
-                                                    We do our best to make you feel always satisfied with our service!<br>
-                                                                                                 Translation & Interpretation services all over China<br>
+             We are glad to inform you, that your order for interpretation services has been accepted!\n
+             As long as the total amount of your order exceeds 1000 $, we have to ask you to make a payment\n
+             via bank transfer.\n
+             Please, make a payment within 7 days starting from this moment. In case the payment is not made\n
+             on time, your order will be cancelled.\n
+             You will get a contact information of your interpreter within 24 hours after the payment is made.\n
+             %{details}\n
+             Automatically\n
+             Please, find an invoice in the attachment of this email.\n
+             If you wish to ask a question, please follow the link below:\n
+             %{dashboard_link}\n
+                                                    We do our best to make you feel always satisfied with our service!\n
+                                                                                                 Translation & Interpretation services all over China\n
                                                                                                                          We do it professionally!"
     order_notification:
       subject: New order
-      body: "Dear Interpreter,<br>
+      body: "Dear Interpreter,\n
 
-             We kindly inform you, that you have got a new order notification!<br>
+             We kindly inform you, that you have got a new order notification!\n
 
-             Please check your Yufu.net dashboard order section as soon as possible and confirm an order, if you<br>
+             Please check your Yufu.net dashboard order section as soon as possible and confirm an order, if you\n
 
-             are available for work.<br>
+             are available for work.\n
 
-             For an order check, please follow the link below:<br>
+             For an order check, please follow the link below:\n
 
-             %{dashboard_link}<br>
+             %{dashboard_link}\n
 
-             We wish you a nice day!<br>
+             We wish you a nice day!\n
 
 
 
-                                                                                                     Translation & Interpretation services all over China<br>
+                                                                                                     Translation & Interpretation services all over China\n
 
                                                                                                                                            We do it professionally!"
     primary_offer_confirmed_for_client:
       subject: Your order details
       body: "Dear %{client},
-             <br>
-             We are glad to inform you, that your order for an interpretation service has been confirmed!<br>
+             \n
+             We are glad to inform you, that your order for an interpretation service has been confirmed!\n
 
-             Now you can get familiar with your order details, as well as get acquainted with your primary<br>
+             Now you can get familiar with your order details, as well as get acquainted with your primary\n
 
              interpreter.
-             <br>
-             In a few hours you will also receive a contact information of your backup interpreter. Backup<br>
+             \n
+             In a few hours you will also receive a contact information of your backup interpreter. Backup\n
 
 
              interpreter will serve you in case of contingency.
-             <br>
+             \n
              Your order details
 
              %{order_details}
-             <br>
-             Your interpreter<br>
+             \n
+             Your interpreter\n
 
              %{interpreter}
-             <br>
-             If you wish to ask a question, please follow the link below:<br>
+             \n
+             If you wish to ask a question, please follow the link below:\n
 
              %{dashboard_link}
-             <br>
-             Thank you for choosing Yufu.net!<br>
+             \n
+             Thank you for choosing Yufu.net!\n
 
-                                                                   We do our best to make you feel always satisfied with our service!<br>
+                                                                   We do our best to make you feel always satisfied with our service!\n
 
-                                                                      Translation & Interpretation services all over China<br>
+                                                                      Translation & Interpretation services all over China\n
 
-                                                                     We do it professionally!<br>
+                                                                     We do it professionally!\n
 
-                                                                     Sincerely Yours,YUFU.NET Team <br>"
+                                                                     Sincerely Yours,YUFU.NET Team \n"
     reminder_invoice:
       subject: Reminder about payment
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-             We kindly remind you, that your order for an interpretation service has not been paid yet. Please,<br>
+             We kindly remind you, that your order for an interpretation service has not been paid yet. Please,\n
 
-             make a payment immediately, otherwise your order will be automatically cancelled.<br>
+             make a payment immediately, otherwise your order will be automatically cancelled.\n
 
-             Please, find an invoice in the attachment of this email.<br>
+             Please, find an invoice in the attachment of this email.\n
 
-             Your order details<br>
+             Your order details\n
 
-             %{order_details}<br>
+             %{order_details}\n
 
-             If you wish to ask a question, please follow the link below:<br>
+             If you wish to ask a question, please follow the link below:\n
 
-             %{dashboard_link}<br>
+             %{dashboard_link}\n
 
-             Thank you for choosing Yufu.net!<br>
+             Thank you for choosing Yufu.net!\n
 
-                                                                   We do our best to make you feel always satisfied with our service!<br>
+                                                                   We do our best to make you feel always satisfied with our service!\n
 
-                                                                      Translation & Interpretation services all over China<br>
+                                                                      Translation & Interpretation services all over China\n
 
-                                                                     We do it professionally!<br>
+                                                                     We do it professionally!\n
 
-                                                                     Sincerely Yours,YUFU.NET Team <br>"
+                                                                     Sincerely Yours,YUFU.NET Team \n"
     service_recalled_int:
       subject: Service recalled
       body: "Dear Interpreter,
@@ -333,15 +333,15 @@ en:
 
              Now you are free for more orders! And you will still get 30% of one working day compensation.
 
-             We sincerely apologize for any inconvenience!<br>
+             We sincerely apologize for any inconvenience!\n
 
-                                                                                We do our best to make you feel always satisfied with our service!<br>
+                                                                                We do our best to make you feel always satisfied with our service!\n
 
-                                                                                   Translation & Interpretation services all over China<br>
+                                                                                   Translation & Interpretation services all over China\n
 
-                                                                                  We do it professionally!<br>
+                                                                                  We do it professionally!\n
 
-                                                                                  Sincerely Yours,YUFU.NET Team <br>"
+                                                                                  Sincerely Yours,YUFU.NET Team \n"
     signup_reminder:
       subject: Reminder about confirmation
       body: "Dear %{client},
@@ -353,226 +353,226 @@ en:
             <br/>
             %{confirmation_url}
             <br/>
-            Thank you for choosing Yufu.net!<br>
+            Thank you for choosing Yufu.net!\n
 
-                                                                  We do our best to make you feel always satisfied with our service!<br>
+                                                                  We do our best to make you feel always satisfied with our service!\n
 
-                                                                     Translation & Interpretation services all over China<br>
+                                                                     Translation & Interpretation services all over China\n
 
-                                                                    We do it professionally!<br>
+                                                                    We do it professionally!\n
 
-                                                                    Sincerely Yours,YUFU.NET Team <br>"
+                                                                    Sincerely Yours,YUFU.NET Team \n"
     trans_invoice:
       subject: Payment informaion
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-            We are glad to inform you, that your order for a translation service has been accepted!<br>
+            We are glad to inform you, that your order for a translation service has been accepted!\n
 
-            As long as the total amount of your order exceeds 100 $, we have to ask you to make a payment via<br>
+            As long as the total amount of your order exceeds 100 $, we have to ask you to make a payment via\n
 
-            bank transfer.<br>
+            bank transfer.\n
 
-            Please, make a payment within 7 days starting from this moment. In case the payment is not made<br>
+            Please, make a payment within 7 days starting from this moment. In case the payment is not made\n
 
-            on time, your order will be automatically cancelled.<br>
+            on time, your order will be automatically cancelled.\n
 
-            Please, find an invoice in the attachment of this email.<br>
+            Please, find an invoice in the attachment of this email.\n
 
-            Your order details<br>
+            Your order details\n
 
-            %{order_details}<br>
+            %{order_details}\n
 
-            If you wish to ask a question, please follow the link below:<br>
+            If you wish to ask a question, please follow the link below:\n
 
-            %{dashboard_link}<br>
+            %{dashboard_link}\n
 
-            Thank you for choosing Yufu.net!<br>
+            Thank you for choosing Yufu.net!\n
 
-                                                                  We do our best to make you feel always satisfied with our service!<br>
+                                                                  We do our best to make you feel always satisfied with our service!\n
 
-                                                                     Translation & Interpretation services all over China<br>
+                                                                     Translation & Interpretation services all over China\n
 
-                                                                    We do it professionally!<br>
+                                                                    We do it professionally!\n
 
-                                                                    Sincerely Yours,YUFU.NET Team <br>"
+                                                                    Sincerely Yours,YUFU.NET Team \n"
     trans_invoice_cancel:
       subject: Order cancellation
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-      We kindly inform you, that your order for a translation service has been cancelled due to non-<br>
+      We kindly inform you, that your order for a translation service has been cancelled due to non-\n
 
-      payment.<br>
+      payment.\n
 
-      If you didn’t get through the payment on time, but still would like to order this service, please<br>
+      If you didn’t get through the payment on time, but still would like to order this service, please\n
 
-      follow the link below for a new order placement.<br>
+      follow the link below for a new order placement.\n
 
-      %{new_verbal_order}<br>
+      %{new_verbal_order}\n
 
 
-      If you wish to ask a question, please follow the link below:<br>
+      If you wish to ask a question, please follow the link below:\n
 
-      %{dashboard_link}<br>
+      %{dashboard_link}\n
 
-      We sincerely apologize for any inconvenience!<br>
+      We sincerely apologize for any inconvenience!\n
 
-                                                                         We do our best to make you feel always satisfied with our service!<br>
+                                                                         We do our best to make you feel always satisfied with our service!\n
 
-                                                                            Translation & Interpretation services all over China<br>
+                                                                            Translation & Interpretation services all over China\n
 
-                                                                           We do it professionally!<br>
+                                                                           We do it professionally!\n
 
-                                                                           Sincerely Yours,YUFU.NET Team <br>"
+                                                                           Sincerely Yours,YUFU.NET Team \n"
     trans_invoice_reminder:
       subject: Reminder about payment
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-            We kindly remind you, that your order for a translation service has not been paid yet. Please, make<br>
+            We kindly remind you, that your order for a translation service has not been paid yet. Please, make\n
 
-            a payment immediately, otherwise your order will be cancelled automatically.<br>
+            a payment immediately, otherwise your order will be cancelled automatically.\n
 
-            Please, find an invoice in the attachment of this email.<br>
+            Please, find an invoice in the attachment of this email.\n
 
-            Your order details<br>
+            Your order details\n
 
-            %{order_details}<br>
+            %{order_details}\n
 
-            If you wish to ask a question, please follow the link below:<br>
+            If you wish to ask a question, please follow the link below:\n
 
-            %{dashboard_link}<br>
+            %{dashboard_link}\n
 
-            Thank you for choosing Yufu.net!<br>
+            Thank you for choosing Yufu.net!\n
 
-                                                                  We do our best to make you feel always satisfied with our service!<br>
+                                                                  We do our best to make you feel always satisfied with our service!\n
 
-                                                                     Translation & Interpretation services all over China<br>
+                                                                     Translation & Interpretation services all over China\n
 
-                                                                    We do it professionally!<br>
+                                                                    We do it professionally!\n
 
-                                                                    Sincerely Yours,YUFU.NET Team <br>"
+                                                                    Sincerely Yours,YUFU.NET Team \n"
     trans_norefund:
       subject: Order cancellation
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-            We kindly inform you, that your order for interpretation services has been successfully cancelled.<br>
+            We kindly inform you, that your order for interpretation services has been successfully cancelled.\n
 
-            Your payment will be refunded according to the terms & conditions of Yufu.net Company that you<br>
+            Your payment will be refunded according to the terms & conditions of Yufu.net Company that you\n
 
-            have read and agreed.<br>
+            have read and agreed.\n
 
-            Since your order has been cancelled after the confirmation, the payment is not refundable.<br>
+            Since your order has been cancelled after the confirmation, the payment is not refundable.\n
 
-            If you wish to check your remaining balance, please follow the link below:<br>
+            If you wish to check your remaining balance, please follow the link below:\n
 
-            %{balance_url}<br>
+            %{balance_url}\n
 
-            We sincerely apologize for any inconvenience!<br>
+            We sincerely apologize for any inconvenience!\n
 
-                                                                               We do our best to make you feel always satisfied with our service!<br>
+                                                                               We do our best to make you feel always satisfied with our service!\n
 
-                                                                                  Translation & Interpretation services all over China<br>
+                                                                                  Translation & Interpretation services all over China\n
 
-                                                                                 We do it professionally!<br>
+                                                                                 We do it professionally!\n
 
-                                                                                 Sincerely Yours,YUFU.NET Team <br>"
+                                                                                 Sincerely Yours,YUFU.NET Team \n"
     trans_cancel_immed:
       subject: Order cancellation
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-            We kindly inform you, that your order for translation service has been successfully cancelled.<br>
+            We kindly inform you, that your order for translation service has been successfully cancelled.\n
 
-            Your payment will be refunded according to the terms & conditions of Yufu.net Company that you<br>
+            Your payment will be refunded according to the terms & conditions of Yufu.net Company that you\n
 
-            have read and agreed.<br>
+            have read and agreed.\n
 
-            Since your order has been cancelled immediately, the amount of your refund constitutes full<br>
+            Since your order has been cancelled immediately, the amount of your refund constitutes full\n
 
-            amount of the payment, except the cost of an irreducible order. All bank charges are covered by the<br>
+            amount of the payment, except the cost of an irreducible order. All bank charges are covered by the\n
 
-            client.<br>
+            client.\n
 
-            Remaining amount will be transferred to your Yufu.net balance. The remaining balance you can<br>
+            Remaining amount will be transferred to your Yufu.net balance. The remaining balance you can\n
 
-            withdraw any time or use it for other Yufu.net services payment.<br>
+            withdraw any time or use it for other Yufu.net services payment.\n
 
-            If you wish to check your remaining balance, please follow the link below.<br>
+            If you wish to check your remaining balance, please follow the link below.\n
 
-            %{balance_url}<br>
+            %{balance_url}\n
 
-            We sincerely apologize for any inconvenience!<br>
+            We sincerely apologize for any inconvenience!\n
 
-                                                                               We do our best to make you feel always satisfied with our service!<br>
+                                                                               We do our best to make you feel always satisfied with our service!\n
 
-                                                                                  Translation & Interpretation services all over China<br>
+                                                                                  Translation & Interpretation services all over China\n
 
-                                                                                 We do it professionally!<br>
+                                                                                 We do it professionally!\n
 
-                                                                                 Sincerely Yours,YUFU.NET Team <br>"
+                                                                                 Sincerely Yours,YUFU.NET Team \n"
     trans_confirm:
       subject: Order canfirmation
       body: "Dear %{client},
 
-            We are glad to inform you, that your order for a translation service has been approved!<br>
+            We are glad to inform you, that your order for a translation service has been approved!\n
 
-            The translation will be performed in accordance with your order. Translated document will be<br>
+            The translation will be performed in accordance with your order. Translated document will be\n
 
-            placed at your dashboard of Yufu.net system in a message section.<br>
+            placed at your dashboard of Yufu.net system in a message section.\n
 
-            Your order details<br>
+            Your order details\n
 
-            %{order_details}<br>
+            %{order_details}\n
 
-            Thank you for choosing Yufu.net!<br>
+            Thank you for choosing Yufu.net!\n
 
-                                                                  We do our best to make you feel always satisfied with our service!<br>
+                                                                  We do our best to make you feel always satisfied with our service!\n
 
-                                                                     Translation & Interpretation services all over China<br>
+                                                                     Translation & Interpretation services all over China\n
 
-                                                                    We do it professionally!<br>
+                                                                    We do it professionally!\n
 
-                                                                    Sincerely Yours,YUFU.NET Team <br>"
+                                                                    Sincerely Yours,YUFU.NET Team \n"
     translation_completed:
       subject: Translation completed
-      body: "Dear %{client},<br>
+      body: "Dear %{client},\n
 
-            We are glad to inform, that your translation has been successfully completed!<br>
+            We are glad to inform, that your translation has been successfully completed!\n
 
-            Please, find your translated document at your dashboard of Yufu.net system in a message section. If<br>
+            Please, find your translated document at your dashboard of Yufu.net system in a message section. If\n
 
-            you wish to find your translated document immediately, please follow the link below:<br>
+            you wish to find your translated document immediately, please follow the link below:\n
 
-            %{dashboard_link}<br>
+            %{dashboard_link}\n
 
-            Thank you for choosing Yufu.net!<br>
+            Thank you for choosing Yufu.net!\n
 
-                      We do our best to make you feel always satisfied with our service!<br>
+                      We do our best to make you feel always satisfied with our service!\n
 
-                         Translation & Interpretation services all over China<br>
+                         Translation & Interpretation services all over China\n
 
-                        We do it professionally!<br>
+                        We do it professionally!\n
 
-                        Sincerely Yours,YUFU.NET Team <br>"
+                        Sincerely Yours,YUFU.NET Team \n"
     warning_interp:
       subject: Warning
-      body: "Dear Interpreter,<br>
+      body: "Dear Interpreter,\n
 
-             As far as you hadn’t reconfirmed your accessibility, your order was cancelled.<br>
+             As far as you hadn’t reconfirmed your accessibility, your order was cancelled.\n
 
-             Please pay attention that each order that hadn’t been reconfirmed, has a negative impact on your<br>
+             Please pay attention that each order that hadn’t been reconfirmed, has a negative impact on your\n
 
-             reputation as an interpreter.<br>
+             reputation as an interpreter.\n
 
-             Next time if you cannot perform your job, please let us know in advance.<br>
+             Next time if you cannot perform your job, please let us know in advance.\n
 
-             Thank you for cooperation!<br>
+             Thank you for cooperation!\n
 
-                      We do our best to make you feel always satisfied with our service!<br>
+                      We do our best to make you feel always satisfied with our service!\n
 
-                         Translation & Interpretation services all over China<br>
+                         Translation & Interpretation services all over China\n
 
-                        We do it professionally!<br>
+                        We do it professionally!\n
 
-                        Sincerely Yours,YUFU.NET Team <br>"
+                        Sincerely Yours,YUFU.NET Team \n"
     reminder_for_backup_interpreter:
       subject: Order reconfirmation
     reminder_to_the_client:

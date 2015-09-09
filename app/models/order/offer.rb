@@ -32,7 +32,13 @@ module Order
                              else
                                NotificationMailer.secondary_offer_confirmed offer.translator.user
                              end
-                           end
+                           end,
+                          sms: -> (user, offer) do
+                            if offer.primary?
+                            else
+                              SmsNotification.instance.secondary_offer_confirmed(user)
+                            end
+                          end
     has_notification_about :confirm_for_client,
                            observers: -> (offer){ offer.order.owner.user },
                            message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_client"},
