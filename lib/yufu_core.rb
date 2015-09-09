@@ -11,6 +11,9 @@ require 'yufu/add_versions_to_i18n_patch'
 require 'yufu/mongoid_fields_localized_patch'
 require 'yufu/mongoid_fields_patch'
 require 'yufu/i18n_mailer_scope'
+require 'sms_gate'
+require 'yufu/action_sms'
+require 'yufu/sms_notification'
 
 require 'hash_extension'
 
