@@ -17,6 +17,8 @@ module Order
     # field :state#, default: 'paying'
     field :gateway_class
 
+    default_scope  -> {desc :id}
+
     state_machine initial: :paying do
 
       state :paying
