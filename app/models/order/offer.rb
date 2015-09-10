@@ -22,6 +22,7 @@ module Order
     #after_create :confirm_if_need
     after_save :notify_about_confirm_for_translator, :notify_about_confirm_for_client, :process_order,
                if: -> (offer) {offer.is_confirmed_changed? && offer.is_confirmed?}
+    after_create :notify_about_create_offer_for_owner
 
     has_notification_about :confirm_for_translator,
                            observers: :translator,
@@ -34,10 +35,7 @@ module Order
                              end
                            end,
                           sms: -> (user, offer) do
-                            if offer.primary?
-                            else
-                              Yufu::SmsNotification.instance.secondary_offer_confirmed(user)
-                            end
+                            Yufu::SmsNotification.instance.offer_confirmed_for_translator(user)
                           end
     has_notification_about :confirm_for_client,
                            observers: -> (offer){ offer.order.owner.user },
@@ -48,6 +46,13 @@ module Order
                              else
                                NotificationMailer.secondary_offer_confirmed_for_client user, offer
                              end
+                           end
+
+    has_notification_about :create_offer_for_owner,
+                           observers: :translator,
+                           message: -> (offer) {"notifications.offers.create_offer_for_owner"},
+                           sms: -> (user, offer) do
+                             Yufu::SmsNotification.instance.new_offer_for_translator user
                            end
 
 

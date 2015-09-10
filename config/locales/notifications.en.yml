@@ -1,5 +1,12 @@
 en:
   notifications:
+    offers:
+      confirm_primary_offer_for_client: Your main interpreter has been approved
+      confirm_primary_offer_for_translator: You have become a main interpreter on order
+      confirm_secondary_offer_for_client: Your backup interpreter has been approved
+      confirm_secondary_offer_for_translator: You have become a back-up interpreter on order
+      create_offer_for_owner: New offer has been created
+
     new_messages: New message
     processing_order: Your order is processed by an interpreter
     ready_for_processing: New order is available to you
@@ -10,3 +17,4 @@ en:
     done_order: Order is finished
     change_status_main_intrp: change status
     appointment_with_interpreter: Appointment with interpreter
+
