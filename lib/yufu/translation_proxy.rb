@@ -16,7 +16,6 @@ module Yufu
 
     attr_accessor :key, :locale, :translation
 
-    @@keys = Set.new
 
     def initialize(key, translation, locale = 'en', version = nil, value = nil)
       @key = key
@@ -107,24 +106,25 @@ module Yufu
     end
 
     def self.keys
-      return @@keys unless @@keys.empty?
-      TranslationProxy.reset_keys
+      Rails.cache.fetch 'translations_keys', expires_in: 6.hours do
+        reset_keys
+      end
     end
 
     def self.reset_keys
-      @@keys = Set.new
+      result = Set.new
       I18n.backend.backends.each do |back|
         if back.is_a? I18n::Backend::Simple
           back.send :init_translations
           I18n.backend.send(:translations).each do |locale, hash|
             hash.flatten_hash.each do |k, v|
-              @@keys << k.to_s unless EXCEPTED_KEYS === k
+              result << k.to_s unless EXCEPTED_KEYS === k
             end
           end
         end
       end
 
-      @@keys += Translation.distinct(:key).map(&:to_s)
+      result += Translation.distinct(:key).map(&:to_s)
 
       MONGO_MODELS.each do |temp|
         t = temp.split('.')
@@ -133,10 +133,10 @@ module Yufu
         # klass
         que.each do |k|
           key = klass.gsub('::', '_') + '.' + t[1] + '.' + k[0]
-          @@keys << key.to_s
+          result << key.to_s
         end
       end
-      @@keys
+      result
     end
 
 
