@@ -1,6 +1,6 @@
 class InviteSerializer < ActiveModel::Serializer
   attributes :id, :email, :last_name, :first_name, :middle_name, :overlord_id, :vassal_id,
-             :invitation_text_id, :pass_registration?
+             :invitation_text_id, :pass_registration?, :expired
 
   # has_one :invitation_text
 
