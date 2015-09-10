@@ -5,4 +5,4 @@ services:
 rvm:
   - 2.1.1
 script:
-  - bundle exec rake rspec
+  - bundle exec rspec
