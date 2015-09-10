@@ -29,6 +29,10 @@ class Localization::Version
       transition [:new, :rejected] => :commited
     end
 
+    event :revert_commit do
+      transition :commit => :new
+    end
+
     event :reject do
       transition :commited => :rejected
     end
