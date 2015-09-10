@@ -51,20 +51,18 @@ module Yufu
     end
 
     def self.only_updated(version)
-      if version.english?
+      if version.english? || version.independent?
         version.translations.map do |t|
           TranslationProxy.new t.key, t, version.localization.name, version
         end
       else
-        last_approved_version_number = version.localization.localization_versions
-                                           .approved.where(:id.lte => version.id).desc(:id).first.try :version_number_id
-        last_approved_version_number ||= 0
-        available_version_numbers = Localization::VersionNumber.where(:number.gte => last_approved_version_number,
-                                                                      :number.lte => version.version_number.number)
-                                                               .distinct :id
+        last_approved_version_with_parent = version.localization.localization_versions
+                                                .dependent.approved.where(:id.lte => version.id).desc(:id).first.try(:id)
+        cond = {:id.lte => version.parent_version_id}
+        cond[:id.gt] = last_approved_version_with_parent if last_approved_version_with_parent.present?
 
-        version_ids = Localization::Version.approved.where(:version_number_id.in => available_version_numbers)
-                          .distinct :id
+        version_ids = Localization::Version.english.where(cond).distinct :id
+
         Translation.where(:version_id.in => version_ids).distinct(:key).map do |k|
           TranslationProxy.new k, version.translations.where(key: k).first, version.localization.name, version
         end
