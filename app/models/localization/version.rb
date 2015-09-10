@@ -30,7 +30,7 @@ class Localization::Version
     end
 
     event :revert_commit do
-      transition :commit => :new
+      transition :commited => :new
     end
 
     event :reject do
