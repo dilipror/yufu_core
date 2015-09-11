@@ -1,3 +1,4 @@
+# DEPRECATED
 class Localization::VersionNumber
   include Mongoid::Document
   include Mongoid::Timestamps

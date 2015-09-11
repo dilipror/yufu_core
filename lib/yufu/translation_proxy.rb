@@ -16,7 +16,6 @@ module Yufu
 
     attr_accessor :key, :locale, :translation
 
-    @@keys = Set.new
 
     def initialize(key, translation, locale = 'en', version = nil, value = nil)
       @key = key
@@ -51,20 +50,18 @@ module Yufu
     end
 
     def self.only_updated(version)
-      if version.english?
+      if version.english? || version.independent?
         version.translations.map do |t|
           TranslationProxy.new t.key, t, version.localization.name, version
         end
       else
-        last_approved_version_number = version.localization.localization_versions
-                                           .approved.where(:id.lte => version.id).desc(:id).first.try :version_number_id
-        last_approved_version_number ||= 0
-        available_version_numbers = Localization::VersionNumber.where(:number.gte => last_approved_version_number,
-                                                                      :number.lte => version.version_number.number)
-                                                               .distinct :id
+        last_approved_version_with_parent = version.localization.localization_versions
+                                                .dependent.approved.where(:id.lte => version.id).desc(:id).first.try(:id)
+        cond = {:id.lte => version.parent_version_id}
+        cond[:id.gt] = last_approved_version_with_parent if last_approved_version_with_parent.present?
 
-        version_ids = Localization::Version.approved.where(:version_number_id.in => available_version_numbers)
-                          .distinct :id
+        version_ids = Localization::Version.english.where(cond).distinct :id
+
         Translation.where(:version_id.in => version_ids).distinct(:key).map do |k|
           TranslationProxy.new k, version.translations.where(key: k).first, version.localization.name, version
         end
@@ -109,24 +106,25 @@ module Yufu
     end
 
     def self.keys
-      return @@keys unless @@keys.empty?
-      TranslationProxy.reset_keys
+      Rails.cache.fetch 'translations_keys', expires_in: 6.hours do
+        reset_keys
+      end
     end
 
     def self.reset_keys
-      @@keys = Set.new
+      result = Set.new
       I18n.backend.backends.each do |back|
         if back.is_a? I18n::Backend::Simple
           back.send :init_translations
           I18n.backend.send(:translations).each do |locale, hash|
             hash.flatten_hash.each do |k, v|
-              @@keys << k.to_s unless EXCEPTED_KEYS === k
+              result << k.to_s unless EXCEPTED_KEYS === k
             end
           end
         end
       end
 
-      @@keys += Translation.distinct(:key).map(&:to_s)
+      result += Translation.distinct(:key).map(&:to_s)
 
       MONGO_MODELS.each do |temp|
         t = temp.split('.')
@@ -135,10 +133,10 @@ module Yufu
         # klass
         que.each do |k|
           key = klass.gsub('::', '_') + '.' + t[1] + '.' + k[0]
-          @@keys << key.to_s
+          result << key.to_s
         end
       end
-      @@keys
+      result
     end
 
 

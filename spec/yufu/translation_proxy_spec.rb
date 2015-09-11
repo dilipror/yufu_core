@@ -31,19 +31,24 @@ RSpec.describe Yufu::TranslationProxy do
       it{is_expected.to include new_translations.key}
     end
 
-    context 'not english version' do
-      let(:first){create :localization_version_number}
-      let(:second){create :localization_version_number}
-      let(:third){create :localization_version_number}
+    context 'independent version' do
+      let(:version){create :localization_version}
+      let(:new_translations){create :translation, version: version}
 
-      let(:first_version){create :localization_version, :approved, version_number: first, localization: Localization.default}
-      let(:second_second){create :localization_version, :approved, version_number: second, localization: Localization.default}
-      let(:third_second){create :localization_version, :approved, version_number: third, localization: Localization.default}
+      before(:each){new_translations}
+
+      it{is_expected.to include new_translations.key}
+    end
+
+    context 'not english version' do
+      let(:first_version){create :localization_version, :approved, localization: Localization.default}
+      let(:second_version){create :localization_version, :approved, localization: Localization.default}
+      let(:third_second){create :localization_version, :approved, localization: Localization.default}
       let(:translation_from_first){create :translation, version: first_version}
-      let(:translation_from_second){create :translation, version: second_second}
+      let(:translation_from_second){create :translation, version: second_version}
       let(:translation_from_third){create :translation, version: third_second}
 
-      let(:version){create :localization_version, version_number: second}
+      let(:version){create :localization_version, parent_version: second_version}
 
       before(:each){translation_from_first; translation_from_second; translation_from_third}
 

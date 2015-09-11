@@ -127,6 +127,7 @@ class User
   after_create :create_profile_client,     if: 'profile_client.nil?'
   after_create :create_profile_translator, if: 'profile_translator.nil?'
   after_create :create_default_invitation_texts
+  before_create :add_invite
 
 
   token length: 9, contains: :alphanumeric
@@ -231,5 +232,11 @@ class User
 
   def set_overlord
     self.overlord = invitation.overlord
+  end
+
+  def add_invite
+    if invitation.nil? && Invite.where(email: email.underscore, expired: false).present?
+      self.invitation = Invite.where(email: email.underscore, expired: false).first
+    end
   end
 end
