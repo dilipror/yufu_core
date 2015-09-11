@@ -122,12 +122,12 @@ class User
 
   before_save :set_avatar_extension, :after_role_changed, :ensure_authentication_token
   before_create :role_changed_first_time
+  before_create :add_invite
   before_create :set_overlord,  if: 'invitation.present?'
   after_create :create_referral_link, :create_banners, :create_billing
   after_create :create_profile_client,     if: 'profile_client.nil?'
   after_create :create_profile_translator, if: 'profile_translator.nil?'
   after_create :create_default_invitation_texts
-  before_create :add_invite
 
 
   token length: 9, contains: :alphanumeric

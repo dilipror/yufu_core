@@ -9,9 +9,6 @@ module Order
     field :last_name
     field :email
     field :phone
-    field :company_name
-    field :company_uid
-    field :company_address
     field :identification_number
     field :skype
     field :viber

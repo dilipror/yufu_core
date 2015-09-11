@@ -18,7 +18,7 @@ class Invite
   validates_uniqueness_of :email, scope: :overlord, case_sensitive: false
   # validate :uniq_email_in_registered_users, unless: :persisted?
   validate :can_not_edit_accepted_invite
-  validate :only_one_invite_until_expired
+  validate :only_one_invite_until_expired, unless: :persisted?
   validates_presence_of :overlord
 
   after_create :run_expire_worker
