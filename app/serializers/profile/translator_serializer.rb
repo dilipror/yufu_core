@@ -1,5 +1,5 @@
 class Profile::TranslatorSerializer < Profile::BaseSerializer
-  attributes :state, :one_day_passed, :status
+  attributes :state, :one_day_passed, :status, :total_approve
 
   has_many :city_approves
 

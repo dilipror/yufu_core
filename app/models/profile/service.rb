@@ -3,9 +3,8 @@ module Profile
     include Mongoid::Document
     include Approvable
     include Filterable
+    include VerbalLevel
 
-
-    field :level,                  default: 'guide'
     field :verbal_price,           type: BigDecimal
     field :written_price,          type: BigDecimal
     field :corrector,              type: Mongoid::Boolean
@@ -17,10 +16,9 @@ module Profile
     field :additions
 
     belongs_to :language
+    belongs_to :level_up_request, class_name: 'Profile::LevelUpRequest'
     belongs_to :translator, class_name: 'Profile::Translator'
 
-
-    validates_inclusion_of :level, in: Order::Verbal::TRANSLATION_LEVELS
     validates_presence_of :language
     validate :present_written_translate_type
 

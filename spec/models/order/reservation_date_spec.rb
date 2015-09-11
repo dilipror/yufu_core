@@ -191,13 +191,17 @@ RSpec.describe Order::ReservationDate, :type => :model do
     context 'pass arguments' do
       let(:reservation_date) {build :order_reservation_date, order_verbal: create(:order_verbal, reservation_dates: [])}
 
-      subject{reservation_date.available? language, location, level}
+      subject do
+        reservation_date.available? language, location, level
+      end
 
       context 'there is translator who support passed lvl and language' do
         let(:language) {service.language}
         let(:level)    {service.level}
 
-        it{is_expected.to be_truthy}
+        it do
+          is_expected.to be_truthy
+        end
       end
 
       context 'there is no translator who support passed lvl and language' do
@@ -208,34 +212,6 @@ RSpec.describe Order::ReservationDate, :type => :model do
       end
     end
 
-  end
-
-  # Deprecated
-  describe '#available_level' do
-    subject{reservation_date.available_level}
-    context 'current level is not available' do
-      let(:city) {create :city}
-
-      let(:step) {build :profile_steps_service, hsk_level: 4, cities: [city]}
-      let(:translator) {create :profile_translator, profile_steps_service: step, city: city}
-      # let(:translator) {create :profile_translator }
-      let(:translator_guide) {create :profile_translator,
-                                     services: [(build :service,
-                                                       language: translator.services.first.language, level: 'guide')]}
-
-      let(:reservation_date) do
-        translator_guide
-        language = translator.profile_steps_service.services.first.language
-        lvl = 'business'
-        cr = create :order_language_criterion, language: language, level: lvl
-        build :order_reservation_date,
-              order_verbal: create(:order_verbal, language: language, level: lvl, location: translator.profile_steps_service.cities.first)
-      end
-
-      # it 'returns max available level' do
-      #   is_expected.to eq('expert')
-      # end
-    end
   end
 
   describe 'validates a pair of date and order_id' do

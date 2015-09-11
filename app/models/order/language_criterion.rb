@@ -3,14 +3,13 @@ module Order
     include Mongoid::Document
     include Mongoid::Timestamps
     include Priced
+    include VerbalLevel
 
-    field :level
     belongs_to :language
 
     belongs_to :main_socket,    class_name: 'Order::Verbal', inverse_of: :main_language_criterion
     belongs_to :reserve_socket, class_name: 'Order::Verbal', inverse_of: :reserve_language_criterions
 
-    validates_inclusion_of :level, in: Order::Verbal::TRANSLATION_LEVELS, if: :persisted?
     validate :only_one_socket_present
     validates_presence_of :language_id, if: :persisted?
     # validates_presence_of :language

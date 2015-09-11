@@ -60,7 +60,7 @@ module Profile
 
       before_transition :on => :approved do |translator|
         translator.total_approve = true
-        # true
+        true
       end
 
       before_transition :on => :approving do |translator|
@@ -79,20 +79,7 @@ module Profile
         transition [:new, :approved] => :approving#, if: :one_day_passed?
       end
 
-      # event :approve do
-      #   transition [:not_approved, :approving] => :approved
-      # end
-
-      # event :reject do
-      #   transition [:approved, :approving] => :not_approved
-      # end
-
     end
-
-    # def update_state
-    #   approving
-    # end
-
 
     # filtering
     def self.filter_email(email)
@@ -133,7 +120,10 @@ module Profile
     end
 
     def self.support_services(language, city, level)
-      ids_from_service  = Profile::Service.not_only_written.approved.where(language: language, level: level).distinct(:translator_id)
+      int_level = level.is_a?(Integer) ? level : Order::Verbal::TRANSLATION_LEVELS[level.to_sym]
+      ids_from_service  = Profile::Service.not_only_written
+                                          .approved.where(language: language,
+                                                          :level.gte => int_level).distinct(:translator_id)
       ids_from_location = CityApprove.approved.where(city: city).distinct(:translator_id)
       where :id.in => (ids_from_service & ids_from_location)
     end
@@ -174,7 +164,7 @@ module Profile
 
     def can_process_order?(order)
       city_approves.approved.where(city_id: order.location.id).any? &&
-          services.approved.where(language_id: order.language.id, level: order.level).any?
+          services.approved.where(language_id: order.language.id, :level.gte => order.level_value).any?
     end
 
 

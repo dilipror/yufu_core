@@ -54,31 +54,36 @@ RSpec.describe Profile::Translator, :type => :model do
   #   end
   # end
 
-  describe 'scope supported' do
+  describe '.support_services' do
     let(:city) {create :city}
 
     let(:step) {build :profile_steps_service, hsk_level: 4, cities: [city]}
     let(:translator_in_scope) {create :profile_translator, profile_steps_service: step, city: city}
-    let(:translator_with_other_language) {create :profile_translator,services: [build(:service)] , city: city, profile_steps_service: {cities: [city]}}
-    let(:translator_with_other_level) {create :profile_translator, services: [build(:service, level: 'guide')], city: city, profile_steps_service: {cities: [city]}}
+    let(:translator_with_other_language) {create :profile_translator,services: [build(:service)] , city: city, profile_steps_service: step}
+    let(:translator_with_low_level) {create :profile_translator, services: [build(:service, language: service.language, level: 'guide')], city: city, profile_steps_service: step}
+    let(:translator_with_high_level) {create :profile_translator, services: [build(:service, language: service.language, level: 'expert')], city: city, profile_steps_service: step}
     let(:translator_from_other_city) {create :profile_translator, services: [build(:service, language: service.language)]}
     let(:service) {translator_in_scope.services.first}
 
-    before(:each) { translator_with_other_language; translator_with_other_level; translator_from_other_city }
+    before(:each) { translator_with_other_language; translator_with_low_level; translator_with_high_level; translator_from_other_city }
     before(:each) do
       translator_in_scope.city_approves.update_all is_approved: true
+      translator_with_low_level.city_approves.update_all is_approved: true
+      translator_with_high_level.city_approves.update_all is_approved: true
+      service.update level: 2
       service.update! is_approved: true
     end
 
     subject{Profile::Translator.support_services service.language, city, service.level }
 
     it{is_expected.to include(translator_in_scope)}
+    it{is_expected.to include(translator_with_high_level)}
     it{is_expected.not_to include(translator_with_other_language)}
-    it{is_expected.not_to include(translator_with_other_level)}
+    it{is_expected.not_to include(translator_with_low_level)}
     it{is_expected.not_to include(translator_from_other_city)}
   end
 
-  describe '#can_process_order??' do
+  describe '#can_process_order?' do
     let(:language){create :language}
     let(:city){create :city}
     let(:translator){create :profile_translator,
@@ -87,9 +92,26 @@ RSpec.describe Profile::Translator, :type => :model do
     subject{translator.can_process_order? order}
 
     context 'translator has approved service and city for order' do
-      let(:order) {create :wait_offers_order, location: city, language: language}
+      let(:order) {create :wait_offers_order, location: city, language: language, level: 'business'}
+      let(:translator){create :profile_translator,
+                              services: [build(:service, is_approved: true, language: language, level: level)],
+                              city_approves: [build(:city_approve, is_approved: true, city: city)]}
 
-      it{is_expected.to be_truthy}
+
+      context "service's lvl is greater than order's lvl" do
+        let(:level){'expert'}
+        it{is_expected.to be_truthy}
+      end
+
+      context "service's lvl is equal order's lvl" do
+        let(:level){'business'}
+        it{is_expected.to be_truthy}
+      end
+
+      context "service's lvl is less than order's lvl" do
+        let(:level){'guide'}
+        it{is_expected.to be_falsey}
+      end
     end
 
     context 'translator has not approved service' do
@@ -321,16 +343,19 @@ RSpec.describe Profile::Translator, :type => :model do
 
 
     context 'when cities changes' do
-      let(:translator) {create :profile_translator, state: :approved}
-      # let(:city) {translator.profile_steps_service.cities.first}
+      let(:city) {create :city, name: 'lol?'}
+      let(:new_city) {create :city}
+      let(:step_service) {build :profile_steps_service, cities: [city]}
+      let(:translator) {create :profile_translator, state: :approved,
+                               profile_steps_service: step_service}
 
       context 'when add city' do
-        subject{translator.profile_steps_service.cities.first.delete}
+        subject{translator.profile_steps_service.update_attributes city_ids: [city.id, new_city.id]}
         it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
       end
 
       context 'when remove' do
-        subject{service.update_attributes level: 'business'}
+        subject{translator.profile_steps_service.update_attributes city_ids: [new_city.id]}
         it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
       end
 
