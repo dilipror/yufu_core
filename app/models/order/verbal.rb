@@ -1,7 +1,8 @@
 module Order
   class Verbal < Base
+    TRANSLATION_LEVELS = {guide: 1, business: 2, expert: 3}
 
-    TRANSLATION_LEVELS = %w(guide business expert)
+    include VerbalLevel
 
     GENDERS = ['male', 'female']
     GOALS   = ['business', 'entertainment']
@@ -14,7 +15,6 @@ module Order
     field :want_native_chinese, type: Mongoid::Boolean, default: false
     field :do_not_want_native_chinese, type: Mongoid::Boolean, default: false
     field :update_time, type: DateTime
-    field :level
     field :greeted_at_hour,   type: Integer, default: 7
     field :greeted_at_minute, type: Integer, default: 0
     field :meeting_in
@@ -70,7 +70,6 @@ module Order
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
     validates_presence_of :location, if: :persisted?
     validate :assign_reservation_to_criterion, if: -> (o) {o.step == 2}
-    validates_inclusion_of :level, in: Order::Verbal::TRANSLATION_LEVELS, if: ->{step > 1}
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion
@@ -88,7 +87,6 @@ module Order
     scope :close,       -> (profile) do
       default_scope_for(profile).where :state.in => [:close, :rated], connected_method_for(profile) => profile
     end
-
 
     state_machine initial: :new do
 
@@ -130,7 +128,7 @@ module Order
     def there_are_translator_with_surcharge?
       CityApprove.where(city: location, with_surcharge: true).each do |apr_city|
         ln = language || main_language_criterion.language
-        tmp = apr_city.translator.services.where language: ln, level: level
+        tmp = apr_city.translator.services.where language: ln, :level.gte => level_value
         return true if tmp.count > 0
       end
       false
@@ -168,8 +166,8 @@ module Order
 
     def set_langvel
       unless main_language_criterion.nil?
-        write_attribute(:language_id, main_language_criterion.language_id) if language.nil?
-        write_attribute(:level, main_language_criterion.level) if level.nil?
+        self.language = main_language_criterion.language if language.nil?
+        self.level = main_language_criterion.level if level.nil?
       end
     end
 

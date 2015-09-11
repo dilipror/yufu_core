@@ -38,19 +38,16 @@ RSpec.describe Language, :type => :model do
 
   end
 
-  describe '.available_levels' do
-    subject{trans1.services.first.language.available_levels trans1.city_approves.first.city}
+  describe '#available_levels' do
+    subject{language.available_levels translator.city_approves.first.city}
 
-    context 'when 2 translators with same service and diff lvl' do
-      let(:service1) {create :service}
-      let(:service2) {create :service, level: 'business', language: service1.language}
-      let!(:trans1) {create :profile_translator, services: [service1]}
-      let!(:trans2) {create :profile_translator, services: [service2]}
+    let(:language){create :language}
+    let(:business_service){create :service, level: 'business', language: language}
+    let(:translator) {create :profile_translator, services: [business_service]}
 
-      it 'business not include' do
-        expect(subject.count).to eq 1
-      end
-    end
+    it{is_expected.to include :guide}
+    it{is_expected.to include :business}
+    it{is_expected.not_to include :expert}
   end
 
 end

@@ -20,19 +20,10 @@ module Order
     def available?(language = nil, city = nil, level = nil)
       language = language || order_verbal.try(:language)
       city     = city     || order_verbal.location
-      level    = level    || order_verbal.try(:level)
+      level    = level    || order_verbal.try(:level_value)
       !Profile::Translator.free_on(date).support_services(language, city, level).empty?
     end
     alias :available_for? :available?
-
-    # Deprecated
-    def available_level(language = nil, city = nil)
-      return level if available?(language)
-      Order::Verbal::TRANSLATION_LEVELS.reverse.each do |lvl|
-        return lvl if available?(language, city, lvl)
-      end
-      return nil
-    end
 
     def original_price_without_overtime
       price =  order_verbal.language.verbal_price(level) * hours

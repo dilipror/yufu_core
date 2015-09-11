@@ -35,7 +35,16 @@ class Language
 
   scope :not_chinese, -> {where is_chinese: false}
   scope :chinese,     -> {where is_chinese: true}
-
+  scope :for_communication, -> {where communication: true}
+  scope :for_profile, -> (profile) do
+    if profile._type == 'Profile::Translator'
+      langs_ids = profile.services.map &:language_id
+      where :id.in => langs_ids
+    else
+      raise ArgumentError, 'expect Profile::Translator'
+    end
+  end
+  default_scope -> {order_by :is_chinese.desc, :name.asc}
 
   #fitering
   def self.filter_name(name)
@@ -51,17 +60,6 @@ class Language
   def self.filter_group(name)
     group_ids = LanguagesGroup.where(name: /.*#{name}.*/).distinct :id
     where :languages_group_id.in => group_ids
-  end
-
-
-  scope :for_profile, -> (profile) do
-    if profile._type == 'Profile::Translator'
-      langs_ids = profile.services.map &:language_id
-      where :id.in => langs_ids
-    else
-      raise ArgumentError, 'expect Profile::Translator'
-    end
-
   end
 
   def self.available_from_chinese
@@ -86,9 +84,6 @@ class Language
     where(:id.in => languages_ids)
   end
 
-  scope :for_communication, -> {where communication: true}
-  default_scope -> {order_by :is_chinese.desc, :name.asc}
-
   def has_senior?
     senior.present?
   end
@@ -96,7 +91,8 @@ class Language
 
   def available_levels(city_id = nil)
     translators_ids = CityApprove.where(city_id: city_id).distinct :translator_id
-    Profile::Service.approved.where(language_id: id, :translator_id.in => translators_ids).distinct :level
+    max_level = Profile::Service.approved.where(language_id: id, :translator_id.in => translators_ids).max :level
+    (Order::Verbal::TRANSLATION_LEVELS.select {|k, v| v <= max_level}).keys
   end
 
   protected
