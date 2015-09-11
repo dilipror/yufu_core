@@ -6,6 +6,11 @@ module Order
 
     TYPES  = %w(text document media)
     LEVELS = %w(translate_and_correct translate)
+    WORDS_PER_DAY_TRANS = 1500.0
+    WORDS_PER_DAY_PROOF = 4500.0
+    CHARS_PER_DAY_TRANS = 2400.0
+    CHARS_PER_DAY_PROOF = 7200.0
+    DOCS_PER_DAY = 8.0
 
     field :translation_type
     field :quantity_for_translate, type: Integer, default: 0
@@ -193,8 +198,32 @@ module Order
       base_price
     end
 
+
+    def days_for_translate
+      days_for_work('translate')
+    end
+
+    def days_for_translate_and_correct
+      days_for_work('translate_and_correct')
+    end
+
+    def days_for_work(type = nil)
+      translate_type = type || translation_type
+      if order_type.type_name == 'document'
+        return (quantity_for_translate / DOCS_PER_DAY).ceil
+      else
+        if order_type.type_name == 'text'
+          days =  original_language.is_hieroglyph ? (quantity_for_translate / CHARS_PER_DAY_TRANS).ceil : (quantity_for_translate / WORDS_PER_DAY_TRANS).ceil
+          if translate_type == 'translate_and_correct'
+            days +=  original_language.is_hieroglyph ? (quantity_for_translate / CHARS_PER_DAY_PROOF).ceil : (quantity_for_translate / WORDS_PER_DAY_PROOF).ceil
+          end
+          return days
+        end
+      end
+    end
+
     def border_quantity_for_translate
-      original_language.is_chinese ? 800 : 500
+      original_language.is_hieroglyph ? 800 : 500
     end
 
     def close_cash_flow
@@ -225,7 +254,7 @@ module Order
 
     def base_lang_cost(lang)
       group = lang.languages_group
-      value_name = original_language.is_chinese && count_on_words? ? :value_ch : :value
+      value_name = original_language.is_hieroglyph && count_on_words? ? :value_ch : :value
       group.written_prices.find_by(written_type_id: order_type.id).send(value_name) || 0
     end
 

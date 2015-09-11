@@ -41,12 +41,12 @@ RSpec.describe Order::Written, type: :model do
     before (:each) do
       Price::Written.any_instance.stub(:value).and_return(1000)
       Price::Written.any_instance.stub(:value_ch).and_return(800)
-      order.original_language.stub(:is_chinese).and_return(is_chinese)
+      order.original_language.stub(:is_hieroglyph).and_return(is_hieroglyph)
     end
 
     context 'original is chinese' do
 
-      let(:is_chinese){true}
+      let(:is_hieroglyph){true}
 
       before(:each){order.stub(:count_on_words?).and_return(true)}
 
@@ -58,7 +58,7 @@ RSpec.describe Order::Written, type: :model do
 
     context 'original is not chinese' do
 
-      let(:is_chinese){false}
+      let(:is_hieroglyph){false}
 
       it 'return base lang price' do
         expect(order.base_lang_cost(lang)).to eq(1000)
@@ -77,7 +77,7 @@ RSpec.describe Order::Written, type: :model do
     context 'cases' do
       before(:each) do
         order.stub(:quantity_for_translate).and_return(words_count)
-        order.original_language.stub(:is_chinese).and_return(is_chinese)
+        order.original_language.stub(:is_hieroglyph).and_return(is_hieroglyph)
       end
 
       subject{order.lang_price(lang)}
@@ -87,14 +87,14 @@ RSpec.describe Order::Written, type: :model do
         before(:each){order.stub(:count_on_words?).and_return(false)}
 
         let(:words_count){1}
-        let(:is_chinese){true}
+        let(:is_hieroglyph){true}
 
         it {is_expected.to eq(Currency.exchange_to_f(1000, Currency.current_currency))}
 
       end
 
       context 'less than 500 not chinese' do
-        let(:is_chinese){false}
+        let(:is_hieroglyph){false}
         let(:words_count){450}
 
         it {is_expected.to eq(Currency.exchange_to_f(1000 * 500, Currency.current_currency))}
@@ -103,7 +103,7 @@ RSpec.describe Order::Written, type: :model do
 
       context 'less than 1000 chinese' do
 
-        let(:is_chinese){true}
+        let(:is_hieroglyph){true}
         let(:words_count){700}
 
         it {is_expected.to eq(Currency.exchange_to_f(1000 * 800, Currency.current_currency))}
@@ -112,7 +112,7 @@ RSpec.describe Order::Written, type: :model do
 
       context 'more than 800 chinese' do
 
-        let(:is_chinese){true}
+        let(:is_hieroglyph){true}
         let(:words_count){1000}
 
         it {is_expected.to eq(Currency.exchange_to_f(1000 * 1000, Currency.current_currency))}
@@ -121,7 +121,7 @@ RSpec.describe Order::Written, type: :model do
 
       context 'more than 500 not chinese' do
 
-        let(:is_chinese){false}
+        let(:is_hieroglyph){false}
         let(:words_count){600}
 
         it {is_expected.to eq(Currency.exchange_to_f(1000 * 600, Currency.current_currency))}
@@ -224,7 +224,7 @@ RSpec.describe Order::Written, type: :model do
     let(:translator){create :profile_translator}
     let(:senior){create :profile_translator}
     let(:language){create :language, senior: senior}
-    let(:chinese){create :language, is_chinese: true}
+    let(:chinese){create :language, is_hieroglyph: true}
     let(:client){create :profile_client}
 
     let(:invoice) {create :invoice, user: client.user }
@@ -323,7 +323,7 @@ RSpec.describe Order::Written, type: :model do
     let(:lang1){create :language}
     let(:lang2){create :language}
     let(:lang3){create :language}
-    let(:chinese){create :language, is_chinese: true}
+    let(:chinese){create :language, is_hieroglyph: true}
 
     let(:translator){create :profile_translator, services:
                   [build(:service, written_approves: true, written_translate_type: 'From chinese', language: lang1),
@@ -403,6 +403,74 @@ RSpec.describe Order::Written, type: :model do
       it ('cost') {expect(subject[0][:cost]).to eq(12000)}
       it ('cost') {expect(subject[1][:cost]).to eq(3960)}
       it ('cost') {expect(subject[2][:cost]).to eq(30)}
+
+    end
+
+  end
+
+  describe '#days_for_work' do
+
+    let(:order){create :order_written, attrs}
+
+    subject{order.days_for_work}
+
+    context 'document translations' do
+      let(:number){8}
+
+      let(:attrs) {{quantity_for_translate: number}}
+
+      before(:each){Order::Written::WrittenType.any_instance.stub(:type_name).and_return('document')}
+
+      it{is_expected.to eq(1)}
+
+    end
+
+    context 'translate for words' do
+
+      let(:number){1500}
+
+      before(:each){Order::Written::WrittenType.any_instance.stub(:type_name).and_return('text')}
+
+      let(:number){8}
+      let(:attrs) {{translation_type: 'translate', quantity_for_translate: number}}
+
+      it{is_expected.to eq(1)}
+    end
+
+    context 'translate for chars' do
+
+      let(:number){2400}
+
+      let(:attrs) {{translation_type: 'translate', quantity_for_translate: number}}
+
+      before(:each){Order::Written::WrittenType.any_instance.stub(:type_name).and_return('text'); Language.any_instance.stub(:is_hieroglyph).and_return(true)}
+
+      it{is_expected.to eq(1)}
+
+    end
+
+
+    context 'translate ans correct for words' do
+
+      let(:number){4500}
+
+      let(:attrs) {{translation_type: 'translate_and_correct', quantity_for_translate: number}}
+
+      before(:each){Order::Written::WrittenType.any_instance.stub(:type_name).and_return('text')}
+
+      it{is_expected.to eq(4)}
+
+    end
+
+    context 'translate and correct for chars' do
+
+      let(:number){7200}
+
+      let(:attrs) {{translation_type: 'translate_and_correct', quantity_for_translate: number}}
+
+      before(:each){Order::Written::WrittenType.any_instance.stub(:type_name).and_return('text'); Language.any_instance.stub(:is_hieroglyph).and_return(true)}
+
+      it{is_expected.to eq(4)}
 
     end
 
