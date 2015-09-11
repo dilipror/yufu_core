@@ -27,6 +27,16 @@ module Profile
     scope :only_written, -> {where only_written: true}
     scope :not_only_written, -> {where :only_written.ne => true}
 
+    after_save :change_translator_state, if: -> { (level_changed? || written_translate_type_changed?) &&
+                                           translator.try(:state) == 'approved' }
+
+    after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
+    after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
+
+    def change_translator_state
+      translator.try :approving
+    end
+
     #filtering
     def self.filter_language(language_id)
       Profile::Service.where language_id: language_id
@@ -42,7 +52,7 @@ module Profile
       Profile::Service.where :translator_id.in => translator_ids
     end
 
-    
+
 
     def present_written_translate_type
       if written_approves && written_translate_type.blank?

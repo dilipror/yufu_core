@@ -5,6 +5,7 @@ gem 'mongoid', '~>4.0.2'
 gem 'bson'
 gem 'mongoid-autoinc', require: 'autoinc'
 gem 'mongoid_auto_increment'
+# gem "mongoid-enum"
 
 gem 'paperclip', '< 4.3'
 gem 'mongoid-paperclip', require: 'mongoid_paperclip'

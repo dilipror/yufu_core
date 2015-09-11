@@ -111,34 +111,35 @@ RSpec.describe Profile::Translator, :type => :model do
 
   end
 
-  describe 'state to approving' do
-
-    subject{profile.approving}
-    context 'more then 1 day' do
-      let(:profile){create :profile_translator, state: :new, last_sent_to_approvement: DateTime.now - 1.days}
-
-      it 'state change' do
-        subject
-        expect(profile.reload.state).to eq('approving')
-      end
-    end
-
-    context 'last_sent_to_approvement change' do
-      let(:profile){create :profile_translator, state: :new, last_sent_to_approvement: DateTime.now - 2.days}
-      it 'last_sent_to_approvement change' do
-        subject
-        expect(profile.reload.last_sent_to_approvement).to eq(DateTime.now)
-      end
-    end
-
-    context 'less then 1 day' do
-      let(:profile){create :profile_translator, state: :new, last_sent_to_approvement: DateTime.now - 2.hours}
-
-      it 'state not change' do
-        expect{subject}.not_to change{profile.reload.state}
-      end
-    end
-  end
+  # пока выпилен функционал аппрува раз в сутки
+  # describe 'state to approving' do
+  #
+  #   subject{profile.approving}
+  #   context 'more then 1 day' do
+  #     let(:profile){create :profile_translator, state: :new, last_sent_to_approvement: DateTime.now - 1.days}
+  #
+  #     it 'state change' do
+  #       subject
+  #       expect(profile.reload.state).to eq('approving')
+  #     end
+  #   end
+  #
+  #   context 'last_sent_to_approvement change' do
+  #     let(:profile){create :profile_translator, state: :new, last_sent_to_approvement: DateTime.now - 2.days}
+  #     it 'last_sent_to_approvement change' do
+  #       subject
+  #       expect(profile.reload.last_sent_to_approvement).to eq(DateTime.now)
+  #     end
+  #   end
+  #
+  #   context 'less then 1 day' do
+  #     let(:profile){create :profile_translator, state: :new, last_sent_to_approvement: DateTime.now - 2.hours}
+  #
+  #     it 'state not change' do
+  #       expect{subject}.not_to change{profile.reload.state}
+  #     end
+  #   end
+  # end
 
   describe '.support_languages_in_city' do
     let(:target_city) {create :city}
@@ -178,87 +179,161 @@ RSpec.describe Profile::Translator, :type => :model do
     end
   end
 
-  describe '#status' do
-    let(:city1) {create :city}
-    let(:city2) {create :city}
-    let(:city3) {create :city}
+  # describe '#status' do
+  #   let(:city1) {create :city}
+  #   let(:city2) {create :city}
+  #   let(:city3) {create :city}
+  #
+  #   let(:city_approve1) {create :city_approve, city: city1, is_approved: true}
+  #   let(:city_approve2) {create :city_approve, city: city2, is_approved: false}
+  #   let(:city_approve3) {create :city_approve, city: city2, is_approved: true, with_surcharge: true}
+  #
+  #   let(:service1) {create :service, is_approved: true}
+  #   let(:service2) {create :service, is_approved: false}
+  #
+  #   let(:step_service) {create :profile_steps_service, cities: [city1, city2], cities_with_surcharge: [city3]}
+  #
+  #
+  #   subject{profile_translator.status}
+  #
+  #   context 'status new' do
+  #     let(:profile_translator){create :profile_translator, state: :new}
+  #     it{is_expected.to eq('new')}
+  #   end
+  #
+  #   context 'status reopen' do
+  #     let(:profile_translator){create :profile_translator, state: :reopen}
+  #     it{is_expected.to eq('reopen')}
+  #   end
+  #
+  #   context 'status partial_approved' do
+  #
+  #     context 'half services and cities' do
+  #       let(:profile_translator){create :profile_translator, state: :approving,
+  #                                       services: [service1, service2],
+  #                                       city_approves: [city_approve1, city_approve2],
+  #                                       profile_steps_service: step_service}
+  #
+  #       it{is_expected.to eq('partial_approved')}
+  #     end
+  #
+  #     context 'approved all cities' do
+  #       let(:profile_translator){create :profile_translator, state: :approving,
+  #                                       services: [service1, service2],
+  #                                       city_approves: [city_approve1],
+  #                                       profile_steps_service: step_service}
+  #
+  #       it{is_expected.to eq('partial_approved')}
+  #     end
+  #
+  #     context 'approved all services' do
+  #       let(:profile_translator){create :profile_translator, state: :approving,
+  #                                       services: [service1],
+  #                                       city_approves: [city_approve1, city_approve2],
+  #                                       profile_steps_service: step_service}
+  #
+  #       it{is_expected.to eq('partial_approved')}
+  #     end
+  #   end
+  #   context 'status approved' do
+  #     let(:step_service) {create :profile_steps_service, cities: [city1]}
+  #     let(:profile_translator){create :profile_translator, state: :approving,
+  #                                     services: [service1],
+  #                                     city_approves: [city_approve1],
+  #                                     profile_steps_service: step_service}
+  #     it{is_expected.to eq('approved')}
+  #   end
+  #
+  #   context 'status approving' do
+  #     context 'no one approved city' do
+  #       let(:profile_translator){create :profile_translator, state: :approving,
+  #                                       city_approves: [city_approve2],
+  #                                       services: [service1],
+  #                                       profile_steps_service: step_service}
+  #       it{is_expected.to eq('approving')}
+  #     end
+  #
+  #     context 'no one approved service' do
+  #       let(:profile_translator){create :profile_translator, state: :approving,
+  #                                       city_approves: [city_approve1],
+  #                                       services: [service2],
+  #                                       profile_steps_service: step_service}
+  #       it{is_expected.to eq('approving')}
+  #     end
+  #   end
+  #
+  # end
 
-    let(:city_approve1) {create :city_approve, city: city1, is_approved: true}
-    let(:city_approve2) {create :city_approve, city: city2, is_approved: false}
-    let(:city_approve3) {create :city_approve, city: city2, is_approved: true, with_surcharge: true}
+  describe 'changes state' do
 
-    let(:service1) {create :service, is_approved: true}
-    let(:service2) {create :service, is_approved: false}
+    describe '#approving' do
+      subject{translator.approving}
 
-    let(:step_service) {create :profile_steps_service, cities: [city1, city2], cities_with_surcharge: [city3]}
+      context 'when translator is new' do
+        let(:translator) {create :profile_translator}
+        it{expect{subject}.to change{translator.state}.from('new').to('approving')}
+      end
 
-
-    subject{profile_translator.status}
-
-    context 'status new' do
-      let(:profile_translator){create :profile_translator, state: :new}
-      it{is_expected.to eq('new')}
+      context 'when translator is approved' do
+        let(:translator) {create :profile_translator, state: :approved}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      end
     end
 
-    context 'status reopen' do
-      let(:profile_translator){create :profile_translator, state: :reopen}
-      it{is_expected.to eq('reopen')}
-    end
+    describe '#approve' do
+      subject{translator.approve}
 
-    context 'status partial_approved' do
-
-      context 'half services and cities' do
-        let(:profile_translator){create :profile_translator, state: :approving,
-                                        services: [service1, service2],
-                                        city_approves: [city_approve1, city_approve2],
-                                        profile_steps_service: step_service}
-
-        it{is_expected.to eq('partial_approved')}
+      context 'when translator is new' do
+        let(:translator) {create :profile_translator}
+        it{expect{subject}.not_to change{translator.state}}
       end
 
-      context 'approved all cities' do
-        let(:profile_translator){create :profile_translator, state: :approving,
-                                        services: [service1, service2],
-                                        city_approves: [city_approve1],
-                                        profile_steps_service: step_service}
-
-        it{is_expected.to eq('partial_approved')}
-      end
-
-      context 'approved all services' do
-        let(:profile_translator){create :profile_translator, state: :approving,
-                                        services: [service1],
-                                        city_approves: [city_approve1, city_approve2],
-                                        profile_steps_service: step_service}
-
-        it{is_expected.to eq('partial_approved')}
+      context 'when translator is approving' do
+        let(:translator) {create :profile_translator, state: :approving}
+        it{expect{subject}.to change{translator.state}.from('approving').to('approved')}
       end
     end
-    context 'status approved' do
-      let(:step_service) {create :profile_steps_service, cities: [city1]}
-      let(:profile_translator){create :profile_translator, state: :approving,
-                                      services: [service1],
-                                      city_approves: [city_approve1],
-                                      profile_steps_service: step_service}
-      it{is_expected.to eq('approved')}
+
+    context 'when services changes' do
+      let(:translator) {create :profile_translator, state: :approved}
+      let(:service) {translator.services.first}
+
+      context 'when changes writt translation type' do
+        subject{service.update_attributes written_translate_type: 'new'}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      end
+
+      context 'when lvl changes' do
+        subject{service.update_attributes level: 'business'}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      end
+
+      context 'when add new service' do
+        subject{create :service, translator: translator}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      end
+
+      context 'when remove service' do
+        subject{translator.services.last.destroy}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      end
     end
 
-    context 'status approving' do
-      context 'no one approved city' do
-        let(:profile_translator){create :profile_translator, state: :approving,
-                                        city_approves: [city_approve2],
-                                        services: [service1],
-                                        profile_steps_service: step_service}
-        it{is_expected.to eq('approving')}
+
+    context 'when cities changes' do
+      let(:translator) {create :profile_translator, state: :approved}
+      # let(:city) {translator.profile_steps_service.cities.first}
+
+      context 'when add city' do
+        subject{translator.profile_steps_service.cities.first.delete}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
       end
 
-      context 'no one approved service' do
-        let(:profile_translator){create :profile_translator, state: :approving,
-                                        city_approves: [city_approve1],
-                                        services: [service2],
-                                        profile_steps_service: step_service}
-        it{is_expected.to eq('approving')}
+      context 'when remove' do
+        subject{service.update_attributes level: 'business'}
+        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
       end
+
     end
 
   end
