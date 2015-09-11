@@ -343,16 +343,19 @@ RSpec.describe Profile::Translator, :type => :model do
 
 
     context 'when cities changes' do
-      let(:translator) {create :profile_translator, state: :approved}
-      # let(:city) {translator.profile_steps_service.cities.first}
+      let(:city) {create :city, name: 'lol?'}
+      let(:new_city) {create :city}
+      let(:step_service) {build :profile_steps_service, cities: [city]}
+      let(:translator) {create :profile_translator, state: :approved,
+                               profile_steps_service: step_service}
 
       context 'when add city' do
-        subject{translator.profile_steps_service.cities.first.delete}
+        subject{translator.profile_steps_service.update_attributes city_ids: [city.id, new_city.id]}
         it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
       end
 
       context 'when remove' do
-        subject{service.update_attributes level: 'business'}
+        subject{translator.profile_steps_service.update_attributes city_ids: [new_city.id]}
         it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
       end
 

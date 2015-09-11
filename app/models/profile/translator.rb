@@ -60,7 +60,7 @@ module Profile
 
       before_transition :on => :approved do |translator|
         translator.total_approve = true
-        # true
+        true
       end
 
       before_transition :on => :approving do |translator|

@@ -13,6 +13,9 @@ class Invoice
   field :is_paid, default: false
   field :description
   field :need_invoice_copy, type: Boolean, default: false
+  field :company_name
+  field :company_uid
+  field :company_address
 
   auto_increment :number
 
@@ -41,7 +44,7 @@ class Invoice
   after_save :update_taxes, :check_pay_way#, :pending_invoice
   #
   # validates_presence_of :wechat
-  
+  validates_presence_of :company_name, :company_uid, :company_address, if: -> {company_name.present? || company_uid.present? || company_address.present?}
 
   state_machine initial: :new do
     state :pending
