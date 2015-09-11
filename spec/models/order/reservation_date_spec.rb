@@ -23,6 +23,26 @@ RSpec.describe Order::ReservationDate, :type => :model do
       it {is_expected.to eq day_cost * 8 + day_cost * 2 * 1.5}
     end
 
+    context 'date is not confirmed' do
+      let(:order) {create :order_verbal, reservation_dates: [build(:order_reservation_date, hours: 8, is_confirmed: false)]}
+      let(:reservation_date) {order.reservation_dates.first}
+
+      subject{reservation_date.original_price ignore_confirmation: ignore_confirmation}
+
+      context 'pass ignore confirmation as true' do
+        let(:ignore_confirmation){true}
+
+        it {is_expected.not_to eq 0}
+      end
+
+      context 'pass ignore confirmation as false' do
+        let(:ignore_confirmation){false}
+
+        it {is_expected.to eq 0}
+      end
+    end
+
+
   end
 
   describe '#original_price_without_overtime' do
