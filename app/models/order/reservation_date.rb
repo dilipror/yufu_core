@@ -53,8 +53,8 @@ module Order
       end
     end
 
-    def original_price(is_first_date: false, work_start_at: nil)
-      return 0 unless is_confirmed
+    def original_price(is_first_date: false, work_start_at: nil, ignore_confirmation: false)
+      return 0 unless is_confirmed || ignore_confirmation
       return 0 if order_verbal.language.nil? || order_verbal.level.nil?
       original_price_without_overtime + overtime_price(is_first_date: is_first_date, work_start_at: work_start_at)
     end

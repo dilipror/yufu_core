@@ -11,7 +11,7 @@ RSpec.describe Order::Offer, :type => :model do
 
         it {expect{subject}.to change{offer.translator.user.notifications.count}.by(1)}
         it {expect{subject}.to change{offer.order.owner.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{NotificationMailer.deliveries.count}.by(2)}
+        it {expect{subject}.to change{NotificationMailer.deliveries.count}.by(3)}
       end
 
       context 'offer is primary' do
