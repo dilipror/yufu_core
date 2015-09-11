@@ -8,7 +8,7 @@ module Profile
     field :passport_num
     field :passport_country
 
-    field :state
+    # field :state
     field :last_sent_to_approvement, type: DateTime, default: DateTime.yesterday
     # field :one_day_passed, type: Boolean, default: nil
 
@@ -54,21 +54,29 @@ module Profile
 
     state_machine initial: :new do
 
-      before_transition any => :approving do |translator|
-        translator.last_sent_to_approvement = DateTime.now
+      # before_transition any => :approving do |translator|
+      #   translator.last_sent_to_approvement = DateTime.now
+      # end
+
+      before_transition :on => :approved do |translator|
+        translator.total_approve = true
+        # true
+      end
+
+      before_transition :on => :approving do |translator|
+        translator.total_approve = false
+        true
       end
 
       state :approving
       state :approved
-      state :not_approved
-      state :reopen
 
-      event :reopen do
-        transition approving: :reopen
+      event :approve do
+        transition approving: :approved
       end
 
       event :approving do
-        transition [:new, :reopen] => :approving, if: :one_day_passed?
+        transition [:new, :approved] => :approving#, if: :one_day_passed?
       end
 
       # event :approve do
@@ -81,7 +89,12 @@ module Profile
 
     end
 
+    # def update_state
+    #   approving
+    # end
 
+
+    # filtering
     def self.filter_email(email)
       user_ids = User.where(email: /.*#{email}.*/).distinct :id
       # translator_ids = Profile::Translator.where(:user_id.in => user_ids).distinct :id
@@ -152,10 +165,11 @@ module Profile
     end
 
     def status
-      return state.to_s         if ['new', 'reopen'].include? state.to_s
-      return 'partial_approved' if state.to_s == 'approving' && partial_approved
-      return 'approved'         if state.to_s == 'approving' && all_approved
-      return 'approving'        if state.to_s == 'approving' && !partial_approved && !all_approved
+      'dev'
+      # return state.to_s         if ['new', 'reopen'].include? state.to_s
+      # return 'partial_approved' if state.to_s == 'approving' && partial_approved
+      # return 'approved'         if state.to_s == 'approving' && all_approved
+      # return 'approving'        if state.to_s == 'approving' && !partial_approved && !all_approved
     end
 
     def can_process_order?(order)

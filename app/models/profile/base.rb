@@ -30,7 +30,8 @@ module Profile
     end
 
     def can_update?
-      new? || reopen?
+      # new? || reopen?
+      true
     end
   end
 end
