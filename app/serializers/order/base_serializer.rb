@@ -1,5 +1,5 @@
 class Order::BaseSerializer < ActiveModel::Serializer
-  attributes :id, :state, :human_state_name, :type, :cost, :price, :step, :owner_id, :token, :pay_way, :invoice_ids,
+  attributes :id, :state, :human_state_name, :type, :cost, :price, :step, :owner_id, :pay_way, :invoice_ids,
              :assignee_id, :number, :ticket_id, :referral_link_id
 
   def ticket_id

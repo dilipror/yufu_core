@@ -3,14 +3,10 @@ module Order
     include Mongoid::Document
     include Mongoid::Timestamps
     include Notificable
-    include Mongoid::Token
     include Sidekiq
     include Mongoid::Autoinc
     include OrderWorkflow
     include Priced
-
-    # DEPRECATED
-    token length: 9, contains: :alphanumeric
 
     SCOPES = %w(open in_progress close paying correct control done all_orders)
     PAY_WAYS = %w(card bank alipay credit_card local_balance)
