@@ -218,4 +218,44 @@ RSpec.describe Invoice, :type => :model do
     end
   end
 
+  describe 'company params validations' do
+
+    let(:invoice){build :invoice, attrs}
+
+    subject{invoice.valid?}
+
+    context 'fields are empty' do
+
+      let(:attrs){{company_name: nil, company_uid: nil, company_address: nil}}
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    context 'company name is empty' do
+
+      let(:attrs){{company_name: nil, company_uid: '123', company_address: 'boulevard'}}
+
+      it{is_expected.to be_falsey}
+
+    end
+
+    context 'company uid is empty' do
+
+      let(:attrs){{company_name: 'qwerty', company_uid: nil, company_address: 'boulevard'}}
+
+      it{is_expected.to be_falsey}
+
+    end
+
+    context 'company address is empty' do
+
+      let(:attrs){{company_name: 'qwerty', company_uid: '1234', company_address: nil}}
+
+      it{is_expected.to be_falsey}
+
+    end
+
+  end
+
 end
