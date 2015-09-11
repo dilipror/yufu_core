@@ -16,6 +16,7 @@ module Profile
     field :additions
 
     belongs_to :language
+    belongs_to :level_up_request, class_name: 'Profile::LevelUpRequest'
     belongs_to :translator, class_name: 'Profile::Translator'
 
     validates_presence_of :language
