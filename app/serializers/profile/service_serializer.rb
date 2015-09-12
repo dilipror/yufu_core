@@ -6,4 +6,8 @@ class Profile::ServiceSerializer < ActiveModel::Serializer
   def translator_id
     @object.translator.id
   end
+
+  def level_up_request_id
+    @object.level_up_request.try :id
+  end
 end

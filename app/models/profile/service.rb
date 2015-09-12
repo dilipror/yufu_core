@@ -16,8 +16,9 @@ module Profile
     field :additions
 
     belongs_to :language
-    belongs_to :level_up_request, class_name: 'Profile::LevelUpRequest'
     belongs_to :translator, class_name: 'Profile::Translator'
+
+    has_one :level_up_request, class_name: 'Profile::LevelUpRequest', dependent: :destroy
 
     validates_presence_of :language
     validate :present_written_translate_type
@@ -27,6 +28,7 @@ module Profile
 
     after_save :change_translator_state, if: -> { (level_changed? || written_translate_type_changed?) &&
                                            translator.try(:state) == 'approved' }
+
 
     after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
     after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
