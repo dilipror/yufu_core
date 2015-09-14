@@ -141,11 +141,11 @@ module Order
       end
     end
 
-    def create_and_execute_transaction(debit, credit, amount)
+    def create_and_execute_transaction(debit, credit, amount, commission = nil)
       if debit.nil? || credit.nil?
         return false
       end
-      transaction = Transaction.new(sum: amount, debit: debit, credit: credit, invoice: invoices.first)
+      transaction = Transaction.new(sum: amount, debit: debit, credit: credit, invoice: invoices.first, is_commission_from: commission)
       transaction.execute
       transaction.save
     end
