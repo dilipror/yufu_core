@@ -33,6 +33,10 @@ module Profile
     after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
     after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
 
+    # def level_up_request_changed?
+    #   level_up_request.try(:id).try(changed?)
+    # end
+
     def change_translator_state
       translator.try :approving
     end

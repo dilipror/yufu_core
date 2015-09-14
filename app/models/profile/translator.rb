@@ -59,12 +59,12 @@ module Profile
       # end
 
       before_transition :on => :approved do |translator|
-        translator.total_approve = true
+        translator.update_attributes total_approve: true
         true
       end
 
       before_transition :on => :approving do |translator|
-        translator.total_approve = false
+        translator.update_attributes total_approve: false
         true
       end
 

@@ -6,6 +6,7 @@ module Profile
 
     field :from, type: Integer
     field :to,   type: Integer
+    field :under_consideration, type: Boolean, default: false
 
     belongs_to :service, class_name: 'Profile::Service'
 
@@ -14,6 +15,13 @@ module Profile
 
     validates_presence_of :from, :to, :service
     after_save :check_level_up, if: -> {state != 'new'}
+    after_create :set_profile_state
+
+    def set_profile_state
+      if service.translator.present?
+        service.translator.update_attributes state: :approving, total_approve: false
+      end
+    end
 
 
     state_machine initial: :new do
