@@ -143,7 +143,7 @@ module Order
     def after_close_cashflow
       unless is_private
         charge_commission_to assignee.try(:user), :to_translator
-        charge_commission_to senior, :to_senior
+        charge_commission_to senior.try(:user), :to_senior
       end
       charge_commission_to referral_link.try(:user), :to_partner
       charge_commission_to banner.try(:user), :to_partner
