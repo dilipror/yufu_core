@@ -136,29 +136,29 @@ module Order
       transaction.save
     end
 
-    def after_paid_cashflow
-      charge_commission_to referral_link.try(:user)
-      charge_commission_to banner.try(:user)
-      charge_commission_to owner.try(:user).try(:overlord)
+    def senior
+      nil
     end
 
     def after_close_cashflow
-      charge_commission_to assignee.try(:user), 30
-      charge_commission_to assignee.try(:user).try(:overlord)
+      unless is_private
+        charge_commission_to assignee.try(:user), :to_translator
+        charge_commission_to senior, :to_senior
+      end
+      charge_commission_to referral_link.try(:user), :to_partner
+      charge_commission_to banner.try(:user), :to_partner
+      charge_commission_to referral_link.try(:user).try(:overlord), :to_partners_agent
+      charge_commission_to banner.try(:user).try(:overlord), :to_partners_agent
+      charge_commission_to assignee.try(:user).try(:overlord), :to_translators_agent
     end
 
     private
     # commission in %
-    def charge_commission_to(account, commission = 3)
-      cost = (invoices.first.cost || 0) * commission / 100
-      if account.present?
-        create_and_execute_transaction Office.head, account, cost
-      end
+    def charge_commission_to(account, key)
+      cost = (invoices.first.cost || 0) * 0.95
+      Order::Commission.execute_transaction key, Office.head, account, cost, self
     end
 
-    def close_cash_flow
-
-    end
 
     def check_close
       if !do_close.nil? && state == 'in_progress'

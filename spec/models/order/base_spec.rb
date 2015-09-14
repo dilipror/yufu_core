@@ -3,6 +3,17 @@ require 'rails_helper'
 RSpec.describe Order::Base, :type => :model do
 
   describe '#after_close_cashflow' do
+
+    before (:each) do
+      Order::Commission.create key: :to_senior, percent: 0.03
+      Order::Commission.create key: :to_partner, percent: 0.06
+      Order::Commission.create key: :to_partners_agent, percent: 0.015
+      Order::Commission.create key: :to_translators_agent, percent: 0.015
+      Order::Commission.create key: :to_translator, percent: 0.7
+    end
+
+    let(:user){create :user}
+
     let(:assignee) {create :profile_translator}
 
     before(:each) {order.invoices.create cost: 100.0}
@@ -10,13 +21,8 @@ RSpec.describe Order::Base, :type => :model do
     subject{order.after_close_cashflow}
 
     context 'order has translator' do
-
       let(:order) {create :order_base, assignee: assignee}
-      it {expect{subject}.to change{order.assignee.user.reload.balance}.by(BigDecimal.new '30.0')}
-    end
-
-    context 'order has no translator' do
-
+      it {expect{subject}.to change{order.assignee.user.reload.balance}.by(BigDecimal.new 95*0.7, 4)}
     end
 
     context 'translator has overlord' do
@@ -27,38 +33,61 @@ RSpec.describe Order::Base, :type => :model do
 
       let(:order) {create :order_base, assignee: assignee}
 
-      it {expect{subject}.to change{overlord.reload.balance}.by(BigDecimal.new '3.0')}
+      it {expect{subject}.to change{overlord.reload.balance}.by(BigDecimal.new 95*0.015, 4)}
     end
-
-    context 'translator has no overlord' do
-
-    end
-
-  end
-
-  describe '#after_paid_cashflow' do
-    let(:user){create :user}
-
-    before(:each) {order.invoices.create! cost: 100.0}
-
-    subject{order.after_paid_cashflow}
 
     context 'order has ref link' do
       let(:order){create :order_base, referral_link: user.referral_link}
-      it {expect{subject}.to change{user.reload.balance}.by(BigDecimal.new '3.0')}
+      it {expect{subject}.to change{user.reload.balance}.by(BigDecimal.new 95*0.06, 2)}
     end
 
     context 'order has banner' do
       let(:order){create :order_base, banner: user.banners.first}
-      it {expect{subject}.to change{user.reload.balance}.by(BigDecimal.new '3.0')}
+      it {expect{subject}.to change{user.reload.balance}.by(BigDecimal.new 95*0.06, 2)}
     end
 
-    context "order's owner has overlord" do
-      let(:user){create :user, overlord: create(:user)}
-      let(:order){create :order_base, owner: user.profile_client}
-      it {expect{subject}.to change{user.reload.overlord.balance}.by(BigDecimal.new '3.0')}
+    context 'partner has overlord' do
+      let(:order){create :order_base, banner: user.banners.first}
+      before(:each){user.update overlord: (create :user)}
+      it {expect{subject}.to change{user.reload.balance}.by(BigDecimal.new 95*0.06, 2)}
+    end
+
+    context 'verbal has senior' do
+      let(:senior){create :user}
+      let(:language){create :language, senior: senior}
+      let(:order){create :order_verbal, main_language_criterion: (create :order_language_criterion, language: language)}
+
+      it {expect{subject}.to change{senior.reload.balance}.by(BigDecimal.new 95*0.03, 4)}
+
+    end
+
+    context 'written has senior' do
+
+      let(:senior){create :user}
+      let(:language){create :language, senior: senior}
+      let(:order){create :order_written}
+
+      before(:each){order.stub(:real_translation_language).and_return(language)}
+
+      it {expect{subject}.to change{senior.reload.balance}.by(BigDecimal.new 95*0.03, 4)}
+
+    end
+
+    context 'order is private' do
+
+      let(:senior){create :user}
+      let(:translator){create :profile_translator}
+      let(:language){create :language, senior: senior}
+      let(:order){create :order_written, is_private: true, assignee: translator}
+
+      before(:each){order.stub(:real_translation_language).and_return(language)}
+
+      it {expect{subject}.not_to change{senior.reload.balance}}
+      it {expect{subject}.not_to change{translator.user.reload.balance}}
+
     end
   end
+
 
   describe '#paid' do
     let(:user){create :user}
@@ -70,12 +99,6 @@ RSpec.describe Order::Base, :type => :model do
     subject{order.paid}
 
     it{expect{subject}.to change{order.state}.to 'wait_offer'}
-
-    context 'order has a referral link' do
-      it 'charge commission to owner of the link' do
-        expect{subject}.to change{user.reload.balance}.by(BigDecimal.new '3.0')
-      end
-    end
   end
 
   describe '#offer_status_for' do
