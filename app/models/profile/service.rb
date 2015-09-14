@@ -33,9 +33,6 @@ module Profile
     after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
     after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
 
-    def change_translator_state
-      translator.try :approving
-    end
 
     #filtering
     def self.filter_language(language_id)
@@ -52,7 +49,9 @@ module Profile
       Profile::Service.where :translator_id.in => translator_ids
     end
 
-
+    def change_translator_state
+      translator.try :approving
+    end
 
     def present_written_translate_type
       if written_approves && written_translate_type.blank?
@@ -76,6 +75,11 @@ module Profile
     def name
       "#{language.try(:name)} | lvl: #{level}"
     end
+
+    def senior?
+      language.try(:senior) == translator
+    end
+    alias :is_senior :senior?
 
     def owner?(user)
       false if translator.nil?
