@@ -144,4 +144,35 @@ RSpec.describe Order::Base, :type => :model do
     end
   end
 
+  describe '#create and execute transaction' do
+
+    let(:debit){create :user, balance: 10000}
+    let(:credit){create :user}
+    let(:order){create :order_base}
+
+
+
+    context 'no commission' do
+      subject{order.create_and_execute_transaction(debit, credit, 100)}
+
+      it {expect{subject}.to change{Transaction.count}.by(1)}
+
+      it {expect{subject}.not_to change{Transaction.last.try(:is_commission_from)}}
+
+    end
+
+    context 'with commission' do
+
+      let(:commission){create :order_commission}
+
+      subject{order.create_and_execute_transaction(debit, credit, 100, commission)}
+
+      it {expect{subject}.to change{Transaction.count}.by(1)}
+
+      it {expect{subject}.to change{Transaction.last.try(:is_commission_from)}.to(commission)}
+
+    end
+
+  end
+
 end
