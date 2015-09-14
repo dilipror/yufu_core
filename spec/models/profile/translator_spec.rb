@@ -361,6 +361,16 @@ RSpec.describe Profile::Translator, :type => :model do
 
     end
 
+    context 'when created level up request' do
+      let(:translator) {create :profile_translator, state: :approved}
+      let(:service) {create :service, level: 1, translator: translator}
+      let(:lvl_up) {create :level_up_request, from: 1, to: 2}
+
+      subject{service.update_attributes level_up_request: lvl_up}
+      it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      it{expect{subject}.to change{translator.total_approve}.from(true).to(false)}
+    end
+
   end
 
 

@@ -10,6 +10,7 @@ en:
       city_approves: City approves
       service_approves: Service approves
       languages: Languages
+      financial_department: Financial department
 
     state_machine_human_name:
       open: open
