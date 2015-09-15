@@ -259,6 +259,10 @@ module Order
       end
     end
 
+    def senior
+      main_language_criterion.language.try :senior
+    end
+
     # Need refactor with new cash system
     def close_cash_flow
       unless self.is_private

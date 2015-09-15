@@ -226,6 +226,10 @@ module Order
       original_language.is_hieroglyph ? 800 : 500
     end
 
+    def senior
+      real_translation_language.try :senior
+    end
+
     def close_cash_flow
       price_to_members = self.price * 0.95
       if translation_type == 'translate'

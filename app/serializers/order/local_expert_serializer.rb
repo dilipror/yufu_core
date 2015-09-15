@@ -1,6 +1,6 @@
 class Order::LocalExpertSerializer < Order::BaseSerializer
   attributes :services_pack_name, :price, :url, :services_pack_id,
-             :state, :type, :invoice_ids, :step, :owner_id, :token, :number
+             :state, :type, :invoice_ids, :step, :owner_id, :number
 
   has_many :service_orders
 

@@ -40,11 +40,6 @@ module OrderWorkflow
         order.assignee = nil
       end
 
-      before_transition on: :paid do |order|
-        order.after_paid_cashflow
-        true
-      end
-
       before_transition on: :close do |order|
         # order.close_cash_flow
         order.after_close_cashflow
