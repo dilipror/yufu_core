@@ -3,13 +3,7 @@ module PaymentMethod
     field :email
 
     validates_presence_of :email
+    validates_format_of :email, :with => /(\A[^-][\w+\-.]*)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,  if: -> {email.present?}
 
   end
-  #
-  # def available_currencies
-  #   res = []
-  #   res << Currency.find_by(iso_code: 'GBP')
-  #   res
-  # end
-
 end

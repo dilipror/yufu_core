@@ -52,6 +52,11 @@ module Profile
     end
     scope :approved, -> {where state: 'approved'}
 
+    def self.role_translator
+      user_ids = User.where(role: :translator).distinct :id
+      where(:user_id.in => user_ids).desc(:id)
+    end
+
     state_machine initial: :new do
 
       # before_transition any => :approving do |translator|
