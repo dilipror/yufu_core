@@ -35,6 +35,7 @@ module Profile
 
     def change_translator_state
       translator.try :approving
+      translator.update_attributes total_approve: false
     end
 
     #filtering

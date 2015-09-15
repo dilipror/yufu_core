@@ -63,15 +63,15 @@ module Profile
       #   translator.last_sent_to_approvement = DateTime.now
       # end
 
-      before_transition :on => :approved do |translator|
-        translator.update_attributes total_approve: true
-        true
-      end
-
-      before_transition :on => :approving do |translator|
-        translator.update_attributes total_approve: false
-        true
-      end
+      # before_transition :on => :approved do |translator|
+      #   translator.update_attributes total_approve: true
+      #   true
+      # end
+      #
+      # before_transition :on => :approving do |translator|
+      #   translator.update_attributes total_approve: false
+      #   true
+      # end
 
       state :approving
       state :approved
