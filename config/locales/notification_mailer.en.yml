@@ -573,6 +573,10 @@ en:
                         We do it professionally!\n
 
                         Sincerely Yours,YUFU.NET Team \n"
+    translator_approving:
+      subject: Translator approving
+      body: "Dear Interpreter,\n
+             We kindly inform you, that your profile translator has been approved"
     reminder_for_backup_interpreter:
       subject: Order reconfirmation
     reminder_to_the_client:

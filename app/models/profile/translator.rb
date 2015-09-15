@@ -3,6 +3,8 @@ module Profile
     include Mongoid::Paperclip
     extend Enumerize
     include Filterable
+    include Notificable
+
 
     field :passport_number
     field :passport_num
@@ -57,24 +59,24 @@ module Profile
       where(:user_id.in => user_ids).desc(:id)
     end
 
+    has_notification_about :approve_translator,
+                           observers: :user,
+                           message: "yo!",
+                           mailer: -> (translator, rr) do
+                             NotificationMailer.translator_approving translator
+                           end,
+                           sms: -> (translator, rr) do
+                             Yufu::SmsNotification.instance.translator_approving translator
+                           end
+
     state_machine initial: :new do
-
-      # before_transition any => :approving do |translator|
-      #   translator.last_sent_to_approvement = DateTime.now
-      # end
-
-      # before_transition :on => :approved do |translator|
-      #   translator.update_attributes total_approve: true
-      #   true
-      # end
-      #
-      # before_transition :on => :approving do |translator|
-      #   translator.update_attributes total_approve: false
-      #   true
-      # end
 
       state :approving
       state :approved
+
+      before_transition :on => :approve do |translator|
+        translator.notify_about_approve_translator
+      end
 
       event :approve do
         transition approving: :approved

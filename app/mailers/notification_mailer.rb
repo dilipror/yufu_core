@@ -133,6 +133,11 @@ class NotificationMailer < ActionMailer::Base
                                       dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
+  def translator_approving(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+  end
+
   private
 
   def client(user)
