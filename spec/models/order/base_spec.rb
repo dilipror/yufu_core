@@ -53,23 +53,23 @@ RSpec.describe Order::Base, :type => :model do
     end
 
     context 'verbal has senior' do
-      let(:senior){create :user}
+      let(:senior){create :profile_translator}
       let(:language){create :language, senior: senior}
-      let(:order){create :order_verbal, main_language_criterion: (create :order_language_criterion, language: language)}
+      let(:order){create :order_verbal, main_language_criterion: (create :order_language_criterion, language: language), is_private: false}
 
-      it {expect{subject}.to change{senior.reload.balance}.by(BigDecimal.new 95*0.03, 4)}
+      it {expect{subject}.to change{senior.user.reload.balance}.by(BigDecimal.new 95*0.03, 4)}
 
     end
 
     context 'written has senior' do
 
-      let(:senior){create :user}
+      let(:senior){create :profile_translator}
       let(:language){create :language, senior: senior}
       let(:order){create :order_written}
 
       before(:each){order.stub(:real_translation_language).and_return(language)}
 
-      it {expect{subject}.to change{senior.reload.balance}.by(BigDecimal.new 95*0.03, 4)}
+      it {expect{subject}.to change{senior.user.reload.balance}.by(BigDecimal.new 95*0.03, 4)}
 
     end
 

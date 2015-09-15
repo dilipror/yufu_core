@@ -1,4 +1,8 @@
 class NotificationMailer < ActionMailer::Base
+  include Yufu::I18nMailerScope
+  include ActionView::Helpers::UrlHelper
+  include Devise::Controllers::UrlHelpers
+
   def new_order_for_translator(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url ))
   end
