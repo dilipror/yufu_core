@@ -4,9 +4,6 @@ class Localization::Version
 
   field :name
 
-  # DEPRECATED
-  belongs_to :version_number, class_name: 'Localization::VersionNumber'
-
   belongs_to :parent_version, class_name: 'Localization::Version'
   belongs_to :localization
   has_many :translations, dependent: :destroy
