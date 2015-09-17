@@ -307,7 +307,7 @@ RSpec.describe Profile::Translator, :type => :model do
 
       context 'when translator is new' do
         let(:translator) {create :profile_translator}
-        it{expect{subject}.not_to change{translator.state}}
+        it{expect{subject}.to change{translator.state}}
       end
 
       context 'when translator is approving' do
