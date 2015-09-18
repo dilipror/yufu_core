@@ -56,7 +56,7 @@ module Profile
 
     def self.role_translator
       user_ids = User.where(role: :translator).distinct :id
-      where(:user_id.in => user_ids).desc(:id)
+      where(:user_id.in => user_ids).desc(:created_at)
     end
 
     has_notification_about :approve_translator,
