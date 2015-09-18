@@ -30,6 +30,7 @@ require 'mongoid/token'
 require 'mongoid_auto_increment'
 require 'active_model_serializers'
 require 'enumerize'
+require 'wicked_pdf'
 
 
 module YufuCore
