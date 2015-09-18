@@ -21,6 +21,8 @@ PATH
       sidekiq
       slim-rails
       state_machine
+      wicked_pdf
+      wkhtmltopdf-binary
 
 GEM
   remote: https://rubygems.org/
@@ -304,10 +306,13 @@ GEM
     unf_ext (0.0.7.1)
     warden (1.2.3)
       rack (>= 1.0)
+    wicked_pdf (0.11.0)
+      rails
     will_paginate (3.0.7)
     will_paginate_mongoid (2.0.1)
       mongoid
       will_paginate (~> 3.0)
+    wkhtmltopdf-binary (0.9.9.3)
 
 PLATFORMS
   ruby

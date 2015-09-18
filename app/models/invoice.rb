@@ -106,13 +106,24 @@ class Invoice
     pay_company.try(:currency) || Currency.where(iso_code: Currency.current_currency).first
   end
 
+  # TODO: move this logic to gateway
   def check_pay_way
-    if pay_way.present? && state == 'paying'
-      PaymentsMailer.send_billing_info(user, self).deliver
+    if pay_way.present?
       if pay_way.gateway_type == 'bank'
-        payments.create gateway_class: 'Order::Gateway::Bank', sum: cost, pay_way: pay_way, order: subject
+        if paying?
+          send_to_mail
+          payments.create gateway_class: 'Order::Gateway::Bank', sum: cost, pay_way: pay_way, order: subject
+        end
+      else
+        if paid?
+          send_to_mail
+        end
       end
     end
+  end
+
+  def send_to_mail
+    PaymentsMailer.send_billing_info(user, self).deliver
   end
 
   def pending_invoice
