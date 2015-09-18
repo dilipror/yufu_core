@@ -10,7 +10,7 @@ module Order
     field :address
     field :index
 
-    validates_presence_of :name, :address, :index, if: -> {send_type.present?}
+    validates_presence_of :name, :address, :index, if: -> {send_type.present? && order_written.step == 2}
 
   end
 end
