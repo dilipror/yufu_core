@@ -128,7 +128,7 @@ class User
   after_create :create_profile_client,     if: 'profile_client.nil?'
   after_create :create_profile_translator, if: 'profile_translator.nil?'
   after_create :create_default_invitation_texts
-
+  # before_save :downcase_email
 
   token length: 9, contains: :alphanumeric
 
@@ -235,8 +235,12 @@ class User
   end
 
   def add_invite
-    if invitation.nil? && Invite.where(email: email.underscore, expired: false).present?
-      self.invitation = Invite.where(email: email.underscore, expired: false).first
+    if invitation.nil? && Invite.where(email: email.downcase, expired: false).present?
+      self.invitation = Invite.where(email: email.downcase, expired: false).first
     end
+  end
+
+  def downcase_email
+    self.email = self.email.downcase
   end
 end

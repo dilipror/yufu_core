@@ -9,6 +9,10 @@ class UserSerializer < ActiveModel::Serializer
 
   has_many :invites, :permissions
 
+  def id
+    @object.id
+  end
+
   def is_admin
     @object.is_a? Admin
   end

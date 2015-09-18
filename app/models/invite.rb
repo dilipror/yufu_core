@@ -23,7 +23,7 @@ class Invite
 
   after_create :run_expire_worker
 
-  before_save :uderscore_email
+  before_save :downcase_email
 
   scope :clicked, -> {where clicked: true}
   scope :pass_registration, -> {
@@ -59,7 +59,7 @@ class Invite
   end
 
   def uniq_email_in_registered_users
-    if ((User.where email: email.underscore).present? && vassal.blank?) || ((Invite.where email: email.underscore, expired: false).present?)
+    if ((User.where email: email.downcase).present? && vassal.blank?) || ((Invite.where email: email.downcase, expired: false).present?)
       errors.add(:email, "registered")
     end
   end
@@ -78,13 +78,13 @@ class Invite
   end
 
   def only_one_invite_until_expired
-    if Invite.where(email: email.underscore, expired: false).present?
+    if Invite.where(email: email.downcase, expired: false).present?
       errors.add(:email, "Invite for email have not expired yet")
     end
   end
 
-  def uderscore_email
-    self.email = self.email.underscore
+  def downcase_email
+    self.email = self.email.downcase
   end
 
 end
