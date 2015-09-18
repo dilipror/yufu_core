@@ -10,7 +10,7 @@ class OrderVerbalQueueFactoryWorker
       queue = Order::Verbal::TranslatorsQueue.send build_method, order, date_iterator
       if queue.present?
         queue.lock_to <= DateTime.now ? queue.notify_about_create :
-            Order::Verbal::TranslatorsQueue.delay_for(30.minutes).notify_queue(queue)
+            Order::Verbal::TranslatorsQueue.delay_for(30.minutes).notify_queue(queue.id)
         date_iterator += 30.minutes
         true
       else

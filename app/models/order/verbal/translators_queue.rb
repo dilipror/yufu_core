@@ -13,7 +13,8 @@ class Order::Verbal::TranslatorsQueue
   has_notification_about :create, observers: :translators, message: 'notifications.new_order',
                          mailer: -> (user, queue) { NotificationMailer.new_order_for_translator(user).deliver }
 
-  def self.notify_queue(queue)
+  def self.notify_queue(queue_id)
+    queue = Order::Verbal::TranslatorsQueue.find queue_id
     queue.notify_about_create
   end
 
