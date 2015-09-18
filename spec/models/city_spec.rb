@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'mongoid/criteria'
 
 RSpec.describe City, type: :model do
   describe '.available_for' do
@@ -69,5 +70,32 @@ RSpec.describe City, type: :model do
     it{is_expected.to include(approved_city)}
     it{is_expected.to include(approved_city_with_surcharge)}
     it{is_expected.not_to include(not_approved_city)}
+  end
+
+  describe '#languages_ids' do
+
+    # let(:city_approve){(create :city_approve, is_approved: true)}
+
+    let(:city){create :city}
+
+
+    let(:translator){create :profile_translator, city: city, services: []}
+
+    let(:language_1){create :language}
+    let(:language_2){create :language}
+
+    let(:service_1){create :service, only_written: true, translator: translator, is_approved: true}
+    let(:service_2){create :service, only_written: false, translator: translator, is_approved: true}
+
+    subject{city.language_ids}
+
+    before(:each) do
+      service_1
+      service_2
+      CityApprove.create city: city, is_approved: true, translator: translator
+    end
+
+    it{ is_expected.to include(service_2.language_id) }
+    it{ expect(subject.length).to eq(1) }
   end
 end

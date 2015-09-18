@@ -43,6 +43,6 @@ class City
 
   def language_ids
     translator_ids = city_approves.approved.distinct :translator_id
-    Profile::Service.approved.where(:translator_id.in => translator_ids).distinct :language_id
+    Profile::Service.approved.where(:translator_id.in => translator_ids, only_written: false).distinct :language_id
   end
 end
