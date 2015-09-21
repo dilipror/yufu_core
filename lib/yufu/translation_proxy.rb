@@ -7,7 +7,7 @@ module Yufu
                     admin.misc.filter_date_format date.day_names date.abbr_day_names date.month_names abbr_month_names
                     date ckeditor. admin.).join('|')}/
 
-    MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::ServicesPack.name
+    MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::Service.short_description Order::ServicesPack.name
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
                     Order::Written::WrittenSubtype.name Order::Written::WrittenSubtype.description
                     Order::Written::WrittenType.name Order::Written::WrittenType.description
