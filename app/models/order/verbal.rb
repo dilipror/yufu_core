@@ -7,6 +7,7 @@ module Order
     GENDERS = ['male', 'female']
     GOALS   = ['business', 'entertainment']
     DEFAULTCOST = 115.0
+    DEFAULT_SURCHARGE_NEAR_CITY = 430.0 # CNY
 
 
     field :translation_level
@@ -118,7 +119,7 @@ module Order
       reservation_price = reservation_dates.to_a.inject(0) { |sum, n| sum + n.original_price }
       price = 0
       if include_near_city && there_are_translator_with_surcharge?
-        price = reservation_price + 310
+        price = reservation_price + DEFAULT_SURCHARGE_NEAR_CITY
       else
         price = reservation_price
       end
