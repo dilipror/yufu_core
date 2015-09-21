@@ -42,6 +42,12 @@ class Translation
     I18n.t key
   end
 
+  def all_translation_by_version(version)
+    exist_in_version = version.translations
+    other = Translation.all_in(version.localization).where :key.nin => exist_in_version.distinct(:key)
+    Translation.not_model_localizers.any_of exist_in_version.selector, other.selector
+  end
+
   def self.all_in(localization)
     version_ids = localization.localization_versions.distinct(:id)
     exist_in_locale = Translation.where(:version_id.in => version_ids)
