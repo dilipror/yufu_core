@@ -96,6 +96,20 @@ module Profile
       # Profile::Translator.all
     end
 
+
+    def self.without_surcharge(city)
+      res = []
+      city_approve_ids = CityApprove.where(city: city, with_surcharge: false).distinct :id
+      Profile::Translator.all.each do |tr|
+        res << tr if (tr.city_approves.distinct(:id) & city_approve_ids) != []
+      end
+      res
+    end
+
+    # def self.with_surcharge(city)
+    #   city_approves.where city: city, with_surcharge: true
+    # end
+
     def self.chinese
       china_ids = Country.china.distinct :id
       Profile::Translator.where :'profile_steps_language.citizenship_id'.in => china_ids
@@ -177,41 +191,41 @@ module Profile
 
     protected
 
-    def partial_approved
-      (count_approved_cities > 0 && count_approved_services > 0) &&
-          (count_approved_cities != profile_steps_service.cities.count + profile_steps_service.cities_with_surcharge.count ||
-              count_approved_services != count_services)
-    end
-
-    def all_approved
-      count_approved_cities == profile_steps_service.cities.count + profile_steps_service.cities_with_surcharge.count &&
-          count_approved_services == services.count
-    end
-
-    def count_approved_cities
-      count = 0
-      city_approves.each do |city_approved|
-        count += 1 if city_approved.is_approved
-      end
-      count
-    end
-
-    def count_approved_services
-      count = 0
-      services.each do |service_approved|
-        count += 1 if service_approved.is_approved
-        count += 1 if service_approved.written_approves
-      end
-      count
-    end
-
-    def count_services
-      count = services.count
-      services.each do |service|
-        count += 1 if service.written_translate_type.present?
-      end
-      count
-    end
+    # def partial_approved
+    #   (count_approved_cities > 0 && count_approved_services > 0) &&
+    #       (count_approved_cities != profile_steps_service.cities.count + profile_steps_service.cities_with_surcharge.count ||
+    #           count_approved_services != count_services)
+    # end
+    #
+    # def all_approved
+    #   count_approved_cities == profile_steps_service.cities.count + profile_steps_service.cities_with_surcharge.count &&
+    #       count_approved_services == services.count
+    # end
+    #
+    # def count_approved_cities
+    #   count = 0
+    #   city_approves.each do |city_approved|
+    #     count += 1 if city_approved.is_approved
+    #   end
+    #   count
+    # end
+    #
+    # def count_approved_services
+    #   count = 0
+    #   services.each do |service_approved|
+    #     count += 1 if service_approved.is_approved
+    #     count += 1 if service_approved.written_approves
+    #   end
+    #   count
+    # end
+    #
+    # def count_services
+    #   count = services.count
+    #   services.each do |service|
+    #     count += 1 if service.written_translate_type.present?
+    #   end
+    #   count
+    # end
 
 
 
