@@ -66,6 +66,8 @@ module Order
                            mailer: -> (user, order) do
                              NotificationMailer.reminder_to_the_client_48 user, order
                            end
+    # has_notification_about :
+
 
 
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
