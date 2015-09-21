@@ -47,4 +47,31 @@ RSpec.describe Invite, :type => :model do
     it{is_expected.to eq('camel@case.com')}
   end
 
+  describe 'uniq_email_in_registered_users' do
+
+    context 'user exists' do
+
+      let(:user){create :user}
+
+      subject{build(:invite, email: user.email).valid?}
+
+      it{is_expected.to be_falsey}
+    end
+
+    context 'user is vassal' do
+      let(:user){create :user}
+
+      subject{build(:invite, email: user.email, vassal: user).valid?}
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'user does not exist' do
+      subject{build(:invite, email: 'vasya@pup.king').valid?}
+
+      it{is_expected.to be_truthy}
+    end
+
+  end
+
 end
