@@ -15,7 +15,7 @@ class Invite
   has_one :vassal, class_name: 'User', inverse_of: :invitation
 
   validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
-  validates_uniqueness_of :email, scope: :overlord, case_sensitive: false
+  validates_uniqueness_of :email, scope: :overlord, case_sensitive: false, message: (proc {I18n.t('mailer.invitation_email.errors.email_is_taken')})
   validate :uniq_email_in_registered_users, unless: :persisted?
   validate :can_not_edit_accepted_invite
   validate :only_one_invite_until_expired, unless: :persisted?
@@ -59,15 +59,15 @@ class Invite
   end
 
   def uniq_email_in_registered_users
-    if ((User.where email: email.downcase).present? && vassal.blank?) || ((Invite.where email: email.downcase, expired: false).present?)
-      errors.add(:email, "registered")
+    if (User.where email: email.downcase).present? && vassal.blank?
+      errors.add(:email, I18n.t('mailer.invitation_email.errors.registered'))
     end
   end
 
   def can_not_edit_accepted_invite
     if vassal.present?
       if vassal.email != email
-        errors.add(:email, "can not edit accepted invite")
+        errors.add(:email, I18n.t('mailer.invitation_email.errors.accepted'))
       end
     end
   end
@@ -79,7 +79,7 @@ class Invite
 
   def only_one_invite_until_expired
     if Invite.where(email: email.downcase, expired: false).present?
-      errors.add(:email, "Invite for email have not expired yet")
+      errors.add(:email,  I18n.t('mailer.invitation_email.errors.have_not_expired'))
     end
   end
 
