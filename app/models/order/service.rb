@@ -11,7 +11,7 @@ module Order
     field :discount,          type: BigDecimal, default: 0
     field :support_count,     type: Boolean,    default: false
     field :is_custom,         type: Boolean,    default: false
-    field :short_description
+    field :short_description, localize: true
 
     has_and_belongs_to_many :services_packs, :class_name => 'Order::ServicesPack'
 
@@ -21,6 +21,6 @@ module Order
     validates_presence_of :cost, :name, :downpayments, :discount
     validates_format_of :cost, :downpayments, :discount, :with => /\A\d+(?:\.\d{0,2})?\z/
     # validates_presence_of :downpayments, unless: -> {services_packs.nil? && services_packs.try(:need_downpayments)}
-    clear_localized :name
+    clear_localized :name, :short_description
   end
 end
