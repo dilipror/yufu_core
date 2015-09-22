@@ -2,10 +2,12 @@ module Order
   class Offer
     include Mongoid::Document
     include Notificable
+    include Mongoid::Timestamps::Created
 
     STATUSES = %w(primary secondary)
 
     field :status, default: 'secondary'
+    field :state
     field :is_confirmed, type: Mongoid::Boolean, default: false
 
     belongs_to :translator, class_name: 'Profile::Translator'
@@ -15,6 +17,7 @@ module Order
     validates_inclusion_of :status, in: STATUSES
     validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
     validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
+    validates_uniqueness_of :translator
 
     scope :primary,   -> {where status: 'primary'}
     scope :secondary, -> {where status: 'secondary'}
@@ -56,6 +59,24 @@ module Order
                            end
 
 
+    state_machine :status, initial: :new do
+      state :rejected
+      state :confirmed
+
+      event :reject do
+        transition new: :rejected
+      end
+
+      event :confirm do
+        transition new: :confirmed
+      end
+
+      before_transition on: :confirm do |offer|
+        offer.order.state == 'wait_offer' && (offer.can_confirm?)
+      end
+
+    end
+    
     def can_be_primary?
       order.can_send_primary_offer?
     end
@@ -68,9 +89,23 @@ module Order
       self.status == 'primary'
     end
 
+    def can_confirm?
+
+    end
+
+    def after_12
+      (Time.now - created_at) >= 12.hours
+    end
+
+    def after_24
+      (Time.now - created_at) >= 24.hours
+    end
+
+
+
     private
     def process_order
-      order.process if order.primary_offer.try(:is_confirmed?) && order.secondary_offer.try(:is_confirmed?)
+      order.process
     end
 
     def confirm_if_need
