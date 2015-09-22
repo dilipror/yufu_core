@@ -165,6 +165,68 @@ module Order
       translator.can_process_order? self
     end
 
+    def first_date_time
+      if reservation_dates.first.present?
+        reservation_dates.first.date.change({hour: greeted_at_hour, min: greeted_at_minute})
+      end
+    end
+
+    def after_12
+
+    end
+
+    def after_24
+
+    end
+
+    def before_60
+
+    end
+
+    def before_48
+
+    end
+
+    def before_36
+
+    end
+
+    def before_24
+
+    end
+
+    def before_4
+
+    end
+
+    def after_12?
+      (Time.now - created_at) >= 12.hours
+    end
+
+    def after_24?
+      (Time.now - created_at) >= 24.hours
+    end
+
+    def before_60?
+      (first_date_time - Time.now) <= 60.hours
+    end
+
+    def before_48?
+      (first_date_time - Time.now) <= 48.hours && (first_date_time - Time.now) > 0
+    end
+
+    def before_36?
+      (first_date_time - Time.now) <= 36.hours && (first_date_time - Time.now) > 0
+    end
+
+    def before_24?
+      (first_date_time - Time.now) <= 24.hours && (first_date_time - Time.now) > 0
+    end
+
+    def before_4?
+      (first_date_time - Time.now) <= 4.hours && (first_date_time - Time.now) > 0
+    end
+
     private
 
     def set_langvel

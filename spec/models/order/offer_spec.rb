@@ -103,5 +103,87 @@ RSpec.describe Order::Offer, :type => :model do
     end
   end
 
+  describe '#confirm' do
+
+    let(:order){create :order_verbal, offers: [], state: 'wait_offer'}
+    let(:offer){create :offer, order: order}
+    before(:each){order.stub(:process).and_return(true)}
+
+    subject{offer.confirm}
+
+    context 'can confirm primary' do
+
+      before(:each) do
+        order.stub(:before_60).and_return(true)
+        order.stub(:before_48).and_return(false)
+        order.stub(:before_36).and_return(false)
+        offer.stub(:primary?).and_return(true)
+      end
+
+      it{is_expected.to be_truthy}
+      it{ expect{subject}.to change{offer.state}.from('new').to('confirmed')}
+    end
+
+    context 'can confirm backup' do
+
+      before(:each) do
+        order.stub(:before_60).and_return(true)
+        order.stub(:before_48).and_return(true)
+        order.stub(:before_36).and_return(false)
+        offer.stub(:primary?).and_return(false)
+        offer.stub(:back_up?).and_return(true)
+      end
+
+      it{is_expected.to be_truthy}
+      it{expect{subject}.to change{offer.state}.from('new').to('confirmed')}
+    end
+
+    context 'can not confirm primary' do
+
+      before(:each) do
+        order.stub(:before_60).and_return(false)
+        order.stub(:before_48).and_return(false)
+        order.stub(:before_36).and_return(false)
+        offer.stub(:primary?).and_return(true)
+        offer.stub(:back_up?).and_return(false)
+      end
+
+      it{is_expected.to be_falsey}
+      it{ expect{subject}.not_to change{offer.state}.from('new')}
+    end
+
+    context 'can not confirm backup' do
+
+      before(:each) do
+        order.stub(:before_60).and_return(true)
+        order.stub(:before_48).and_return(false)
+        order.stub(:before_36).and_return(false)
+        offer.stub(:primary?).and_return(false)
+        offer.stub(:back_up?).and_return(true)
+      end
+
+      it{is_expected.to be_falsey}
+      it{ expect{subject}.not_to change{offer.state}.from('new')}
+    end
+
+    context 'can confirm any' do
+      before(:each) do
+        order.stub(:before_60).and_return(true)
+        order.stub(:before_48).and_return(true)
+        order.stub(:before_36).and_return(true)
+        offer.stub(:primary?).and_return(false)
+        offer.stub(:back_up?).and_return(false)
+      end
+
+      it{is_expected.to be_truthy}
+      it{ expect{subject}.to change{offer.state}.from('new').to('confirmed')}
+    end
+
+
+  end
+
+  describe '#primary?, #backup?' do
+
+  end
 
 end

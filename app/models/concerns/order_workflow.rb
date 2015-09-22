@@ -40,6 +40,18 @@ module OrderWorkflow
         order.assignee = nil
       end
 
+      before_transition on: :paid do |order|
+        if order.is_a? Order::Verbal
+          OrderWorkflowWorker.perform_in 24.hours, order.id, 'after_24'
+          OrderWorkflowWorker.perform_in 12.hours, order.id, 'after_12'
+          OrderWorkflowWorker.perform_in (order.first_date_time - 60.hours) - Time.now, order.id, 'before_60'
+          OrderWorkflowWorker.perform_in (order.first_date_time - 48.hours) - Time.now , order.id, 'before_48'
+          OrderWorkflowWorker.perform_in (order.first_date_time - 36.hours) - Time.now , order.id, 'before_36'
+          OrderWorkflowWorker.perform_in (order.first_date_time - 24.hours) - Time.now, order.id, 'before_24'
+          OrderWorkflowWorker.perform_in (order.first_date_time -  4.hours) - Time.now , order.id, 'before_4'
+        end
+      end
+
       before_transition on: :close do |order|
         # order.close_cash_flow
         order.after_close_cashflow

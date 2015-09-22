@@ -445,4 +445,117 @@ RSpec.describe Order::Verbal, :type => :model do
 
   end
 
+  describe '#first_date_time' do
+
+    let(:order){create :order_verbal, greeted_at_hour: 12, greeted_at_minute: 37}
+
+    before(:each){order.reservation_dates.first.stub(:date).and_return(Time.parse('03.11.2015'))}
+
+    subject{order.first_date_time}
+
+    it{is_expected.to eq(Time.parse('12:37 03.11.2015'))}
+
+  end
+
+  describe 'timestamps' do
+
+    describe '#after_12?' do
+      let(:order){create :order_verbal}
+
+      subject{order.after_12?}
+
+      before(:each)do
+        order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    describe '#after_24?' do
+      let(:order){create :order_verbal}
+
+      subject{order.after_24?}
+
+      before(:each)do
+        order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 25.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    describe '#before_60?' do
+      let(:order){create :order_verbal}
+
+      subject{order.before_60?}
+
+      before(:each)do
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 60.hours)
+        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    describe '#before_48?' do
+      let(:order){create :order_verbal}
+
+      subject{order.before_48?}
+
+      before(:each)do
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 48.hours)
+        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    describe '#before_36?' do
+      let(:order){create :order_verbal}
+
+      subject{order.before_36?}
+
+      before(:each)do
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 36.hours)
+        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    describe '#before_24?' do
+      let(:order){create :order_verbal}
+
+      subject{order.before_24?}
+
+      before(:each)do
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 24.hours)
+        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    describe '#before_4?' do
+      let(:order){create :order_verbal}
+
+      subject{order.before_4?}
+
+      before(:each)do
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 4.hours)
+        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+  end
+
 end
