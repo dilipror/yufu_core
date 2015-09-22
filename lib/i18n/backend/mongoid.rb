@@ -13,10 +13,18 @@ module I18n
 
       def translations(version = nil)
         trans = {}
-        query = version.nil? ? Translation.not_model_localizers : Translation.all_translation_by_version(version)
+
+        if version.nil?
+          query = Translation.not_model_localizers
+          locale = nil
+        else
+          query = Translation.all_translation_by_version(version)
+          locale = version.localization.name
+        end
+
         query.each do |t|
           trans_pointer = trans
-          locale = t.version.localization.name
+          locale ||= t.version.localization.name
           k = "#{locale}.#{t.key.to_s}"
           key_array = k.split(".")
           last_key = key_array.delete_at(key_array.length - 1)

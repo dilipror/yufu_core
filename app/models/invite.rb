@@ -1,5 +1,6 @@
 class Invite
   include Mongoid::Document
+  include Mongoid::Timestamps::Created
 
   field :email
   field :last_name
