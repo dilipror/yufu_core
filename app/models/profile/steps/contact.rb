@@ -21,8 +21,7 @@ module Profile
       end
 
       def uniq_phone
-        tmp = User.where phone: phone
-        if tmp.count > 1 || (tmp.count == 1 && tmp.first != translator.user )
+        if  User.where(phone: phone, :id.ne => translator.user_id).any?
           errors.add(:phone, 'already taken')
         end
       end
