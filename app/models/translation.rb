@@ -55,7 +55,7 @@ class Translation
     version_ids = localization.localization_versions.distinct(:id)
     exist_in_locale = Translation.where(:version_id.in => version_ids)
     original_locale = Localization.find_by name: I18n.locale
-    original_available_versions = original_locale.localization_versions.distinct(:id)
+    original_available_versions = original_locale.localization_versions.approved.distinct(:id)
     Translation.actual.any_of(exist_in_locale.selector,
                               {:version_id.in => original_available_versions, :key.nin => exist_in_locale.distinct(:key)})
   end
