@@ -119,7 +119,7 @@ class User
   #check that new  password is not equals to old
   # validate :new_password, if: -> {password.present? && encrypted_password_was.present?}
   validates_format_of :email, :with => /(\A[^-][\w+\-.]*)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,  if: -> {email.present?}
-  validates_uniqueness_of :phone
+  validates_uniqueness_of :phone,  if: -> {phone.present?}
 
   before_save :set_avatar_extension, :after_role_changed, :ensure_authentication_token
   before_create :role_changed_first_time
