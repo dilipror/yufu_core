@@ -19,7 +19,7 @@ module Order
     # embedded_in :order_base, class_name: 'Order::Base'
     embedded_in :invoice, class_name: 'Invoice'
 
-    validates_presence_of :wechat, if: :persisted?
+    validates_presence_of :wechat, :phone, if: :persisted?
 
     def invoice
       @__parent
@@ -27,6 +27,8 @@ module Order
 
 
     validate :company_params#, :wechat_param
+    validate :uniq_phone
+
 
     # def identification_number
     #   # 'ogo'
@@ -44,6 +46,13 @@ module Order
 
     def need_validate?
       present? && invoice.subject.step == 3
+    end
+
+    def uniq_phone
+      tmp = User.where phone: phone
+      if tmp.count > 1 || (tmp.count == 1 && tmp.first != invoice.user )
+        errors.add(:phone, 'already taken')
+      end
     end
 
     # def wechat_param
