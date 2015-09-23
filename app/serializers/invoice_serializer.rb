@@ -22,7 +22,8 @@ class InvoiceSerializer < ActiveModel::Serializer
   end
 
   def cost
-    @object.exchanged_cost
+    # Currency.exchange(@object.cost).to_f
+    @object.cost
   end
 
   has_one :client_info
