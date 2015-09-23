@@ -3,6 +3,7 @@ FactoryGirl.define do
     last_name 'client'
     first_name 'info'
     wechat 'asdasd'
+    sequence(:phone) {|n| "911#{n}"}
     association country
   end
 end

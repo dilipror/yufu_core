@@ -59,7 +59,7 @@ module Order
                            end
 
 
-    state_machine :status, initial: :new do
+    state_machine initial: :new do
       state :rejected
       state :confirmed
 
@@ -71,12 +71,28 @@ module Order
         transition new: :confirmed
       end
 
-      before_transition on: :confirm do |offer|
-        offer.order.state == 'wait_offer' && (offer.can_confirm?)
+      before_transition new: :confirmed do |offer|
+        if offer.can_confirm?
+          offer.order.process
+        end
+        offer.can_confirm?
       end
-
     end
-    
+
+    def can_confirm?
+      case
+        when order.before_36
+          return true
+        when order.before_48
+          return false unless (primary? || back_up?)
+        when order.before_60
+          return false unless primary?
+        when !order.before_60
+          return false
+      end
+      true
+    end
+
     def can_be_primary?
       order.can_send_primary_offer?
     end
@@ -86,22 +102,12 @@ module Order
     end
 
     def primary?
-      self.status == 'primary'
+      self == order.offers.where(state: :new).first
     end
 
-    def can_confirm?
-
+    def back_up?
+      self == order.offers.where(state: :new)[1]
     end
-
-    def after_12
-      (Time.now - created_at) >= 12.hours
-    end
-
-    def after_24
-      (Time.now - created_at) >= 24.hours
-    end
-
-
 
     private
     def process_order

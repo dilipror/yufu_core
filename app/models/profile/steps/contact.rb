@@ -12,11 +12,20 @@ module Profile
       validates_presence_of :phone, :wechat, if: :persisted?
       validates :additional_email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }, allow_blank: true
       validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }
+      validate :uniq_phone
+
 
       after_save do
         translator.user.password = translator.user.password_confirmation = nil
         translator.user.save!
       end
+
+      def uniq_phone
+        if  User.where(phone: phone, :id.ne => translator.user_id).any?
+          errors.add(:phone, 'already taken')
+        end
+      end
+
     end
   end
 end

@@ -45,6 +45,7 @@ class Invoice
   #
   # validates_presence_of :wechat
   validates_presence_of :company_name, :company_uid, :company_address, if: -> {company_name.present? || company_uid.present? || company_address.present?}
+  validate :uniq_phone
 
   state_machine initial: :new do
     state :pending
@@ -104,6 +105,19 @@ class Invoice
 
   def currency
     pay_company.try(:currency) || Currency.where(iso_code: Currency.current_currency).first
+  end
+
+
+  def uniq_phone
+    if client_info.present? && client_info.phone?
+      tmp = User.where phone: client_info.phone
+      if tmp.count > 1 || (tmp.count == 1 && tmp.first != user )
+        errors.add(:client_info, 'phone already taken')
+      end
+    end
+    if client_info.present?
+      errors.add(:client_info, 'phone can not be blank') unless client_info.phone?
+    end
   end
 
   # TODO: move this logic to gateway
