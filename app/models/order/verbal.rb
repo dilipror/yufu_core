@@ -381,7 +381,7 @@ module Order
     def surcharge_paying_items
       if include_near_city && there_are_translator_with_surcharge?
         eu_bank = ExchangeBank.instance
-        [{cost: eu_bank.exchange(5000, 'USD', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
+        [{cost: eu_bank.exchange(DEFAULT_SURCHARGE_NEAR_CITY * 100, 'CNY', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
       else
         []
       end
