@@ -11,7 +11,7 @@ module Support
 
     increments :number
 
-    enumerize :type, in: [:custom, :local_expert]
+    enumerize :type, in: [:custom, :local_expert, :no_translator_found]
     #scope :custom,           -> {where type: :custom}
     #scope :for_local_expert, -> {where type: :local_expert}
 

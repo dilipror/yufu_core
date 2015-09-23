@@ -186,4 +186,19 @@ RSpec.describe Order::Offer, :type => :model do
 
   end
 
+  describe 'become main or back_up' do
+
+    let(:translator){create :profile_translator}
+
+    subject{order.offers.create translator: translator}
+
+    context 'main offer' do
+      let(:order){create :order_verbal, offers: []}
+
+      it{expect{subject}.to change{translator.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+
+    end
+  end
+
 end

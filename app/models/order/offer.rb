@@ -23,33 +23,64 @@ module Order
     scope :secondary, -> {where status: 'secondary'}
 
     #after_create :confirm_if_need
+    # after_save
     after_save :notify_about_confirm_for_translator, :notify_about_confirm_for_client, :process_order,
                if: -> (offer) {offer.is_confirmed_changed? && offer.is_confirmed?}
     after_create :notify_about_create_offer_for_owner
+    after_create :notify_about_become_main_int, if: :primary?
+    after_create :notify_about_become_back_up_int, if: :back_up?
 
-    has_notification_about :confirm_for_translator,
-                           observers: :translator,
-                           message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_translator"},
+    has_notification_about :become_main_int,
+                           message: 'notifications.become_main_int',
+                           observes: :translator,
                            mailer: -> (user, offer) do
-                             if offer.primary?
-                               NotificationMailer.primary_offer_confirmed offer.translator.user
-                             else
-                               NotificationMailer.secondary_offer_confirmed offer.translator.user
-                             end
-                           end,
-                          sms: -> (user, offer) do
-                            Yufu::SmsNotification.instance.offer_confirmed_for_translator(user)
-                          end
-    has_notification_about :confirm_for_client,
-                           observers: -> (offer){ offer.order.owner.user },
-                           message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_client"},
-                           mailer: ->(user, offer) do
-                             if offer.primary?
-                               NotificationMailer.primary_offer_confirmed_for_client user, offer
-                             else
-                               NotificationMailer.secondary_offer_confirmed_for_client user, offer
-                             end
+                             NotificationMailer.become_main_int(user).deliver
                            end
+
+    has_notification_about :become_back_up_int,
+                           message: 'notifications.become_main_int',
+                           observes: :translator,
+                           mailer: -> (user, offer) do
+                             NotificationMailer.become_back_up_int(user).deliver
+                           end
+
+    has_notification_about :main_for_client,
+                           message: 'notifications.main_for_client',
+                           observes: -> (offer){ offer.order.owner.user },
+                           mailer: -> (user, offer) do
+                             NotificationMailer.main_for_client(user).deliver
+                           end
+
+    has_notification_about :back_up_for_client,
+                           message: 'notifications.back_up_for_client',
+                           observes: -> (offer){ offer.order.owner.user },
+                           mailer: -> (user, offer) do
+                             NotificationMailer.back_up_for_client(user).deliver
+                           end
+
+    # has_notification_about :confirm_for_translator,
+    #                        observers: :translator,
+    #                        message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_translator"},
+    #                        mailer: -> (user, offer) do
+    #                          if offer.primary?
+    #                            NotificationMailer.primary_offer_confirmed offer.translator.user
+    #                          else
+    #                            NotificationMailer.secondary_offer_confirmed offer.translator.user
+    #                          end
+    #                        end,
+    #                       sms: -> (user, offer) do
+    #                         Yufu::SmsNotification.instance.offer_confirmed_for_translator(user)
+    #                       end
+    # has_notification_about :confirm_for_client,
+    #                        observers: -> (offer){ offer.order.owner.user },
+    #                        message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_client"},
+    #                        mailer: ->(user, offer) do
+    #                          if offer.primary?
+    #                            NotificationMailer.primary_offer_confirmed_for_client user, offer
+    #                          else
+    #                            NotificationMailer.secondary_offer_confirmed_for_client user, offer
+    #                          end
+    #                        end
 
     has_notification_about :create_offer_for_owner,
                            observers: :translator,
@@ -102,11 +133,11 @@ module Order
     end
 
     def primary?
-      self == order.offers.where(state: :new).first
+      self == order.offers.where(state: 'new').first
     end
 
     def back_up?
-      self == order.offers.where(state: :new)[1]
+      self == order.offers.where(state: 'new')[1]
     end
 
     private

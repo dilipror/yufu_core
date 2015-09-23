@@ -3,6 +3,56 @@ en:
     log_in: 'Log in as a registered user'
     balance: My balance
     new_order: Place new order
+
+    main_for_client:
+      subjet: Order confirmation/voucher
+      body: "Dear %{client},
+
+            ID number %{client_id},
+
+            Order details: %{order_details}\n
+
+            We kindly inform you, that your order for the YUFU.NET service has been confirmed!
+
+            Please see your interpreter`s information:
+
+            Your interpreter
+
+            If you wish to change meeting place and time or ask a question, please follow the link below:
+
+            My dashboard
+
+            Please, pay attention – you can change the time and place of meeting with the interpreter no less
+
+            than 24 hours prior to the appointment.
+
+            Attention please!
+
+            On purpose to avoid any frauds, please print  this voucher in advance and submit it together with
+
+            the copy of your ID to the interpreter at the day of appointment. Interpreter can refuse to serve you
+
+            in case of this documents missing.
+
+            Thank you for choosing Yufu.net!
+
+            Sincerely Yours,
+
+            YUFU.NET community
+
+
+
+            Translation & Advisory services all over China
+
+            We do it professionally!"
+
+    become_main_int:
+      subject: English subject
+      body: English text
+
+    become_back_up_int:
+      subject: English subject
+      body: English text
     reminder_for_backup_interpreter_24:
       subject: Order reconfirmation
       body: "Dear Interpreter,\n
