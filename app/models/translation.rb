@@ -73,7 +73,10 @@ class Translation
 
       version_ids = Localization::Version.english.where(cond).distinct :id
 
-      Translation.where(:version_id.in => version_ids)
+      keys = Translation.where(:version_id.in => version_ids).distinct(:key)
+      in_version = version.translations.where :key.in => keys
+      Translation.any_of in_version.selector,  Translation.where(:version_id.in => version_ids,
+                                                                 :key.nin => in_version.distinct(:key)).selector
     end
   end
 
