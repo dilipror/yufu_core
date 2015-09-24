@@ -96,7 +96,11 @@ table#pink rules="all" style="border: 1px; border-color: #984806;"
         td colspan="2"
           = @user.balance
           | &nbsp;
-          = Currency.where(iso_code: Currency.current_currency).first.symbol
+          = @cny.symbol
+          | &nbsp;/&nbsp;
+          = Currency.exchange @user.balance, 'GBP'
+          | &nbsp;
+          = @gbp.symbol
 
 table style="width: 910px; height: 20px"
   tr
@@ -110,9 +114,10 @@ table#pink_two rules="all" style="border: 1px; border-color: #984806"
       td style="width: 600px"
         = I18n.t('billing.orders_description')
       td style="width: 100px"
-        = I18n.t('billing.the_total_price_rmb')
+        = I18n.t('billing.the_price_cny')
       td style="width: 100px"
-        = I18n.t('billing.total_price')
+        = I18n.t('billing.the_price_gbp')
+
   tbody
   - @invoice.items.each do |item|
     tr
@@ -121,21 +126,21 @@ table#pink_two rules="all" style="border: 1px; border-color: #984806"
       td
         = item.description
       td
-        = item.exchanged_cost('CNY')
-        = Currency.where(iso_code: 'CNY').first.symbol
+        = item.cost
+        = @cny.symbol
       td
-        = item.exchanged_cost('USD')
-        = Currency.where(iso_code: 'USD').first.symbol
-        | /
-        = item.exchanged_cost('EUR')
-        = Currency.where(iso_code: 'EUR').first.symbol
-  tr
-    td colspan=2 style="border-color: gray"
-    td
-      = I18n.t('billing.total_price')
-    td
-      = Currency.exchange @invoice.cost, @invoice.currency.iso_code
-      = @invoice.currency.symbol
+        - if @invoice.pay_company.currency == @cny
+          | -
+        - else
+          = item.exchanged_cost('GBP')
+          = @gbp.symbol
+  /tr
+  /  td colspan=2 style="border-color: gray"
+  /  td
+  /    = I18n.t('billing.total_price')
+    /td
+    /  = Currency.exchange @invoice.cost, @invoice.currency.iso_code
+    /  = @invoice.currency.symbol
 table style="width: 910px;"
   tr
     td style="color: gray; text-align: center; width: 900px; font-size: 14px;"
