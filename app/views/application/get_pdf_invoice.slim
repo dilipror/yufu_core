@@ -12,11 +12,11 @@ table#head rules="all" style="border: 1px; "
       td style="width: 300px; color: #af5320; text-align: right"
         = I18n.t('billing.invoice_date')
         |&nbsp;
-        = invoice.created_at.strftime('%Y-%d-%m')
+        = @invoice.created_at.strftime('%Y-%d-%m')
         br
         = I18n.t('billing.invoice_number')
         |&nbsp;
-        = invoice.number
+        = @invoice.number
 
 table style="width: 910px; height: 20px"
   tr
@@ -27,46 +27,44 @@ table#smth_else rules="all" style="border: 1px; "
   tbody
     tr
       td style="width: 580px; font-size: 13px;"
-        = I18n.t('billing.limited')
+        = @invoice.pay_company.name
         br
-        = I18n.t('billing.hanassey_road')
+        = @invoice.pay_company.address
         br
-        = I18n.t('billing.phone')
-        | &nbsp;
-        a style="color: #000000; text-decoration: none" href='tel: +8618650045062' +8618650045062
+        | #{I18n.t('billing.reg_num')} #{@invoice.pay_company.registration_number}
         br
-        a style="color: #000000; text-decoration: none" href='mailto: infoyufu.net' infoyufu.net
+        a style="color: #000000; text-decoration: none" href='mailto: infoyufu.net'
+          = @invoice.pay_company.email
       td style="width: 20px; font-size: 13px"
         = I18n.t('billing.for')
       td style="width: 300px; color: gray; font-size: 13px; text-align: left"
-        = invoice.client_info.name
+        = @invoice.client_info.name
         br
-        - if invoice.company_name
-          = invoice.company_name
-          br
-          = invoice.company_address
-          br
-        = I18n.t('billing.phone')
-        | &nbsp;
-        = user.phone
+        = @invoice.client_info.country.name
         br
-        = I18n.t('billing.customer_account')
-        | &nbsp;
-        = user.identification_number
+        | #{I18n.t('billing.reg_num')} #{@user.identification_number}
+        - if @user.phone
+          br
+          = I18n.t('billing.phone')
+          | :&nbsp;
+          = @user.phone
 table style="width: 910px;"
   tr
-    td style="font-size: 13px; color: gray"
-      = I18n.t('billing.bank_acount')
-      | &nbsp;
-      | # LV62RTMB0000638806823
+    td
+      /style="font-size: 13px; color: gray"
+      = @invoice.pay_company.bank_name
       br
-      = I18n.t('billing.location')
-      | &nbsp;
-      | Rietumu Bank, SWIFT: RTMBLV2X;
+      = I18n.t('billing.bank_acount')
+      | :&nbsp;
+      = @invoice.pay_company.bank_account_number
+      br
+      = I18n.t('billing.swift')
+      | :&nbsp;
+      = @invoice.pay_company.bank_swift
       br
       = I18n.t('billing.bank_address')
-      | &nbsp;
-      | 7 Vesetas Street, Riga, LV1013, Latvia
+      | :&nbsp;
+      = @invoice.pay_company.bank_address
 table style="width: 910px; height: 20px"
   tr
     td
@@ -84,18 +82,25 @@ table#pink rules="all" style="border: 1px; border-color: #984806;"
     tbody
       tr style="color: gray; height: 30px"
         td colspan="2"
-          = I18n.t("billing.#{invoice.subject.try(:_type).try(:underscore)}")
+          = I18n.t("billing.#{@invoice.subject.try(:_type).try(:underscore)}")
         td
-          = invoice.pay_way.name
+          = @invoice.pay_way.name
         td
-          = invoice.created_at.strftime('%Y-%d-%m')
+          - if @invoice.pay_way.gateway_type == 'bank'
+            = (@invoice.created_at + 3.days).strftime('%Y-%d-%m')
+          - else
+            = @invoice.created_at.strftime('%Y-%d-%m')
       tr style="color: gray; height: 30px"
         td style="background-color: #cd69c6; color: #ffffff; text-align: center;" colspan="2"
           = I18n.t('billing.balance')
         td colspan="2"
-          = user.balance
+          = @user.balance
           | &nbsp;
-          = Currency.where(iso_code: Currency.current_currency).first.symbol
+          = @cny.symbol
+          | &nbsp;/&nbsp;
+          = Currency.exchange @user.balance, 'GBP'
+          | &nbsp;
+          = @gbp.symbol
 
 table style="width: 910px; height: 20px"
   tr
@@ -109,38 +114,39 @@ table#pink_two rules="all" style="border: 1px; border-color: #984806"
       td style="width: 600px"
         = I18n.t('billing.orders_description')
       td style="width: 100px"
-        = I18n.t('billing.the_total_price_rmb')
+        = I18n.t('billing.the_price_cny')
       td style="width: 100px"
-        = I18n.t('billing.total_price')
+        = I18n.t('billing.the_price_gbp')
+
   tbody
-  - invoice.items.each do |item|
+  - @invoice.items.each do |item|
     tr
       td
         = item.number
       td
         = item.description
       td
-        = item.exchanged_cost('CNY')
-        = Currency.where(iso_code: 'CNY').first.symbol
+        = item.cost
+        = @cny.symbol
       td
-        = item.exchanged_cost('USD')
-        = Currency.where(iso_code: 'USD').first.symbol
-        | /
-        = item.exchanged_cost('EUR')
-        = Currency.where(iso_code: 'EUR').first.symbol
-  tr
-    td colspan=2 style="border-color: gray"
-    td
-      = I18n.t('billing.total_price')
-    td
-      = Currency.exchange invoice.cost, invoice.currency.iso_code
-      = invoice.currency.symbol
+        - if @invoice.pay_company.currency == @cny
+          | -
+        - else
+          = item.exchanged_cost('GBP')
+          = @gbp.symbol
+  /tr
+  /  td colspan=2 style="border-color: gray"
+  /  td
+  /    = I18n.t('billing.total_price')
+    /td
+    /  = Currency.exchange @invoice.cost, @invoice.currency.iso_code
+    /  = @invoice.currency.symbol
 table style="width: 910px;"
   tr
     td style="color: gray; text-align: center; width: 900px; font-size: 14px;"
       = I18n.t('billing.total_price')
       | &nbsp; {
-      = invoice.cost.humanize.capitalize
+      = @invoice.cost.humanize.capitalize
       | }
       = Currency.where(iso_code: 'CNY').first.symbol
 table style="width: 910px;"
