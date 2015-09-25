@@ -93,8 +93,12 @@ class Translation
 
       keys = Translation.where(:version_id.in => version_ids).distinct(:key)
       in_version = version.translations.where :key.in => keys
-      Translation.any_of in_version.selector,  Translation.where(:version_id.in => version_ids,
-                                                                 :key.nin => in_version.distinct(:key)).selector
+
+      match = {"$match" => Translation.where(:version_id.in => version_ids, :key.nin => in_version.distinct(:key)).selector}
+      sort = {"$sort" => {"version_id" => -1}}
+      group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
+      dependent = Translation.where :id.in => (Translation.collection.aggregate(match, sort, group).map {|g| g['first']})
+      Translation.any_of in_version.selector, dependent.selector
     end
   end
 
