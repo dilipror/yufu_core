@@ -66,7 +66,6 @@ module Order
                            mailer: -> (user, order) do
                              NotificationMailer.reminder_to_the_client_48 user, order
                            end
-    # has_notification_about :
 
 
 
@@ -115,6 +114,14 @@ module Order
 
     def can_send_secondary_offer?
       offers.secondary.empty?
+    end
+
+    def cancel_by_yufu
+
+    end
+
+    def cancel_by_client
+
     end
 
     def original_price
@@ -225,6 +232,18 @@ module Order
 
     def before_4?
       (first_date_time - Time.now) <= 4.hours && (first_date_time - Time.now) > 0
+    end
+
+    def paid_less_then?(time)
+      # TODO: Implement
+    end
+
+    def will_begin_less_than?(time)
+      # TODO: Implement
+    end
+
+    def has_offer?
+      # TODO: Implement
     end
 
     private
