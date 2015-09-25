@@ -234,6 +234,18 @@ module Order
       (first_date_time - Time.now) <= 4.hours && (first_date_time - Time.now) > 0
     end
 
+    def paid_less_then?(time)
+      # TODO: Implement
+    end
+
+    def will_begin_less_than?(time)
+      # TODO: Implement
+    end
+
+    def has_offer?
+      # TODO: Implement
+    end
+
     private
 
     def set_langvel
