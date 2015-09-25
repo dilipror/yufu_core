@@ -3,7 +3,7 @@
 FactoryGirl.define do
   factory :user do
     sequence(:email) {|n| "user#{n}@example.com"}
-    sequence(:phone) {|n| "911#{n}"}
+    sequence(:phone) {|n| "0911#{n}"}
     confirmed_at Date.yesterday
     password 'password'
   end
