@@ -1,15 +1,19 @@
 meta http-equiv="content-type" content="text/html; charset=utf-8"
-table
+/table
   tr
     td style="color: #cd69c6; font-size: 26px; text-align: right; width: 910"
       = I18n.t('billing.billing_info')
 table#head rules="all" style="border: 1px; "
   tbody
     tr
-      td style="width: 200px; text-align: center"
+      td style="width: 200px; text-align: center;border:none"
         = wicked_pdf_image_tag('logo_small.png')
-      td style="width: 400px;"
-      td style="width: 300px; color: #af5320; text-align: right"
+      td style="width: 400px;color: #cd69c6; font-size: 26px; text-align: center;border:none"
+        = I18n.t('billing.billing_info')
+        br
+        span style='color:black;font-size: 12px;'
+          = I18n.t('billing.in_favour')
+      td style="width: 300px; color: #af5320; text-align: right;border:none"
         = I18n.t('billing.invoice_date')
         |&nbsp;
         = invoice.created_at.strftime('%Y-%d-%m')
@@ -23,50 +27,51 @@ table style="width: 910px; height: 20px"
     td
 
 
-table#smth_else rules="all" style="border: 1px; "
+table#smth_else rules="all"
   tbody
     tr
-      td style="width: 580px; font-size: 13px;"
-        = I18n.t('billing.limited')
+      td style="width: 480px; font-size: 13px;border:none"
+        = invoice.pay_company.name
         br
-        = I18n.t('billing.hanassey_road')
+        = invoice.pay_company.address
         br
-        = I18n.t('billing.phone')
-        | &nbsp;
-        a style="color: #000000; text-decoration: none" href='tel: +8618650045062' +8618650045062
-        br
-        a style="color: #000000; text-decoration: none" href='mailto: infoyufu.net' infoyufu.net
-      td style="width: 20px; font-size: 13px"
-        = I18n.t('billing.for')
-      td style="width: 300px; color: gray; font-size: 13px; text-align: left"
+          span style='color: gray;'
+            | #{I18n.t('billing.reg_num')} #{invoice.pay_company.registration_number}
+        a style="color: #000000; text-decoration: underline;color: #cd69c6" href="mailto: #{invoice.pay_company.email}"
+          = invoice.pay_company.email
+      td style="width: 120px; font-size: 13px;border:none"
+        = I18n.t('billing.to')
+      td style="width: 300px; color: gray; font-size: 13px; text-align: left;border:none"
         = invoice.client_info.name
         br
-        - if invoice.company_name
-          = invoice.company_name
-          br
-          = invoice.company_address
-          br
-        = I18n.t('billing.phone')
-        | &nbsp;
-        = user.phone
+        = invoice.client_info.country.name
         br
-        = I18n.t('billing.customer_account')
-        | &nbsp;
-        = user.identification_number
-table style="width: 910px;"
+        | #{I18n.t('billing.reg_num')} #{user.identification_number}
+        - if user.phone
+          br
+          = I18n.t('billing.phone')
+          | :&nbsp;
+          = user.phone
+table style="width: 910px;font-size: 13px"
   tr
-    td style="font-size: 13px; color: gray"
-      = I18n.t('billing.bank_acount')
-      | &nbsp;
-      | # LV62RTMB0000638806823
+    td
+      /style="font-size: 13px; color: gray"
+      = invoice.pay_company.bank_name
       br
-      = I18n.t('billing.location')
-      | &nbsp;
-      | Rietumu Bank, SWIFT: RTMBLV2X;
+      span style='color: gray;'
+        = I18n.t('billing.bank_acount')
+        | :&nbsp;
+        = invoice.pay_company.bank_account_number
       br
-      = I18n.t('billing.bank_address')
-      | &nbsp;
-      | 7 Vesetas Street, Riga, LV1013, Latvia
+      span style='color: gray;'
+        = I18n.t('billing.swift')
+        | :&nbsp;
+        = invoice.pay_company.bank_swift
+      br
+      span style='color: gray;'
+        = I18n.t('billing.bank_address')
+        | :&nbsp;
+        = invoice.pay_company.bank_address
 table style="width: 910px; height: 20px"
   tr
     td
@@ -88,14 +93,21 @@ table#pink rules="all" style="border: 1px; border-color: #984806;"
         td
           = invoice.pay_way.name
         td
-          = invoice.created_at.strftime('%Y-%d-%m')
+          - if invoice.pay_way.gateway_type == 'bank'
+            = (invoice.created_at + 3.days).strftime('%Y-%d-%m')
+          - else
+            = invoice.created_at.strftime('%Y-%d-%m')
       tr style="color: gray; height: 30px"
         td style="background-color: #cd69c6; color: #ffffff; text-align: center;" colspan="2"
           = I18n.t('billing.balance')
         td colspan="2"
           = user.balance
           | &nbsp;
-          = Currency.where(iso_code: Currency.current_currency).first.symbol
+          = cny.symbol
+          | &nbsp;/&nbsp;
+          = Currency.exchange user.balance, 'GBP'
+          | &nbsp;
+          = gbp.symbol
 
 table style="width: 910px; height: 20px"
   tr
@@ -109,9 +121,10 @@ table#pink_two rules="all" style="border: 1px; border-color: #984806"
       td style="width: 600px"
         = I18n.t('billing.orders_description')
       td style="width: 100px"
-        = I18n.t('billing.the_total_price_rmb')
+        = I18n.t('billing.the_price_cny')
       td style="width: 100px"
-        = I18n.t('billing.total_price')
+        = I18n.t('billing.the_price_gbp')
+
   tbody
   - invoice.items.each do |item|
     tr
@@ -120,39 +133,90 @@ table#pink_two rules="all" style="border: 1px; border-color: #984806"
       td
         = item.description
       td
-        = item.exchanged_cost('CNY')
-        = Currency.where(iso_code: 'CNY').first.symbol
-      td
-        = item.exchanged_cost('USD')
-        = Currency.where(iso_code: 'USD').first.symbol
-        | /
-        = item.exchanged_cost('EUR')
-        = Currency.where(iso_code: 'EUR').first.symbol
+        = item.cost
+        = cny.symbol
+      td style='text-align:center'
+        - if invoice.pay_company.currency == cny
+          | -
+        - else
+          = item.exchanged_cost('GBP')
+          = gbp.symbol
   tr
-    td colspan=2 style="border-color: gray"
+    td
+    td
+      = I18n.t('billing.sub_total')
+    td
+      = invoice.items.sum :cost
+      = cny.symbol
+    td style='text-align:center'
+      - if invoice.pay_company.currency == cny
+        | -
+      - else
+        = sum_gbp_items
+        = gbp.symbol
+  - invoice.taxes.each do |tax|
+    tr
+      td
+      td
+        = tax.name
+        | &nbsp;
+        = tax.tax
+        | %
+      td
+        = invoice.cost_without_taxes * tax.tax / 100
+        = cny.symbol
+      td style='text-align:center'
+        - if invoice.pay_company.currency == cny
+          | -
+        - else
+          = Currency.exchange(invoice.cost_without_taxes * tax.tax / 100, 'GBP')
+          = gbp.symbol
+  tr
+    td
     td
       = I18n.t('billing.total_price')
     td
-      = Currency.exchange invoice.cost, invoice.currency.iso_code
-      = invoice.currency.symbol
-table style="width: 910px;"
+      = invoice.cost
+      = cny.symbol
+    td style='text-align:center'
+      - if invoice.pay_company.currency == cny
+        | -
+      - else
+        = invoice.exchanged_cost 'GBP'
+        = gbp.symbol
+
+
+  /tr
+  /  td colspan=2 style="border-color: gray"
+  /  td
+  /    = I18n.t('billing.total_price')
+    /td
+    /  = Currency.exchange invoice.cost, invoice.currency.iso_code
+    /  = invoice.currency.symbol
+table rules="all"
   tr
-    td style="color: gray; text-align: center; width: 900px; font-size: 14px;"
+    td style="color: gray; text-align: right; font-size: 14px;border:none"
       = I18n.t('billing.total_price')
       | &nbsp; {
-      = invoice.cost.humanize.capitalize
-      | }
-      = Currency.where(iso_code: 'CNY').first.symbol
-table style="width: 910px;"
-  tr
-    td style="color: gray; text-align: center; width: 900px; font-size: 14px;"
-      = I18n.t('billing.exchange_rate')
-      | &nbsp;
-      = eu_bank = Currency.exchange(1, 'EUR').to_f
-      | ,
-      = eu_bank = Currency.exchange(1, 'USD').to_f
-      | &nbsp;
-      = I18n.t('billing.euro_or_dollar')
+      - if invoice.pay_company.currency == cny
+        = invoice.cost.humanize.capitalize
+        | }
+        = cny.symbol
+      - else
+        = invoice.humanize_float(Currency.exchange(Invoice.last.cost, 'GBP').to_f)
+        /= (BigDecimal.new(Currency.exchange(Invoice.last.cost, 'GBP').to_f, 2)).humanize.capitalize
+        | }
+        = gbp.symbol
+- unless invoice.pay_company.currency == cny
+  table style="width: 400px;"
+    tr
+      td style="color: gray; text-align: center; width: 900px; font-size: 14px;"
+        = I18n.t('billing.exchange_rate')
+        | &nbsp;1
+        = gbp.symbol
+        /= eu_bank = Currency.exchange(1, 'GBP').to_f
+        | &nbsp;#{I18n.t('billing.is')}&nbsp;
+        = eu_bank = Currency.exchange(1, 'GBP').to_f
 table class="pink-bottom" rules="all" style="border: 1px; border-color: #984806"
   thead style="background-color: #cd69c6; color: #ffffff"
     tr

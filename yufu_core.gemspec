@@ -36,4 +36,5 @@ Gem::Specification.new do |s|
   s.add_dependency "paperclip", "< 4.3"
   s.add_dependency "wicked_pdf"
   s.add_dependency "wkhtmltopdf-binary"
+  s.add_dependency "mongoid_paranoia"
 end

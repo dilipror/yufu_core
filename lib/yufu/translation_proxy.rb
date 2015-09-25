@@ -11,7 +11,9 @@ module Yufu
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
                     Order::Written::WrittenSubtype.name Order::Written::WrittenSubtype.description
                     Order::Written::WrittenType.name Order::Written::WrittenType.description
-                    Gateway::PaymentGateway.title Gateway::PaymentGateway.description)
+                    Gateway::PaymentGateway.title Gateway::PaymentGateway.description Company.name Company.address
+                    Company.registration_number Company.tooltip Company.bank_name Company.bank_account_number Company.bank_swift
+                    Company.bank_address Company.email)
 
 
     attr_accessor :key, :locale, :translation

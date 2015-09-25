@@ -19,7 +19,7 @@ module Order
     # embedded_in :order_base, class_name: 'Order::Base'
     embedded_in :invoice, class_name: 'Invoice'
 
-    validates_presence_of :wechat, :phone, if: :persisted?
+    # validates_presence_of :wechat, if: :persisted?
 
     def invoice
       @__parent
@@ -27,7 +27,7 @@ module Order
 
 
     validate :company_params#, :wechat_param
-    validate :uniq_phone
+    validate :uniq_phone, if: -> {phone.present?}
 
 
     # def identification_number

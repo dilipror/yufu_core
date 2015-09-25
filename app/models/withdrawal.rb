@@ -34,7 +34,11 @@ class Withdrawal
     end
   end
 
+  def can_create_withdrawal?(sum)
+    user.withdrawals.sum(:sum) + sum.to_f < user.balance
+  end
+
   def possible?
-    user.balance > sum
+    user.balance >= sum if user.present?
   end
 end

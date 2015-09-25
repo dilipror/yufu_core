@@ -27,7 +27,7 @@ RSpec.describe Invoice, :type => :model do
 
     subject{invoice.paying}
 
-    before(:each) {invoice.client_info.update_attributes wechat: 'd'}
+    before(:each) {invoice.client_info.update_attributes wechat: 'd', phone: '23111'}
 
     it 'invoice is paying' do
       subject
@@ -46,7 +46,7 @@ RSpec.describe Invoice, :type => :model do
 
     before(:each)do
       invoice =  order.invoices.create user: user
-      invoice.client_info.update_attributes wechat: 'd'
+      invoice.client_info.update_attributes wechat: 'd', phone: '23111'
       invoice.paying
       invoice.update cost: BigDecimal(100)
     end
@@ -150,7 +150,7 @@ RSpec.describe Invoice, :type => :model do
     let!(:tax_cny1) {create :tax_add_surch, company: cny_company, payment_gateways: [bank]}
     let!(:tax_cny2) {create :tax_add_bus_tax, company: cny_company, payment_gateways: [bank, local_balance]}
 
-    before(:each) {invoice.client_info.update_attributes wechat: 'd'}
+    before(:each) {invoice.client_info.update_attributes wechat: 'd', phone: '23111'}
 
     subject{invoice.amount_tax}
 

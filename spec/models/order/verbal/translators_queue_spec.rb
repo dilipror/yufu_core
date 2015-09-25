@@ -86,8 +86,9 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
 
   describe '.create_senior_queue' do
     let(:city){create :city}
-    let(:language){create :language, senior: senior}
-    let(:senior){create(:profile_translator)}
+    let(:language){create :language}
+    let!(:senior){create :profile_translator, city_approves: [build(:city_approve, is_approved: true, city: city)],
+                         services: [build(:service, is_approved: true, language: language, level: 'guide')]}
     let(:private_translator) do
       create :user, profile_translator: create(:profile_translator,
                                                services: [build(:service, is_approved: true, language: language, level: 'guide')],
@@ -98,7 +99,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
 
     subject{Order::Verbal::TranslatorsQueue.create_senior_queue order}
 
-    before(:each){private_translator}
+    before(:each){private_translator; language.update_attributes senior: senior}
 
     it_behaves_like 'queue builder'
 
@@ -106,7 +107,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
     it{expect(subject.translators).not_to include private_translator.profile_translator}
   end
 
-  describe '.create_last_queue' do
+  describe '.create_without_surcharge_queue' do
     let(:city){create :city}
     let(:language){create :language}
     let(:translator_1){create(:profile_translator,
@@ -118,7 +119,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
                               city_approves: [build(:city_approve, is_approved: true, city: city)] )}
 
 
-    subject{Order::Verbal::TranslatorsQueue.create_last_queue order}
+    subject{Order::Verbal::TranslatorsQueue.create_without_surcharge_queue order}
 
     before(:each) do
       Order::Verbal::TranslatorsQueue.create order_verbal: order, translators: [translator_1]
@@ -127,14 +128,14 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
 
 
     context 'low level order' do
-      let(:order){create :wait_offers_order, location: city, language: language, level: 'business'}
+      let(:order){create :wait_offers_order, location: city, language: language, level: 'business', include_near_city: false}
       it{expect(subject.translators).to include translator_2}
       it{expect(subject.translators).not_to include translator_1}
       it_behaves_like 'queue builder'
     end
 
     context 'normal level order' do
-      let(:order){create :wait_offers_order, location: city, language: language, level: 'guide'}
+      let(:order){create :wait_offers_order, location: city, language: language, level: 'guide', include_near_city: false}
       it{expect(subject.translators).to include translator_2}
       it{expect(subject.translators).not_to include translator_1}
       it_behaves_like 'queue builder'

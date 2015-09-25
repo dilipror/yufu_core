@@ -37,6 +37,8 @@ class Ability
       can :create, Order::Written::WorkReport do |report|
         report.order_written.assignee == user.profile_translator
       end
+
+      can :delete, Translation if user.can_approve_localization?
     end
 
     if user.is_a? Admin

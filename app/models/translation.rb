@@ -1,5 +1,6 @@
 class Translation
   include Mongoid::Document
+  include Mongoid::Paranoia
 
   MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::ServicesPack.name
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
@@ -18,6 +19,7 @@ class Translation
   scope :model_localizers, ->{where is_model_localization: true }
   scope :not_model_localizers, ->{where is_model_localization: false }
   scope :actual, -> {where next_id: nil}
+  scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
 
   validates_presence_of :version
   after_save :wear_out
@@ -42,6 +44,26 @@ class Translation
     I18n.t key
   end
 
+  def self.active
+    tr_ids = []
+    Localization.each do |l|
+      tr_ids += active_ids_in l
+    end
+    Translation.where(:id.in => tr_ids)
+  end
+
+  def self.active_ids_in(localization)
+    approved_version_ids = localization.localization_versions.approved.distinct(:id)
+    match = {"$match" => Translation.where(:version_id.in => approved_version_ids).not_model_localizers.selector}
+    sort = {"$sort" => {"version_id" => -1}}
+    group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
+    Translation.collection.aggregate(match, sort, group).map {|g| g['first']}
+  end
+
+  def self.active_in(localization)
+    Translation.where :id.in => active_ids_in(localization)
+  end
+
   def self.all_translation_by_version(version)
     exist_in_version = version.translations
     keys_exists_in_version = exist_in_version.distinct(:key)
@@ -52,12 +74,19 @@ class Translation
   end
 
   def self.all_in(localization)
-    version_ids = localization.localization_versions.distinct(:id)
-    exist_in_locale = Translation.where(:version_id.in => version_ids)
+    exist_in_locale = Translation.active_in(localization)
     original_locale = Localization.find_by name: I18n.locale
-    original_available_versions = original_locale.localization_versions.approved.distinct(:id)
-    Translation.actual.any_of(exist_in_locale.selector,
-                              {:version_id.in => original_available_versions, :key.nin => exist_in_locale.distinct(:key)})
+    fallbacks = Translation.active_in(original_locale).where :key.nin => exist_in_locale.distinct(:key)
+    Translation.any_of(exist_in_locale.selector, fallbacks.selector)
+  end
+
+  def self.all_deleted_in(localization)
+    version_ids = localization.localization_versions.distinct(:id)
+    match = {"$match" => Translation.deleted.where(:version_id.in => version_ids).selector}
+    sort = {"$sort" => {"version_id" => -1}}
+    group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
+    ids = Translation.collection.aggregate(match, sort, group).map {|g| g['first']}
+    Translation.deleted.where :id.in => ids
   end
 
   def self.only_updated(version)
@@ -71,7 +100,14 @@ class Translation
 
       version_ids = Localization::Version.english.where(cond).distinct :id
 
-      Translation.where(:version_id.in => version_ids)
+      keys = Translation.where(:version_id.in => version_ids).distinct(:key)
+      in_version = version.translations.where :key.in => keys
+
+      match = {"$match" => Translation.where(:version_id.in => version_ids, :key.nin => in_version.distinct(:key)).selector}
+      sort = {"$sort" => {"version_id" => -1}}
+      group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
+      dependent = Translation.where :id.in => (Translation.collection.aggregate(match, sort, group).map {|g| g['first']})
+      Translation.any_of in_version.selector, dependent.selector
     end
   end
 

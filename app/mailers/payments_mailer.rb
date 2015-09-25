@@ -9,8 +9,17 @@ class PaymentsMailer < ActionMailer::Base
   end
 
   def send_billing_info(user, invoice)
-    @invoice = invoice
+    @a = 'asdfasfs'
+    @invoice = Invoice.last
     @user = user
+    @cny = Currency.where(iso_code: 'CNY').first
+    @gbp = Currency.where(iso_code: 'GBP').first
+
+    @sum_gbp_items = 0
+    @invoice.items.each do |item|
+      @sum_gbp_items += item.exchanged_cost('GBP')
+    end
+
     @logo_url = "#{root_url}assets/logo_small.png"
     view = ActionController::Base.new()
     # include helpers and routes
@@ -18,7 +27,7 @@ class PaymentsMailer < ActionMailer::Base
     pdf = WickedPdf.new.pdf_from_string(
         view.render_to_string(
             :template => 'application/get_pdf_invoice.slim',
-            :locals => { invoice: invoice, user: user, logo_url: "#{root_url}assets/logo_small.png"}
+            :locals => { invoice: invoice, user: user, logo_url: "#{root_url}assets/logo_small.png", cny: @cny, gbp: @gbp, sum_gbp_items: @sum_gbp_items}
         )
     )
     BigDecimal.class_eval do

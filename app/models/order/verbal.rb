@@ -117,6 +117,14 @@ module Order
       offers.secondary.empty?
     end
 
+    def cancel_by_yufu
+
+    end
+
+    def cancel_by_client
+
+    end
+
     def original_price
       reservation_price = reservation_dates.to_a.inject(0) { |sum, n| sum + n.original_price }
       price = 0
@@ -230,6 +238,18 @@ module Order
 
     def before_4?
       (first_date_time - DateTime.now) <= 4.hours && (first_date_time - DateTime.now) > 0
+    end
+
+    def paid_less_then?(time)
+      # TODO: Implement
+    end
+
+    def will_begin_less_than?(time)
+      # TODO: Implement
+    end
+
+    def has_offer?
+      # TODO: Implement
     end
 
     private
@@ -386,7 +406,7 @@ module Order
     def surcharge_paying_items
       if include_near_city && there_are_translator_with_surcharge?
         eu_bank = ExchangeBank.instance
-        [{cost: eu_bank.exchange(5000, 'USD', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
+        [{cost: eu_bank.exchange(DEFAULT_SURCHARGE_NEAR_CITY * 100, 'CNY', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
       else
         []
       end

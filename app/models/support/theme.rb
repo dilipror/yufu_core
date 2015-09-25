@@ -6,14 +6,14 @@ module Support
 
     field :name, localize: true
     field :number, type: Integer
-    field :type, default: :custom
-    field :for_local_expert, type: Boolean, default: false
+    field :theme_type, default: :custom
 
     increments :number
 
     enumerize :type, in: [:custom, :local_expert, :no_translator_found]
-    #scope :custom,           -> {where type: :custom}
-    #scope :for_local_expert, -> {where type: :local_expert}
+    enumerize :theme_type, in: [:custom, :local_expert]
+    scope :custom,           -> {where theme_type: :custom}
+    scope :for_local_expert, -> {where theme_type: :local_expert}
 
 
     validates :name, presence: true, uniqueness: true
