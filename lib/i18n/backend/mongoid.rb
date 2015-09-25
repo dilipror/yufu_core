@@ -16,15 +16,14 @@ module I18n
 
         if version.nil?
           query = Translation.active
-          locale = nil
         else
           query = Translation.all_translation_by_version(version)
-          locale = version.localization.name
+          preset_locale = version.localization.name
         end
 
         query.each do |t|
           trans_pointer = trans
-          locale ||= t.version.localization.name
+          locale = preset_locale.nil? ? t.version.localization.name : preset_locale
           k = "#{locale}.#{t.key.to_s}"
           key_array = k.split(".")
           last_key = key_array.delete_at(key_array.length - 1)
