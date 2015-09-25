@@ -138,6 +138,27 @@ class NotificationMailer < ActionMailer::Base
                                       dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
+  def become_main_int(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+
+  end
+
+  def become_back_up_int(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+
+  end
+
+  def for_client(user, offer)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user), client_id: user.to_param,
+                                      order_details: order_details(offer.order),
+                                      interpreter_link: (link_to I18n.t('notification_mailer.your_int'), "#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}"),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+
+  end
+
+
   private
 
   def client(user)

@@ -42,36 +42,37 @@ module Order
 
     delegate :name, to: :location, prefix: true, allow_nil: true
 
-
     has_notification_about :updated, message: 'notifications.order_updated',
                            observers: :subscribers
-
-    has_notification_about :reminder_for_interpreter_24,
-                           observers: -> (order) {order.primary_offer},
-                           message: 'notification.change_status_main_intrp',
-                           mailer: -> (user, order) do
-                             NotificationMailer.reminder_for_backup_interpreter_24 user
-                           end
-
-    has_notification_about :reminder_for_main_interpreter_36,
-                           observers: -> (order) {order.primary_offer},
-                           message: 'notification.change_status_main_intrp',
-                           mailer: -> (user, order) do
-                             NotificationMailer.reminder_for_main_interpreter_36 user
-                           end
-
-    has_notification_about :reminder_to_the_client_48,
-                           observers: -> (order) {order.primary_offer},
-                           message: 'notification.appointment_with_interpreter',
-                           mailer: -> (user, order) do
-                             NotificationMailer.reminder_to_the_client_48 user, order
-                           end
+    #
+    # has_notification_about :reminder_for_interpreter_24,
+    #                        observers: -> (order) {order.primary_offer},
+    #                        message: 'notification.change_status_main_intrp',
+    #                        mailer: -> (user, order) do
+    #                          NotificationMailer.reminder_for_backup_interpreter_24 user
+    #                        end
+    #
+    # has_notification_about :reminder_for_main_interpreter_36,
+    #                        observers: -> (order) {order.primary_offer},
+    #                        message: 'notification.change_status_main_intrp',
+    #                        mailer: -> (user, order) do
+    #                          NotificationMailer.reminder_for_main_interpreter_36 user
+    #                        end
+    #
+    # has_notification_about :reminder_to_the_client_48,
+    #                        observers: -> (order) {order.primary_offer},
+    #                        message: 'notification.appointment_with_interpreter',
+    #                        mailer: -> (user, order) do
+    #                          NotificationMailer.reminder_to_the_client_48 user, order
+    #                        end
+    # has_notification_about :
 
 
 
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
     validates_presence_of :location, if: :persisted?
     validate :assign_reservation_to_criterion, if: -> (o) {o.step == 2}
+    validates_length_of :offers, maximum: 2, unless: :before_36?
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion
@@ -160,11 +161,11 @@ module Order
     end
 
     def primary_offer
-      offers.primary.first
+      offers.where(state: 'new').first
     end
 
     def secondary_offer
-      offers.secondary.first
+      offers.where(state: 'new')[1]
     end
 
     def supported_by?(translator)
@@ -175,11 +176,16 @@ module Order
     def first_date_time
       if reservation_dates.first.present?
         reservation_dates.first.date.change({hour: greeted_at_hour, min: greeted_at_minute})
+      else
+        DateTime.now
       end
     end
 
     def after_12
-
+      if offers.count == 0
+        Support::Ticket.create assign_to: main_language_criterion.language, order: self,
+                               theme: Support::Theme.where(type: 'no_translator_found')
+      end
     end
 
     def after_24
@@ -215,23 +221,23 @@ module Order
     end
 
     def before_60?
-      (first_date_time - Time.now) <= 60.hours
+      (first_date_time - DateTime.now) <= 60.hours
     end
 
     def before_48?
-      (first_date_time - Time.now) <= 48.hours && (first_date_time - Time.now) > 0
+      (first_date_time - DateTime.now) <= 48.hours && (first_date_time - DateTime.now) > 0
     end
 
     def before_36?
-      (first_date_time - Time.now) <= 36.hours && (first_date_time - Time.now) > 0
+      (first_date_time - DateTime.now) <= 36.hours && (first_date_time - DateTime.now) > 0
     end
 
     def before_24?
-      (first_date_time - Time.now) <= 24.hours && (first_date_time - Time.now) > 0
+      (first_date_time - DateTime.now) <= 24.hours && (first_date_time - DateTime.now) > 0
     end
 
     def before_4?
-      (first_date_time - Time.now) <= 4.hours && (first_date_time - Time.now) > 0
+      (first_date_time - DateTime.now) <= 4.hours && (first_date_time - DateTime.now) > 0
     end
 
     def paid_less_then?(time)
@@ -256,7 +262,7 @@ module Order
     end
 
     def first_date
-      reservation_dates.order('date acs').first.date
+      reservation_dates.order('date acs').first.date || Time.now
     end
 
     def hours_to_meeting
