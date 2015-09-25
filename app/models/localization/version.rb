@@ -14,8 +14,6 @@ class Localization::Version
   scope :english, -> {where localization_id: Localization.default.id}
 
   validates_presence_of :name, :localization
-  
-  after_save :export, if: -> {state_changed? && state == 'approved'}
 
   state_machine initial: :new do
     state :approved
@@ -74,9 +72,4 @@ class Localization::Version
   def self.current(localization)
     approved.where(localization_id: localization.id).desc(:version_number_id)
   end
-
-  def export
-    I18n::JS.export unless Rails.env.test?
-  end
-
 end

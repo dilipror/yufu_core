@@ -56,4 +56,22 @@ RSpec.describe Transaction, :type => :model do
       it { expect{subject}.not_to change{credit.reload.balance} }
     end
   end
+
+  describe '.active' do
+    let(:localization) {create :localization}
+    let(:key){'key'}
+    let!(:old_approved_version){create :localization_version, :approved, localization: localization}
+    let!(:last_approved_version){create :localization_version, :approved, localization: localization}
+    let!(:last_not_approved_version){create :localization_version, localization: localization}
+    let!(:old_approved_translation){create :translation, key: key, version: old_approved_version}
+    let!(:last_approved_translation){create :translation, key: key, version: last_approved_version}
+    let!(:last_not_approved_translation){create :translation, key: key, version: last_not_approved_version}
+
+    subject{Translation.active}
+
+    it{is_expected.to include last_approved_translation}
+    it{is_expected.not_to include old_approved_translation}
+    it{is_expected.not_to include last_not_approved_translation}
+
+  end
 end
