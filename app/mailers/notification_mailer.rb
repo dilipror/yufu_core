@@ -159,6 +159,32 @@ class NotificationMailer < ActionMailer::Base
   end
 
 
+  def we_are_looking(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+
+
+  end
+
+  def check_dates(user, order)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user), client_id: user.to_param,
+                                      interpreter_name: "#{ order.primary_offer.try(:translator).try(:user).try(:last_name)} #{order.primary_offer.try(:translator).try(:user).try(:last_name)}",
+                                      phone_number: "#{ order.primary_offer.try(:translator).try(:user).try(:phone)}",
+                                      order_details: order_details(order),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+
+  end
+
+  def re_confirm_main(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+  end
+
+  def re_confirm_back_up(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
+  end
+
   private
 
   def client(user)

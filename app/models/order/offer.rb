@@ -14,13 +14,13 @@ module Order
     belongs_to :order,      class_name: 'Order::Verbal'
 
     validates_presence_of :order
-    validates_inclusion_of :status, in: STATUSES
-    validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
-    validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
+    # validates_inclusion_of :status, in: STATUSES
+    # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
+    # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
     validates_uniqueness_of :translator
 
-    scope :primary,   -> {where status: 'primary'}
-    scope :secondary, -> {where status: 'secondary'}
+    # scope :primary,   -> {where status: 'primary'}
+    # scope :secondary, -> {where status: 'secondary'}
 
     #after_create :confirm_if_need
     # after_save
@@ -34,19 +34,25 @@ module Order
     has_notification_about :become_main_int,
                            message: 'notifications.become_main_int',
                            observes: :translator,
-                           mailer: -> (user, offer) do
+                           mailer: (-> (user, offer) do
                              NotificationMailer.become_main_int(user).deliver
+                           end),
+                           sms: -> (user, offer) do
+                             Yufu::SmsNotification.instance.become_main_int user
                            end
 
     has_notification_about :become_back_up_int,
                            message: 'notifications.become_main_int',
                            observes: :translator,
-                           mailer: -> (user, offer) do
+                           mailer: (-> (user, offer) do
                              NotificationMailer.become_back_up_int(user).deliver
+                           end),
+                           sms: -> (user, offer) do
+                             Yufu::SmsNotification.instance.become_back_up_int user
                            end
 
     has_notification_about :for_client,
-                           message: 'notifications.main_for_client',
+                           message: 'notifications.for_client',
                            observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
                              NotificationMailer.for_client(user, offer).deliver
@@ -83,6 +89,26 @@ module Order
                              Yufu::SmsNotification.instance.new_offer_for_translator user
                            end
 
+    has_notification_about :re_confirm_main,
+                           message: 'notifications.re_confirm',
+                           observers: :translator,
+                           mailer: (-> (user, offer) do
+                             NotificationMailer.re_confirm_main(user).deliver
+                           end),
+                           sms: -> (user, offer) do
+                             Yufu::SmsNotification.instance.re_confirm_main user
+                           end
+
+
+    has_notification_about :re_confirm_back_up,
+                           message: 'notifications.re_confirm',
+                           observers: :translator,
+                           mailer: (-> (user, offer) do
+                             NotificationMailer.re_confirm_back_up(user).deliver
+                           end),
+                           sms: -> (user, offer) do
+                             Yufu::SmsNotification.instance.re_confirm_back_up user
+                           end
 
     state_machine initial: :new do
       state :rejected

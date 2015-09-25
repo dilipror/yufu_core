@@ -459,10 +459,11 @@ RSpec.describe Order::Verbal, :type => :model do
 
   describe 'timestamps' do
 
-    describe '#after_12?' do
+    describe '#paid_ago?' do
+      context '12 h' do
       let(:order){create :order_verbal}
 
-      subject{order.after_12?}
+      subject{order.paid_ago?(12)}
 
       before(:each)do
         order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
@@ -471,91 +472,158 @@ RSpec.describe Order::Verbal, :type => :model do
 
       it{is_expected.to be_truthy}
 
-    end
-
-    describe '#after_24?' do
-      let(:order){create :order_verbal}
-
-      subject{order.after_24?}
-
-      before(:each)do
-        order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 25.hours)
-        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
       end
 
-      it{is_expected.to be_truthy}
+      context '24 h'do
+        let(:order){create :order_verbal}
 
+        subject{order.paid_ago?(24)}
+
+        before(:each)do
+          order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 25.hours)
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
+        end
+
+        it{is_expected.to be_truthy}
+      end
     end
 
-    describe '#before_60?' do
-      let(:order){create :order_verbal}
+    describe 'will_begin_less_than?' do
 
-      subject{order.before_60?}
+      context 'before 60' do
+        let(:order){create :order_verbal}
 
-      before(:each)do
-        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 60.hours)
-        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        subject{order.will_begin_less_than?(60)}
+
+        before(:each)do
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 60.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        end
+
+        it{is_expected.to be_truthy}
+
       end
 
-      it{is_expected.to be_truthy}
+      context 'before 48' do
+        let(:order){create :order_verbal}
 
-    end
 
-    describe '#before_48?' do
-      let(:order){create :order_verbal}
 
-      subject{order.before_48?}
+        before(:each)do
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 48.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        end
 
-      before(:each)do
-        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 48.hours)
-        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        it{is_expected.to be_truthy}
+
       end
 
-      it{is_expected.to be_truthy}
+      context 'before 36' do
+        let(:order){create :order_verbal}
 
-    end
+        subject{order.will_begin_less_than?(36)}
 
-    describe '#before_36?' do
-      let(:order){create :order_verbal}
+        before(:each)do
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 36.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        end
 
-      subject{order.before_36?}
+        it{is_expected.to be_truthy}
 
-      before(:each)do
-        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 36.hours)
-        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
       end
 
-      it{is_expected.to be_truthy}
+      context 'before 24' do
+        let(:order){create :order_verbal}
 
-    end
+        subject{order.will_begin_less_than?(24)}
 
-    describe '#before_24?' do
-      let(:order){create :order_verbal}
+        before(:each)do
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 24.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        end
 
-      subject{order.before_24?}
+        it{is_expected.to be_truthy}
 
-      before(:each)do
-        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 24.hours)
-        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
       end
 
-      it{is_expected.to be_truthy}
+      context 'before 4' do
+        let(:order){create :order_verbal}
 
+        subject{order.will_begin_less_than?(4)}
+
+        before(:each)do
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 4.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+        end
+
+        it{is_expected.to be_truthy}
+
+      end
     end
+  end
 
-    describe '#before_4?' do
-      let(:order){create :order_verbal}
+  describe 'events' do
+    describe '#after_24' do
 
-      subject{order.before_4?}
+      let(:translator){create :profile_translator}
 
-      before(:each)do
-        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 4.hours)
-        order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
+      subject{order.after_24}
+
+      context 'no offer' do
+        let(:order){create :order_verbal, offers: []}
+
+        it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+
       end
 
-      it{is_expected.to be_truthy}
+      context 'offers exist' do
+        let(:order){create :order_verbal, offers: []}
+
+        before(:each){order.offers.create translator: translator }
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+      end
+    end
+    describe 'before_60' do
+
+      let(:translator_1){create :profile_translator}
+      let(:translator_2){create :profile_translator}
+
+      subject{order.before_60}
+
+      let(:order){create :order_verbal, offers: []}
+
+      before(:each) do
+        order.offers.create! translator: translator_1
+        order.offers.create! translator: translator_2
+      end
+
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{translator_1.user.notifications.count}.by(1)}
+      it{expect{subject}.not_to change{translator_2.user.notifications.count}}
 
     end
+
+    describe 'before_48' do
+
+      let(:translator_1){create :profile_translator}
+      let(:translator_2){create :profile_translator}
+
+      subject{order.before_48}
+
+      let(:order){create :order_verbal, offers: []}
+
+      before(:each) do
+        order.offers.create! translator: translator_1
+        order.offers.create! translator: translator_2
+      end
+
+      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_1.user.notifications.count}}
+      it{expect{subject}.to change{translator_2.user.notifications.count}.by(1)}
+
+    end
+
   end
 
 end

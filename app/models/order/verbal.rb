@@ -67,12 +67,48 @@ module Order
     #                        end
     # has_notification_about :
 
+    has_notification_about :looking_for_int,
+                           message: 'notifications.looking_for_int',
+                           observers: -> (order){ order.owner.user },
+                           mailer: -> (user, offer) do
+                             NotificationMailer.we_are_looking(user).deliver
+                           end
+
+
+
+    has_notification_about :reminder_for_interpreter_24,
+                           observers: -> (order) {order.primary_offer},
+                           message: 'notification.change_status_main_intrp',
+                           mailer: -> (user, order) do
+                             NotificationMailer.reminder_for_backup_interpreter_24 user
+                           end
+
+    has_notification_about :reminder_for_main_interpreter_36,
+                           observers: -> (order) {order.primary_offer},
+                           message: 'notification.change_status_main_intrp',
+                           mailer: -> (user, order) do
+                             NotificationMailer.reminder_for_main_interpreter_36 user
+                           end
+
+    has_notification_about :reminder_to_the_client_48,
+                           observers: -> (order) {order.primary_offer},
+                           message: 'notification.appointment_with_interpreter',
+                           mailer: -> (user, order) do
+                             NotificationMailer.reminder_to_the_client_48 user, order
+                           end
+
+    has_notification_about :check_dates,
+                           message: 'notifications.check_dates',
+                           observers: -> (order){ order.owner.user },
+                           mailer: -> (user, order) do
+                             NotificationMailer.check_dates(user, order).deliver
+                           end
 
 
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
     validates_presence_of :location, if: :persisted?
     validate :assign_reservation_to_criterion, if: -> (o) {o.step == 2}
-    validates_length_of :offers, maximum: 2, unless: :before_36?
+    validates_length_of :offers, maximum: 2, unless: ->(order) {order.will_begin_less_than?(36)}
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion
@@ -189,15 +225,18 @@ module Order
     end
 
     def after_24
-
+      if offers.count == 0
+        notify_about_looking_for_int
+      end
     end
 
     def before_60
-
+      notify_about_check_dates
+      primary_offer.notify_about_re_confirm_main
     end
 
     def before_48
-
+      secondary_offer.notify_about_re_confirm_back_up
     end
 
     def before_36
@@ -212,44 +251,44 @@ module Order
 
     end
 
-    def after_12?
-      (Time.now - created_at) >= 12.hours
-    end
+    # def after_12?
+    #   (DateTime.now - created_at) >= 12.hours
+    # end
+    #
+    # def after_24?
+    #   (DateTime.now - created_at) >= 24.hours
+    # end
+    #
+    # def before_60?
+    #   (first_date_time - DateTime.now) <= 60.hours
+    # end
+    #
+    # def before_48?
+    #   (first_date_time - DateTime.now) <= 48.hours && (first_date_time - DateTime.now) > 0
+    # end
+    #
+    # def before_36?
+    #   (first_date_time - DateTime.now) <= 36.hours && (first_date_time - DateTime.now) > 0
+    # end
+    #
+    # def before_24?
+    #   (first_date_time - DateTime.now) <= 24.hours && (first_date_time - DateTime.now) > 0
+    # end
+    #
+    # def before_4?
+    #   (first_date_time - DateTime.now) <= 4.hours && (first_date_time - DateTime.now) > 0
+    # end
 
-    def after_24?
-      (Time.now - created_at) >= 24.hours
-    end
-
-    def before_60?
-      (first_date_time - DateTime.now) <= 60.hours
-    end
-
-    def before_48?
-      (first_date_time - DateTime.now) <= 48.hours && (first_date_time - DateTime.now) > 0
-    end
-
-    def before_36?
-      (first_date_time - DateTime.now) <= 36.hours && (first_date_time - DateTime.now) > 0
-    end
-
-    def before_24?
-      (first_date_time - DateTime.now) <= 24.hours && (first_date_time - DateTime.now) > 0
-    end
-
-    def before_4?
-      (first_date_time - DateTime.now) <= 4.hours && (first_date_time - DateTime.now) > 0
-    end
-
-    def paid_less_then?(time)
-      # TODO: Implement
+    def paid_ago?(time)
+      (Time.now - created_at) >= time.hours
     end
 
     def will_begin_less_than?(time)
-      # TODO: Implement
+      (first_date_time - DateTime.now) <= time.hours && (first_date_time - DateTime.now) > 0
     end
 
     def has_offer?
-      # TODO: Implement
+      offers.where(state: 'new').count > 0
     end
 
     private

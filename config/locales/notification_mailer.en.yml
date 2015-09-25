@@ -47,9 +47,61 @@ en:
 
             We do it professionally!"
 
+    check_dates:
+      subject: Order reminder
+      body: "Dear %{client},
+
+            ID number %{client_id},
+
+            Order details: %{order_details}
+
+            We kindly remind you, that in 60 hours you have an appointment with your interpreter
+
+            %{interpreter_name} . His/her phone number is %{phone_number}
+
+            If you still haven't defined the place and time with the interpreter or want to change it ‐ you still can
+
+            do it. Pay attention, this option will be frozen 24 hours prior to meeting.
+
+            If you wish to change meeting place and time or ask a question, please follow the link below:
+
+            %{dashboard_link}
+
+            Thank you for choosing Yufu.net!
+
+            Sincerely Yours,
+
+            YUFU.NET community"
+
     become_main_int:
       subject: English subject
       body: English text
+
+    we_are_looking:
+      subject: Confirmation delay
+      body: "Dear %{client},
+
+            We regret to inform you, that your order has not yet
+
+            been confirmed!
+
+            We sincerely apologize and suggest the following options:
+
+            1. Wait a bit longer – we will endeavor to find a solution
+
+            2. Cancel your order, though this is not recommended
+
+            3. Place a new order which meets our order parameters.
+
+            To cancel an order or place a new one, please follow the link below:
+
+            %{dashboard_link}
+
+            We sincerely apologize for any inconvenience!
+
+            Sincerely Yours,
+
+            YUFU"
 
     become_back_up_int:
       subject: English subject

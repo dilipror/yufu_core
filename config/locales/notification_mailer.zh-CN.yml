@@ -3,6 +3,35 @@ zh-CN:
     log_in: 用已注册的账户登录
     balance: 我的信息窗
     new_order: 重新下单
+
+    re_confirm_back_up:
+      subject: 再次确认订单
+      body: "亲爱的 %{client},
+
+            目前您是此订单的备选译员。从现在起12个小时之内请您尽快再次确认订单,您将有可能成为此
+
+            订单的核心译员。请您留意。
+
+            请点此链接进入网站:  %{dashboard_link}
+
+            感谢您的合作并祝您生活愉快!
+
+            语富"
+
+    re_confirm_main:
+      subject: 再次确认订单
+      body: "亲爱的 %{client},
+
+            目前您是此订单的核心译员,从现在起12个小时之内请您尽快再次确认能否执行此订单。如未能
+
+            完成确认,该订单则由备选译员接手,同时您的账号将被冻结3个月。请您留意。
+
+            请点此链接进入网站: %{dashboard_link}
+
+            感谢您的合作并祝您生活愉快!
+
+            语富"
+
     become_main_int:
       subject: 订单确认
       body: "亲爱的 %{client},
