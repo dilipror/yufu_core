@@ -150,12 +150,14 @@ class NotificationMailer < ActionMailer::Base
 
   end
 
-  def main_for_client
+  def for_client(user, offer)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user), client_id: user.to_param,
-                                      order_details: order_details(order),
+                                      order_details: order_details(offer.order),
+                                      interpreter_link: (link_to I18n.t('notification_mailer.your_int'), "#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}"),
                                       dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
 
   end
+
 
   private
 

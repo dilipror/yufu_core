@@ -1,4 +1,3 @@
-| !!!!!!!!!!!!!!!!!!!!
-= wicked_pdf_image_tag('logo_small.png')
-/= wicked_pdf_image_tag
-= Rails.root.join 'public', @translator.profile_steps_personal.avatar.url(:original)
+= @translator.user.first_name
+| &nbsp;
+= @translator.user.last_name

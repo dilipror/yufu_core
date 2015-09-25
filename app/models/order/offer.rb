@@ -29,6 +29,7 @@ module Order
     after_create :notify_about_create_offer_for_owner
     after_create :notify_about_become_main_int, if: :primary?
     after_create :notify_about_become_back_up_int, if: :back_up?
+    after_create :notify_about_for_client
 
     has_notification_about :become_main_int,
                            message: 'notifications.become_main_int',
@@ -44,18 +45,11 @@ module Order
                              NotificationMailer.become_back_up_int(user).deliver
                            end
 
-    has_notification_about :main_for_client,
+    has_notification_about :for_client,
                            message: 'notifications.main_for_client',
-                           observes: -> (offer){ offer.order.owner.user },
+                           observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
-                             NotificationMailer.main_for_client(user).deliver
-                           end
-
-    has_notification_about :back_up_for_client,
-                           message: 'notifications.back_up_for_client',
-                           observes: -> (offer){ offer.order.owner.user },
-                           mailer: -> (user, offer) do
-                             NotificationMailer.back_up_for_client(user).deliver
+                             NotificationMailer.for_client(user, offer).deliver
                            end
 
     # has_notification_about :confirm_for_translator,

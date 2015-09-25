@@ -3,8 +3,9 @@ en:
     log_in: 'Log in as a registered user'
     balance: My balance
     new_order: Place new order
+    your_int: Your interpreter
 
-    main_for_client:
+    for_client:
       subjet: Order confirmation/voucher
       body: "Dear %{client},
 
@@ -16,11 +17,11 @@ en:
 
             Please see your interpreter`s information:
 
-            Your interpreter
+            %{interpreter_link}
 
             If you wish to change meeting place and time or ask a question, please follow the link below:
 
-            My dashboard
+            %{dashboard_link}
 
             Please, pay attention – you can change the time and place of meeting with the interpreter no less
 

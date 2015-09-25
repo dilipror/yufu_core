@@ -199,6 +199,21 @@ RSpec.describe Order::Offer, :type => :model do
       it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
 
     end
+
+    context 'back_up offer' do
+      let(:order){create :order_verbal, offers: []}
+
+      before(:each){create :offer, translator: translator, order: order}
+
+      let(:translator_back_up){create :profile_translator}
+
+      subject{order.offers.create translator: translator_back_up}
+
+      it{expect{subject}.not_to change{translator.user.notifications.count}}
+      it{expect{subject}.to change{translator_back_up.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+
+    end
   end
 
 end

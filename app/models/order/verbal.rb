@@ -168,6 +168,8 @@ module Order
     def first_date_time
       if reservation_dates.first.present?
         reservation_dates.first.date.change({hour: greeted_at_hour, min: greeted_at_minute})
+      else
+        DateTime.now
       end
     end
 
