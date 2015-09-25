@@ -358,3 +358,6 @@ DEPENDENCIES
   test-unit
   will_paginate_mongoid
   yufu_core!
+
+BUNDLED WITH
+   1.10.6
