@@ -80,6 +80,15 @@ class Translation
     Translation.any_of(exist_in_locale.selector, fallbacks.selector)
   end
 
+  def self.all_deleted_in(localization)
+    version_ids = localization.localization_versions.distinct(:id)
+    match = {"$match" => Translation.deleted.where(:version_id.in => version_ids).selector}
+    sort = {"$sort" => {"version_id" => -1}}
+    group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
+    ids = Translation.collection.aggregate(match, sort, group).map {|g| g['first']}
+    Translation.deleted.where :id.in => ids
+  end
+
   def self.only_updated(version)
     if version.english? || version.independent?
       version.translations
