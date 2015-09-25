@@ -39,6 +39,6 @@ class Withdrawal
   end
 
   def possible?
-    user.balance > sum if user.present?
+    user.balance >= sum if user.present?
   end
 end
