@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Order::Verbal::Refunder do
+RSpec.describe Order::VerbalRefunder do
   let(:order){create :order_verbal}
-  let(:refunder){Order::Verbal::Refunder.new(order)}
+  let(:refunder){Order::VerbalRefunder.new(order)}
 
   describe '#calculate_sum' do
     subject{refunder.calculate_sum cancel_by}
@@ -12,9 +12,12 @@ RSpec.describe Order::Verbal::Refunder do
     context 'cancel by yufu' do
       let(:cancel_by){:yufu}
 
-      before :each do
-        allow(reunder).to recive
+      context 'order will begin less than 4 hours' do
+        before(:each){allow(order).to receive(:will_begin_less_than?).with(4.hours).and_return(true)}
+
+        it{is_expected.to eq 100 + 192}
       end
+
     end
   end
 
