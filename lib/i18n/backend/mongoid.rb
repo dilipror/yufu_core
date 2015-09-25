@@ -15,7 +15,7 @@ module I18n
         trans = {}
 
         if version.nil?
-          query = Translation.actual.approved.not_model_localizers
+          query = Translation.active
           locale = nil
         else
           query = Translation.all_translation_by_version(version)

@@ -44,6 +44,18 @@ class Translation
     I18n.t key
   end
 
+  def self.active
+    tr_ids = []
+    Localization.each do |l|
+      approved_version_ids = l.localization_versions.approved.distinct(:id)
+      match = {"$match" => Translation.where(:version_id.in => approved_version_ids).not_model_localizers.selector}
+      sort = {"$sort" => {"version_id" => -1}}
+      group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
+      tr_ids += Translation.collection.aggregate(match, sort, group).map {|g| g['first']}
+    end
+    Translation.where(:id.in => tr_ids)
+  end
+
   def self.all_translation_by_version(version)
     exist_in_version = version.translations
     keys_exists_in_version = exist_in_version.distinct(:key)
