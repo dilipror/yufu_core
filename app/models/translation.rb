@@ -54,7 +54,7 @@ class Translation
 
   def self.active_ids_in(localization)
     approved_version_ids = localization.localization_versions.approved.distinct(:id)
-    match = {"$match" => Translation.where(:version_id.in => approved_version_ids).not_model_localizers.selector}
+    match = {"$match" => Translation.where(:version_id.in => approved_version_ids).selector}
     sort = {"$sort" => {"version_id" => -1}}
     group = {"$group" => {"_id" => "$key", "first" => {"$first" => "$_id"}}}
     Translation.collection.aggregate(match, sort, group).map {|g| g['first']}
