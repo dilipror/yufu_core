@@ -70,7 +70,7 @@ class Translation
     other = Translation.all_in(version.localization).where :key.nin => keys_exists_in_version
     keys_in_other = other.distinct(:key)
     fallbacks = Translation.all_in(Localization.default).where :key.nin => (keys_exists_in_version + keys_in_other)
-    Translation.not_model_localizers.any_of exist_in_version.selector, other.selector, fallbacks.selector
+    Translation.any_of exist_in_version.selector, other.selector, fallbacks.selector
   end
 
   def self.all_in(localization)
