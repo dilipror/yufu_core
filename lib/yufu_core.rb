@@ -14,7 +14,6 @@ require 'yufu/i18n_mailer_scope'
 require 'sms_gate'
 require 'yufu/action_sms'
 require 'yufu/sms_notification'
-require 'yufu/order/verbal_refunder'
 
 require 'hash_extension'
 

@@ -287,6 +287,10 @@ module Order
       (first_date_time - DateTime.now) <= time.hours && (first_date_time - DateTime.now) > 0
     end
 
+    def will_begin_at?(time)
+      # TODO: implement
+    end
+
     def has_offer?
       offers.where(state: 'new').count > 0
     end
