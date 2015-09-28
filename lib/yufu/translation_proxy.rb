@@ -4,8 +4,7 @@ module Yufu
     include ActiveModel::Serializable
     EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
                     flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
-                    admin.misc.filter_date_format date.day_names date.abbr_day_names date.month_names abbr_month_names
-                    date ckeditor. admin.).join('|')}/
+                    admin.misc.filter_date_format ckeditor. admin.).join('|')}/
 
     MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::Service.short_description Order::ServicesPack.name
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
