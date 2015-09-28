@@ -110,6 +110,11 @@ module Order
                              Yufu::SmsNotification.instance.re_confirm_back_up user
                            end
 
+    scope :state_new, -> {where state: :new}
+    scope :new_or_confirmed, -> {where :state.in => [:new, :confirmed]}
+    scope :confirmed, -> {where state: :confirmed}
+    scope :rejected, -> {where state: :rejected}
+
     state_machine initial: :new do
       state :rejected
       state :confirmed

@@ -108,7 +108,7 @@ module Order
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
     validates_presence_of :location, if: :persisted?
     validate :assign_reservation_to_criterion, if: -> (o) {o.step == 2}
-    validates_length_of :offers, maximum: 2, unless: ->(order) {order.will_begin_less_than?(36)}
+    validates_length_of :offers, maximum: 2, unless: ->(order) {order.will_begin_less_than?(36.hours)}
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion
@@ -197,11 +197,11 @@ module Order
     end
 
     def primary_offer
-      offers.where(state: 'new').first
+      offers.state_new.first
     end
 
     def secondary_offer
-      offers.where(state: 'new')[1]
+      offers.state_new[1]
     end
 
     def supported_by?(translator)
@@ -232,11 +232,11 @@ module Order
 
     def before_60
       notify_about_check_dates
-      primary_offer.notify_about_re_confirm_main
+      primary_offer.notify_about_re_confirm_main if primary_offer.present?
     end
 
     def before_48
-      secondary_offer.notify_about_re_confirm_back_up
+      secondary_offer.notify_about_re_confirm_back_up if secondary_offer.present?
     end
 
     def before_36
@@ -280,15 +280,15 @@ module Order
     # end
 
     def paid_ago?(time)
-      (Time.now - created_at) >= time.hours
+      (Time.now - created_at) >= time
     end
 
     def will_begin_less_than?(time)
-      (first_date_time - DateTime.now) <= time.hours && (first_date_time - DateTime.now) > 0
+      (first_date_time - DateTime.now) <= time && (first_date_time - DateTime.now) > 0
     end
 
     def has_offer?
-      offers.where(state: 'new').count > 0
+      offers.new_or_confirmed.count > 0
     end
 
     private
