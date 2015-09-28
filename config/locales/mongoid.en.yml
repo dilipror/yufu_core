@@ -254,6 +254,7 @@ en:
         role: Role
         groups: Groups
         permissions: Permissions
+        actions: Actions
         remember_me: Remember me
         duplicate_messages_on_email: Duplicate messages by Email
         duplicate_messages_on_sms: Duplicate messages by SMS
