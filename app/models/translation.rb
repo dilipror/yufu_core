@@ -1,6 +1,7 @@
 class Translation
   include Mongoid::Document
   include Mongoid::Paranoia
+  include Mongoid::Timestamps
 
   MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::ServicesPack.name
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
