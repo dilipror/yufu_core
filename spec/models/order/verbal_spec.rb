@@ -649,7 +649,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:invoice){create :invoice}
     before(:each) do
       invoice.client_info.stub(:invoice).and_return(invoice)
-      order.invoices.first.transactions.first.stub(:sum).and_return(100)
+      order.invoices.first.transactions.create sum: 100, state: 'executed', debit: order.owner.user, credit: Office.head
     end
 
     context 'translator re-confirmed' do

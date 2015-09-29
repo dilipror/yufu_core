@@ -26,8 +26,6 @@ module Order
     end
 
 
-    validate :company_params#, :wechat_param
-    validate :uniq_phone, if: -> {phone.present?}
 
 
     # def identification_number

@@ -110,6 +110,23 @@ module Order
                              Yufu::SmsNotification.instance.re_confirm_back_up user
                            end
 
+    has_notification_about :re_confirmed_translator,
+                           message: 'notifications.re_confirmed_translator',
+                           observers: :translator,
+                           mailer: (-> (user, offer) do
+                             NotificationMailer.re_confirmed_translator(user).deliver
+                           end),
+                           sms: -> (user, offer) do
+                             Yufu::SmsNotification.instance.re_confirmed_translator user
+                           end
+
+    has_notification_about :re_confirmed_client,
+                           message: 'notifications.re_confirmed_client',
+                           observers: :translator,
+                           mailer: -> (user, offer) do
+                             NotificationMailer.re_confirmed_client(user, offer).deliver
+                           end
+
     scope :state_new, -> {where state: :new}
     scope :new_or_confirmed, -> {where :state.in => [:new, :confirmed]}
     scope :confirmed, -> {where state: :confirmed}
@@ -130,6 +147,10 @@ module Order
       before_transition new: :confirmed do |offer|
         if offer.can_confirm?
           offer.order.process
+          notify_about_re_confirmed_translator
+          if translator != order.offers.first.translator && translator != order.offers[1].translator
+            notify_about_re_confirmed_client
+          end
         end
         offer.can_confirm?
       end

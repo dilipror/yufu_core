@@ -5,6 +5,32 @@ en:
     new_order: Place new order
     your_int: Your interpreter
 
+    re_confirmed_client:
+      subject: "Interpreter`s changes"
+      body: "Dear %{client},
+
+            ID number %{client_id},
+
+             Order details: %{order_details}
+
+             We kindly inform you, that  your interpreter has been changed. We sincerely apologize for any
+
+             inconvenience.
+
+             Please see your interpreter`s information:
+
+             %{interpreter_link}
+
+             If you wish to ask a question, please follow the link below:
+
+             %{dashboard_link}
+
+             Thank you for choosing Yufu.net!
+
+             Sincerely Yours,
+
+             YUFU.NET community"
+
     cancel:
       subject: Order cancellation by YUFU.NET
       body: Dear %{client},
@@ -51,7 +77,7 @@ en:
 
             ID number %{client_id},
 
-            Order details: %{order_details}\n
+            Order details: %{order_details}
 
             We kindly inform you, that your order for the YUFU.NET service has been confirmed!
 
