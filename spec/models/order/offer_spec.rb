@@ -1,90 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Order::Offer, :type => :model do
+RSpec.descrie Order::Offer, :type => :model do
 
-  describe 'notifications' do
-    describe 'after confirm' do
-      subject{offer.update! is_confirmed: true}
-
-      context 'offer is secondary' do
-        let(:offer){create :order_offer, status: 'secondary'}
-
-        it {expect{subject}.to change{offer.translator.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{offer.order.owner.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{NotificationMailer.deliveries.count}.by(3)}
-      end
-
-      context 'offer is primary' do
-        let(:offer){create :order_offer, status: 'primary'}
-
-        it {expect{subject}.to change{offer.translator.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{offer.order.owner.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{NotificationMailer.deliveries.count}}
-      end
-    end
-  end
-
-  describe '#process_order' do
-    let(:order){create :wait_offers_order, offers: []}
-    subject {create :order_offer, status: status, is_confirmed: confirm, order: order}
-
-    context 'create primary offer' do
-      let(:status){'primary'}
-
-      context 'create confirmed offer' do
-        let(:confirm){true}
-
-        context 'order has confirmed secondary offer' do
-          before :each do
-            create :order_offer, status: 'secondary', is_confirmed: true, order: order
-          end
-
-          it{expect{subject}.to change{order.state}.to('in_progress')}
-        end
-
-        context 'order has not confirmed secondary offer' do
-          it{expect{subject}.not_to change{order.state}}
-        end
-      end
-      context 'create not confirmed offer' do
-        let(:confirm){false}
-
-        it{expect{subject}.not_to change{order.state}}
-      end
-    end
-
-    context 'create secondary offer' do
-      let(:status){'secondary'}
-
-      context 'create confirmed offer' do
-        let(:confirm){true}
-
-        context 'order has confirmed primary offer' do
-          before :each do
-            create :order_offer, status: 'primary', is_confirmed: true, order: order
-          end
-
-          it{expect{subject}.to change{order.state}.to('in_progress')}
-        end
-
-        context 'order has not confirmed primary offer' do
-          it{expect{subject}.not_to change{order.state}}
-        end
-      end
-      context 'create not confirmed offer' do
-        let(:confirm){false}
-
-        it{expect{subject}.not_to change{order.state}}
-      end
-    end
-  end
-
-  specify 'cannot create 2 primary application for one order' do
-    order = create :order_verbal
-    order.offers << (create :order_offer, status: 'primary')
-    application = build :order_offer, status: 'primary', order: order
-    expect(application.valid?).to be_falsey
-  end
 
   describe 'validate no secondary before primary' do
 
@@ -103,10 +20,12 @@ RSpec.describe Order::Offer, :type => :model do
     end
   end
 
-  describe '#confirm' do
+  describe '#can_confirm?' do
+
+    let(:translator){create :profile_translator}
 
     let(:order){create :order_verbal, offers: [], state: 'wait_offer'}
-    let(:offer){create :offer, order: order}
+    let(:offer){create :offer, order: order, translator: translator}
     before(:each){order.stub(:process).and_return(true)}
 
     subject{offer.confirm}
@@ -114,9 +33,9 @@ RSpec.describe Order::Offer, :type => :model do
     context 'can confirm primary' do
 
       before(:each) do
-        order.stub(:before_60).and_return(true)
-        order.stub(:before_48).and_return(false)
-        order.stub(:before_36).and_return(false)
+        order.stub(:will_begin_less_than?).with(60.hours).and_return(true)
+        order.stub(:will_begin_less_than?).with(48.hours).and_return(false)
+        order.stub(:will_begin_less_than?).with(36.hours).and_return(false)
         offer.stub(:primary?).and_return(true)
       end
 
@@ -127,9 +46,9 @@ RSpec.describe Order::Offer, :type => :model do
     context 'can confirm backup' do
 
       before(:each) do
-        order.stub(:before_60).and_return(true)
-        order.stub(:before_48).and_return(true)
-        order.stub(:before_36).and_return(false)
+        order.stub(:will_begin_less_than?).with(60.hours).and_return(true)
+        order.stub(:will_begin_less_than?).with(48.hours).and_return(true)
+        order.stub(:will_begin_less_than?).with(36.hours).and_return(false)
         offer.stub(:primary?).and_return(false)
         offer.stub(:back_up?).and_return(true)
       end
@@ -141,9 +60,9 @@ RSpec.describe Order::Offer, :type => :model do
     context 'can not confirm primary' do
 
       before(:each) do
-        order.stub(:before_60).and_return(false)
-        order.stub(:before_48).and_return(false)
-        order.stub(:before_36).and_return(false)
+        order.stub(:will_begin_less_than?).with(60.hours).and_return(false)
+        order.stub(:will_begin_less_than?).with(48.hours).and_return(false)
+        order.stub(:will_begin_less_than?).with(36.hours).and_return(false)
         offer.stub(:primary?).and_return(true)
         offer.stub(:back_up?).and_return(false)
       end
@@ -155,9 +74,9 @@ RSpec.describe Order::Offer, :type => :model do
     context 'can not confirm backup' do
 
       before(:each) do
-        order.stub(:before_60).and_return(true)
-        order.stub(:before_48).and_return(false)
-        order.stub(:before_36).and_return(false)
+        order.stub(:will_begin_less_than?).with(60.hours).and_return(true)
+        order.stub(:will_begin_less_than?).with(48.hours).and_return(false)
+        order.stub(:will_begin_less_than?).with(36.hours).and_return(false)
         offer.stub(:primary?).and_return(false)
         offer.stub(:back_up?).and_return(true)
       end
@@ -168,9 +87,9 @@ RSpec.describe Order::Offer, :type => :model do
 
     context 'can confirm any' do
       before(:each) do
-        order.stub(:before_60).and_return(true)
-        order.stub(:before_48).and_return(true)
-        order.stub(:before_36).and_return(true)
+        order.stub(:will_begin_less_than?).with(60.hours).and_return(true)
+        order.stub(:will_begin_less_than?).with(48.hours).and_return(true)
+        order.stub(:will_begin_less_than?).with(36.hours).and_return(true)
         offer.stub(:primary?).and_return(false)
         offer.stub(:back_up?).and_return(false)
       end
@@ -212,6 +131,90 @@ RSpec.describe Order::Offer, :type => :model do
       it{expect{subject}.not_to change{translator.user.notifications.count}}
       it{expect{subject}.to change{translator_back_up.user.notifications.count}.by(1)}
       it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+
+    end
+  end
+
+  describe '#confirm' do
+
+    let(:translator){create :profile_translator}
+    let(:translator_bu){create :profile_translator}
+    let(:translator_other){create :profile_translator}
+    let(:order){create :order_verbal}
+    let(:offer){create :offer, translator: translator, order: order}
+    let(:offer_1){create :offer, translator: translator_bu, order: order}
+    let(:offer_2){create :offer, translator: translator_other, order: order}
+
+    subject{offer.confirm}
+
+    context 'can confirm' do
+
+      before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+      it{expect{subject}.to change{translator.user.reload.notifications.count}.by(1)}
+      it{expect{subject}.not_to change{translator_bu.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_other.user.notifications.count}}
+
+      context 're-confirmed be main' do
+
+        before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+
+      end
+
+      context 're-confirmed be main' do
+
+        before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+        before(:each){
+          offer
+          offer_1
+        }
+
+        subject{offer.confirm}
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+
+      end
+
+      context 're-confirmed other' do
+
+        before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+        subject{offer_2.confirm}
+
+        let(:offer){create :offer, translator: translator, order: order, state: 'rejected'}
+        let(:offer_1){create :offer, translator: translator_bu, order: order, state: 'rejected'}
+
+
+        before(:each){
+          order.stub(:will_begin_less_than?).with(36.hours).and_return(true)
+          order.stub(:process).and_return(true)
+          order.stub(:before_60)
+          offer
+          offer_1
+          offer_2
+        }
+
+        it{expect{subject}.to change{translator_other.user.notifications.count}.by(1)}
+        it{expect{subject}.to change{order.owner.user.reload.notifications.count}.by(1)}
+        it{expect{subject}.not_to change{translator.user.notifications.count}}
+        it{expect{subject}.not_to change{translator_bu.user.notifications.count}}
+
+      end
+
+    end
+
+    context 'can not confirm' do
+
+      before(:each){offer.stub(:can_confirm?).and_return(false)}
+
+      it{expect{subject}.not_to change{order.state}}
+      it{expect{subject}.not_to change{translator.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_bu.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_other.user.notifications.count}}
+      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
 
     end
   end

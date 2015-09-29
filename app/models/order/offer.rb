@@ -122,7 +122,7 @@ module Order
 
     has_notification_about :re_confirmed_client,
                            message: 'notifications.re_confirmed_client',
-                           observers: :translator,
+                           observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
                              NotificationMailer.re_confirmed_client(user, offer).deliver
                            end
@@ -147,9 +147,9 @@ module Order
       before_transition new: :confirmed do |offer|
         if offer.can_confirm?
           offer.order.process
-          notify_about_re_confirmed_translator
-          if translator != order.offers.first.translator && translator != order.offers[1].translator
-            notify_about_re_confirmed_client
+          offer.notify_about_re_confirmed_translator
+          if offer.translator != offer.order.offers.first.translator && offer.translator != offer.order.offers[1].translator
+            offer.notify_about_re_confirmed_client
           end
         end
         offer.can_confirm?
@@ -158,13 +158,13 @@ module Order
 
     def can_confirm?
       case
-        when order.before_36
+        when order.will_begin_less_than?(36.hours)
           return true
-        when order.before_48
+        when order.will_begin_less_than?(48.hours)
           return false unless (primary? || back_up?)
-        when order.before_60
+        when order.will_begin_less_than?(60.hours)
           return false unless primary?
-        when !order.before_60
+        when !order.will_begin_less_than?(60.hours)
           return false
       end
       true

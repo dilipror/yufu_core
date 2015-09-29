@@ -543,6 +543,38 @@ RSpec.describe Order::Verbal, :type => :model do
   end
 
   describe 'events' do
+
+    before(:each) do
+      Support::Theme.create type: 'no_offers_confirmed', name: 'No translators re-confirmed the order'
+      Support::Theme.create type: 'no_translator_found', name: 'No translator found for offer'
+    end
+
+    describe '#after_12' do
+
+      let(:translator_1){create :profile_translator}
+      let(:translator_2){create :profile_translator}
+
+      subject{order.after_12}
+
+      let(:order){create :order_verbal, offers: []}
+
+      context 'no offers' do
+
+        it{expect{subject}.to change{Support::Ticket.count}.by(1)}
+      end
+
+      context 'has offer' do
+
+        before(:each) do
+          order.offers.create! translator: translator_1
+          order.offers.create! translator: translator_2
+        end
+
+        it{expect{subject}.not_to change{Support::Ticket.count}}
+
+      end
+    end
+
     describe '#after_24' do
 
       let(:translator){create :profile_translator}
@@ -604,69 +636,68 @@ RSpec.describe Order::Verbal, :type => :model do
 
     end
 
-  end
 
-  describe '#before_36' do
 
-    subject{order.before_36}
+    describe '#before_36' do
 
-    context 'translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'in_progress'}
+      subject{order.before_36}
 
-      it{expect{subject}.not_to change{Support::Ticket.count}}
+      context 'translator re-confirmed' do
+        let(:order){create :order_verbal, state: 'in_progress'}
+
+        it{expect{subject}.not_to change{Support::Ticket.count}}
+      end
+
+      context 'no translator re-confirmed' do
+        let(:order){create :order_verbal, state: 'wait_offer'}
+        it{expect{subject}.to change{Support::Ticket.count}.by(1)}
+      end
     end
 
-    context 'no translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'wait_offer'}
-      it{expect{subject}.to change{Support::Ticket.count}.by(1)}
-    end
-  end
+    describe '#before_24' do
 
-  describe '#before_24' do
-
-    subject{order.before_24}
+      subject{order.before_24}
 
 
-    context 'translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'in_progress'}
+      context 'translator re-confirmed' do
+        let(:order){create :order_verbal, state: 'in_progress'}
 
-      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
-    end
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+      end
 
-    context 'no translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'wait_offer'}
+      context 'no translator re-confirmed' do
+        let(:order){create :order_verbal, state: 'wait_offer'}
 
-      it{expect{subject}.to change{order.owner.user.reload.notifications.count}.by(1)}
-    end
-  end
-
-  describe '#before_4' do
-
-
-
-    subject{order.before_4}
-
-    let(:invoice){create :invoice}
-    before(:each) do
-      invoice.client_info.stub(:invoice).and_return(invoice)
-      order.invoices.first.transactions.create sum: 100, state: 'executed', debit: order.owner.user, credit: Office.head
+        it{expect{subject}.to change{order.owner.user.reload.notifications.count}.by(1)}
+      end
     end
 
-    context 'translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'in_progress', invoices: [invoice]}
+    describe '#before_4' do
 
-      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
-      it{expect{subject}.not_to change{order.owner.user.balance}}
+      subject{order.before_4}
+
+      let(:invoice){create :invoice}
+      before(:each) do
+        invoice.client_info.stub(:invoice).and_return(invoice)
+        order.invoices.first.transactions.create sum: 100, state: 'executed', debit: order.owner.user, credit: Office.head
+      end
+
+      context 'translator re-confirmed' do
+        let(:order){create :order_verbal, state: 'in_progress', invoices: [invoice]}
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+        it{expect{subject}.not_to change{order.owner.user.balance}}
+      end
+
+      context 'no translator re-confirmed' do
+        let(:order){create :order_verbal, state: 'wait_offer', invoices: [invoice]}
+
+        it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+        it{expect{subject}.to change{order.state}.to('cancelled')}
+        it{expect{subject}.to change{order.owner.user.balance}.by(100)}
+      end
+
     end
-
-    context 'no translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'wait_offer', invoices: [invoice]}
-
-      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
-      it{expect{subject}.to change{order.state}.to('cancelled')}
-      it{expect{subject}.to change{order.owner.user.balance}.by(100)}
-    end
-
   end
 
 end

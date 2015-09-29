@@ -240,8 +240,8 @@ module Order
 
     def after_12
       if offers.count == 0
-        Support::Ticket.create assign_to: main_language_criterion.language, order: self,
-                               theme: Support::Theme.where(type: 'no_translator_found')
+        Support::Ticket.create assigned_to: main_language_criterion.language, order: self,
+                               theme: Support::Theme.where(type: 'no_translator_found').first, subject: I18n.t('tickets.subjects.no_translator_found')
       end
     end
 
@@ -263,7 +263,7 @@ module Order
     def before_36
       if state == 'wait_offer'
         Support::Ticket.create! assigned_to: main_language_criterion.language.senior.try(:user), order: self,
-                               theme: Support::Theme.where(type: 'no_offers_confirmed').first
+                               theme: Support::Theme.where(type: 'no_offers_confirmed').first, subject: I18n.t('tickets.subjects.no_offers_confirmed')
       end
     end
 
