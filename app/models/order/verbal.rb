@@ -146,11 +146,11 @@ module Order
     end
 
     def can_send_primary_offer?
-      offers.primary.empty?
+      #offers.primary.empty?
     end
 
     def can_send_secondary_offer?
-      offers.secondary.empty?
+      #offers.secondary.empty?
     end
 
     def cancel_by_yufu
@@ -285,6 +285,10 @@ module Order
 
     def will_begin_less_than?(time)
       (first_date_time - DateTime.now) <= time && (first_date_time - DateTime.now) > 0
+    end
+
+    def will_begin_at?(time)
+      # TODO: implement
     end
 
     def has_offer?
