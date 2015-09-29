@@ -28,7 +28,7 @@ module Support
 
     accepts_nested_attributes_for :attachments, :comments, :embedded_attachments
 
-    validates_presence_of :user, :theme, :subject
+    validates_presence_of :theme, :subject
 
     has_notification_about :new_comment, observers: :watchers, message: 'notifications.tickets.new_comment'
 
@@ -109,7 +109,7 @@ module Support
 
     private
     def add_default_watchers
-      watchers << user
+      watchers << user if user.present?
       watchers << assigned_to
     end
 

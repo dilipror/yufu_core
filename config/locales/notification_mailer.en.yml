@@ -5,6 +5,46 @@ en:
     new_order: Place new order
     your_int: Your interpreter
 
+    cancel:
+      subject: Order cancellation by YUFU.NET
+      body: Dear %{client},
+
+            Unfortunately we have to inform you,  that your order  for the YUFU.NET service has beed
+
+            cancelled, due to insurmountable reasons.
+
+            Your payment will be refunded in full amount according to the Refund Policy of YUFU.NET.
+
+            We sincerely apologize for any inconvenience!
+
+            Sincerely Yours,
+
+            YUFU.NET community
+
+    we_are_looking_before_24:
+      subject: The order issue
+      body: "Dear %{client},
+
+            We regret to inform you we still have not received
+
+            an order re‐confirmation from our main and reserve interpreters.  We will do our best to
+
+            resolve this issue.
+
+            If you wish, you may cancel the order now. However, we invite you to be patient as we find
+
+            another interpreter. In case we cannot do it on time,
+
+            the order will be cancelled by YUFU.NET. In both cases the payment is refundable to you in full
+
+            amount.
+
+            We sincerely apologize for any inconvenience!
+
+            Sincerely Yours,
+
+            YUFU.NET community"
+
     for_client:
       subjet: Order confirmation/voucher
       body: "Dear %{client},

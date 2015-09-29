@@ -23,4 +23,6 @@ en:
     for_client: Found translator for your order
     looking_for_int: We are looking for interpreter for your order
     re_confirm: "Please re-confirm your confirmation"
+    looking_for_int_before_24: "We are still looking for interpreter for your order"
+    cancel: Your order is cancelled
 

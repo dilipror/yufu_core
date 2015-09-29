@@ -70,10 +70,16 @@ module Order
     has_notification_about :looking_for_int,
                            message: 'notifications.looking_for_int',
                            observers: -> (order){ order.owner.user },
-                           mailer: -> (user, offer) do
+                           mailer: -> (user, order) do
                              NotificationMailer.we_are_looking(user).deliver
                            end
 
+    has_notification_about :looking_for_int_before_24,
+                           message: 'notifications.looking_for_int_before_24',
+                           observers: -> (order){ order.owner.user },
+                           mailer: -> (user, order) do
+                             NotificationMailer.we_are_looking_before_24(user).deliver
+                           end
 
 
     has_notification_about :reminder_for_interpreter_24,
@@ -104,6 +110,12 @@ module Order
                              NotificationMailer.check_dates(user, order).deliver
                            end
 
+    has_notification_about :cancel,
+                           message: 'notifications.cancel',
+                           observers: -> (order){ order.owner.user },
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancel(user).deliver
+                           end
 
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
     validates_presence_of :location, if: :persisted?
@@ -154,11 +166,20 @@ module Order
     end
 
     def cancel_by_yufu
-
+      cancel
+      full_refund
     end
 
     def cancel_by_client
 
+    end
+
+    def full_refund
+      invoices.each do |invoice|
+        invoice.transactions.each do |transaction|
+          transaction.cancel
+        end
+      end
     end
 
     def original_price
@@ -240,44 +261,25 @@ module Order
     end
 
     def before_36
-
+      if state == 'wait_offer'
+        Support::Ticket.create! assigned_to: main_language_criterion.language.senior.try(:user), order: self,
+                               theme: Support::Theme.where(type: 'no_offers_confirmed').first
+      end
     end
 
     def before_24
-
+      if state == 'wait_offer'
+        notify_about_looking_for_int_before_24
+      end
     end
 
     def before_4
-
+      if state == 'wait_offer'
+        notify_about_cancel
+        cancel_by_yufu
+      end
     end
 
-    # def after_12?
-    #   (DateTime.now - created_at) >= 12.hours
-    # end
-    #
-    # def after_24?
-    #   (DateTime.now - created_at) >= 24.hours
-    # end
-    #
-    # def before_60?
-    #   (first_date_time - DateTime.now) <= 60.hours
-    # end
-    #
-    # def before_48?
-    #   (first_date_time - DateTime.now) <= 48.hours && (first_date_time - DateTime.now) > 0
-    # end
-    #
-    # def before_36?
-    #   (first_date_time - DateTime.now) <= 36.hours && (first_date_time - DateTime.now) > 0
-    # end
-    #
-    # def before_24?
-    #   (first_date_time - DateTime.now) <= 24.hours && (first_date_time - DateTime.now) > 0
-    # end
-    #
-    # def before_4?
-    #   (first_date_time - DateTime.now) <= 4.hours && (first_date_time - DateTime.now) > 0
-    # end
 
     def paid_ago?(time)
       (Time.now - created_at) >= time

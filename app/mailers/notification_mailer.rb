@@ -185,6 +185,14 @@ class NotificationMailer < ActionMailer::Base
                                       dashboard_link: (link_to I18n.t('mailer.notification_mailer.dashboard_link'), dashboard_url))
   end
 
+  def we_are_looking_before_24(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
+  end
+
+  def cancel
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
+  end
+
   private
 
   def client(user)
