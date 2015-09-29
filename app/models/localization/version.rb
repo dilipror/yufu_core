@@ -10,8 +10,11 @@ class Localization::Version
 
   scope :approved, -> {where state: 'approved'}
   scope :not_approved, -> {ne :state =>  'approved'}
+  scope :opened, -> {where state: 'new'}
+  scope :commited, -> {where state: 'commited'}
   scope :dependent, -> {ne parent_version_id: nil}
   scope :english, -> {where localization_id: Localization.default.id}
+
 
   validates_presence_of :name, :localization
 
