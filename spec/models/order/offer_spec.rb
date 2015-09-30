@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.descrie Order::Offer, :type => :model do
+RSpec.describe Order::Offer, :type => :model do
 
 
   describe 'validate no secondary before primary' do

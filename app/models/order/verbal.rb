@@ -257,9 +257,9 @@ module Order
     end
 
     def before_4
-      if state == 'wait_offer'
+      if wait_offer?
         notify_about_cancel
-        cancel_by_yufu
+        RejectService.new(self).reject_order :yufu
       end
     end
 
