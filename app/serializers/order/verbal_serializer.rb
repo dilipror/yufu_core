@@ -2,7 +2,7 @@ class Order::VerbalSerializer < Order::BaseSerializer
   attributes :id, :include_near_city, :goal, :location_name, :reservation_dates_count, :location_id,
              :want_native_chinese, :can_confirm, :can_update, :level, :language_id,
              :there_are_translator, :greeted_at_hour, :greeted_at_minute, :meeting_in, :can_send_secondary_offer, :can_send_primary_offer,
-             :offer_status, :offers, :do_not_want_native_chinese, :additional_info
+             :offer_status, :offers, :do_not_want_native_chinese, :additional_info, :can_send_bu, :confirm_after_create
 
   has_one :main_language_criterion
   has_one :airport_pick_up
@@ -44,5 +44,13 @@ class Order::VerbalSerializer < Order::BaseSerializer
 
   def reservation_dates_count
     object.reservation_dates.count
+  end
+
+  def can_send_bu
+    object.offers.where(state: 'new').count == 1 && !object.will_begin_less_than?(36.hours)
+  end
+
+  def confirm_after_create
+    object.will_begin_less_than?(36.hours)
   end
 end

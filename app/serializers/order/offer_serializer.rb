@@ -1,5 +1,5 @@
 class Order::OfferSerializer < ActiveModel::Serializer
-  attributes :id, :status, :is_confirmed, :assignee
+  attributes :id, :assignee, :state
 
   def assignee
     object.translator.try :id

@@ -1,24 +1,6 @@
 require 'rails_helper'
 
-RSpec.descrie Order::Offer, :type => :model do
-
-
-  describe 'validate no secondary before primary' do
-
-    let(:order){create :order_verbal}
-    subject{Order::Offer.new(order: order, status: 'secondary').valid?}
-
-    context 'no primary offer' do
-      it {is_expected.to be_truthy}
-    end
-
-    context 'has primary offer' do
-
-      before(:each) {create :order_offer, order: order, status: 'primary' }
-
-      it {is_expected.to be_truthy}
-    end
-  end
+RSpec.describe Order::Offer, :type => :model do
 
   describe '#can_confirm?' do
 
@@ -217,6 +199,28 @@ RSpec.descrie Order::Offer, :type => :model do
       it{expect{subject}.not_to change{order.owner.user.notifications.count}}
 
     end
+
+    context '#confirm_after_create' do
+
+      let(:order){create :order_verbal, offers: []}
+
+      subject{create :offer, translator: translator, order: order}
+
+      context 'before 36' do
+        before(:each){allow(order).to receive(:will_begin_less_than?).with(36.hours).and_return(true)}
+
+        it{expect(subject.state).to eq('confirmed')}
+
+      end
+
+      context 'out of time frames' do
+        before(:each){allow(order).to receive(:will_begin_less_than?).with(36.hours).and_return(false)}
+
+        it{expect(subject.state).not_to eq('confirmed')}
+      end
+
+    end
+
   end
 
 end
