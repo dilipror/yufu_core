@@ -679,6 +679,8 @@ RSpec.describe Order::Verbal, :type => :model do
       let(:invoice){create :invoice}
       before(:each) do
         invoice.client_info.stub(:invoice).and_return(invoice)
+        allow(order).to receive(:will_begin_less_than?).with(4.hours).and_return true
+        allow(order).to receive(:will_begin_less_than?).with(36.hours).and_return true
         order.invoices.first.transactions.create sum: 100, state: 'executed', debit: order.owner.user, credit: Office.head
       end
 
@@ -693,8 +695,8 @@ RSpec.describe Order::Verbal, :type => :model do
         let(:order){create :order_verbal, state: 'wait_offer', invoices: [invoice]}
 
         it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
-        it{expect{subject}.to change{order.state}.to('cancelled')}
-        it{expect{subject}.to change{order.owner.user.balance}.by(100)}
+        it{expect{subject}.to change{order.state}.to('rejected')}
+        it{expect{subject}.to change{order.owner.user.balance}}
       end
 
     end

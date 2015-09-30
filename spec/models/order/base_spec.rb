@@ -88,7 +88,6 @@ RSpec.describe Order::Base, :type => :model do
     end
   end
 
-
   describe '#paid' do
     let(:user){create :user}
     let(:order){create :order_verbal, referral_link: user.referral_link}
@@ -114,7 +113,6 @@ RSpec.describe Order::Base, :type => :model do
     end
   end
 
-
   describe '#can_send_primary_offer?' do
     it 'returns true if order has not primary offer' do
       order = create :order_verbal
@@ -124,17 +122,6 @@ RSpec.describe Order::Base, :type => :model do
       order = create :order_verbal
       order.offers << (create :order_offer, status: 'primary')
       expect(order.can_send_primary_offer?).to be_falsey
-    end
-  end
-
-  describe '#reject' do
-    let(:order) {create :order_base, assignee: (create :profile_translator), state: :in_progress}
-    subject{order.reject}
-    it 'sets state as wait_offer' do
-      expect{subject}.to change{order.reload.wait_offer?}.to(true)
-    end
-    it 'sets assignee as nil' do
-      expect{subject}.to change{order.reload.assignee}.to(nil)
     end
   end
 
@@ -173,8 +160,6 @@ RSpec.describe Order::Base, :type => :model do
     let(:credit){create :user}
     let(:order){create :order_base}
 
-
-
     context 'no commission' do
       subject{order.create_and_execute_transaction(debit, credit, 100)}
 
@@ -195,7 +180,5 @@ RSpec.describe Order::Base, :type => :model do
       it {expect{subject}.to change{Transaction.last.try(:is_commission_from)}.to(commission)}
 
     end
-
   end
-
 end

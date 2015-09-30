@@ -165,23 +165,6 @@ module Order
       #offers.secondary.empty?
     end
 
-    def cancel_by_yufu
-      cancel
-      full_refund
-    end
-
-    def cancel_by_client
-
-    end
-
-    def full_refund
-      invoices.each do |invoice|
-        invoice.transactions.each do |transaction|
-          transaction.cancel
-        end
-      end
-    end
-
     def original_price
       reservation_price = reservation_dates.to_a.inject(0) { |sum, n| sum + n.original_price }
       price = 0
@@ -274,9 +257,9 @@ module Order
     end
 
     def before_4
-      if state == 'wait_offer'
+      if wait_offer?
         notify_about_cancel
-        cancel_by_yufu
+        RejectService.new(self).reject_order :yufu
       end
     end
 

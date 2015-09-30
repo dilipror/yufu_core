@@ -8,6 +8,7 @@ class Transaction
   belongs_to :debit,              polymorphic: true
   belongs_to :credit,             polymorphic: true
   belongs_to :is_commission_from, polymorphic: true
+  belongs_to :subject,            polymorphic: true
   belongs_to :invoice
 
   validates_presence_of :debit, :credit

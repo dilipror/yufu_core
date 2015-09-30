@@ -1,17 +1,34 @@
 module Order
   class Verbal
-    class RefundService
+    class RejectService
       def initialize(order)
         @order = order
       end
 
-      def refund(cancel_by: :client)
+      def reject_order(inner = :client)
+        if @order.can_reject?
+          refund inner
+          @order.reject
+        end
+      end
 
+      def refund(inner = :client)
+        if @order.paid? && @order.owner.present?
+          sum = calculate_sum inner
+          if sum > 0
+            tr = Transaction.create debit: Office.head,
+                                    credit: @order.owner.user,
+                                    sum: sum,
+                                    message: 'Refund',
+                                    subject: @order
+            tr.execute
+          end
+        end
       end
 
       def calculate_sum(cancel_by)
         if cancel_by == :yufu
-          return full_with_cover if @order.will_begin_less_than?(4.hour)
+          return full_with_cover if @order.will_begin_less_than?(4.hours)
           #return full if (@order.paying? || @order.new?) && !@order.paid_less_then?(7.days) ????
         else
           if @order.has_offer?
@@ -25,14 +42,14 @@ module Order
           else
             return @order.paid_less_then?(24.hours) ? full : full_with_cover
           end
-
         end
+        0
       end
 
       private
 
       def cost
-        @order.invoces.first.cost
+        @order.invoices.first.cost
       end
 
       def full_with_cover

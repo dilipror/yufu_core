@@ -10,7 +10,7 @@ module OrderWorkflow
       state :in_progress
       state :close
       state :rated
-      state :cancelled
+      state :rejected
 
       event :paying do
         transition [:new] => :paying
@@ -29,15 +29,11 @@ module OrderWorkflow
       end
 
       event :reject do
-        transition in_progress: :wait_offer
+        transition all - [:close, :rejected, :rated] => :rejected
       end
 
       event :close do
         transition  [:sent_to_client, :in_progress] => :close
-      end
-
-      event :cancel do
-        transition wait_offer: :cancelled
       end
 
       # It should be after, but it doesn't work with MongoId https://github.com/pluginaweek/state_machine/issues/277

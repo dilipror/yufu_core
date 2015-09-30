@@ -1,13 +1,13 @@
 require 'rails_helper'
 
-RSpec.describe Order::Verbal::RefundService do
+RSpec.describe Order::Verbal::RejectService do
   let(:order){create :order_verbal}
-  let(:refunder){Order::Verbal::RefundService.new(order)}
+  let(:service){Order::Verbal::RejectService.new(order)}
 
   describe '#calculate_sum' do
-    subject{refunder.calculate_sum cancel_by}
+    subject{service.calculate_sum cancel_by}
 
-    before(:each) {allow(refunder).to receive(:cost).and_return(100)}
+    before(:each) {allow(service).to receive(:cost).and_return(100)}
 
     context 'order canceled by yufu' do
       let(:cancel_by){:yufu}
@@ -89,4 +89,36 @@ RSpec.describe Order::Verbal::RefundService do
     end
   end
 
+  describe '#refund' do
+    let(:owner){order.owner.user}
+    let(:order){create :order_verbal, state: 'wait_offer'}
+
+    subject{service.refund}
+
+    context 'sum > 0' do
+      before(:each){allow(service).to receive(:calculate_sum).and_return(100)}
+
+      it{expect{subject}.to change{Transaction.count}.by 1}
+      it{expect{subject}.to change{owner.reload.balance}.by(100)}
+    end
+
+    context 'sum <= 0' do
+      before(:each){allow(service).to receive(:calculate_sum).and_return(0)}
+
+      it{expect{subject}.not_to change{Transaction.count}}
+      it{expect{subject}.not_to change{owner.reload.balance}}
+    end
+  end
+  
+  describe '#reject_order' do
+    subject{service.reject_order}
+    before(:each){allow(service).to receive(:refund)}
+
+    it{expect{subject}.to change{order.state}.to 'rejected'}
+
+    it 'receive refund method' do
+      subject
+      expect(service).to have_received(:refund)
+    end
+  end
 end
