@@ -153,14 +153,6 @@ module Order
       #offers.secondary.empty?
     end
 
-    def cancel_by_yufu
-
-    end
-
-    def cancel_by_client
-
-    end
-
     def original_price
       reservation_price = reservation_dates.to_a.inject(0) { |sum, n| sum + n.original_price }
       price = 0

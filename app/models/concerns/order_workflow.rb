@@ -10,6 +10,7 @@ module OrderWorkflow
       state :in_progress
       state :close
       state :rated
+      state :rejected
 
       event :paying do
         transition [:new] => :paying
@@ -28,7 +29,7 @@ module OrderWorkflow
       end
 
       event :reject do
-        transition in_progress: :wait_offer
+        transition all - [:close, :rejected, :rated] => :rejected
       end
 
       event :close do

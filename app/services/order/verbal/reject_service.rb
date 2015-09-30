@@ -1,12 +1,29 @@
 module Order
   class Verbal
-    class RefundService
+    class RejectService
       def initialize(order)
         @order = order
       end
 
-      def refund(cancel_by: :client)
+      def reject_order(inner = :client)
+        if @order.can_reject?
+          @order.reject
+          refund inner
+        end
+      end
 
+      def refund(inner = :client)
+        if @order.paid? && @order.owner.present?
+          sum = calculate_sum inner
+          if sum > 0
+            tr = Transaction.create debit: Office.head,
+                                    credit: @order.owner.user,
+                                    sum: sum,
+                                    message: 'Refund',
+                                    subject: @order
+            tr.execute
+          end
+        end
       end
 
       def calculate_sum(cancel_by)
