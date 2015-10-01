@@ -25,13 +25,13 @@ RSpec.describe Order::Verbal::RejectService do
         before(:each){allow(order).to receive(:has_offer?).and_return false}
 
         context 'order paid less then 24 hours ago' do
-          before(:each){allow(order).to receive(:paid_less_then?).and_return true}
+          before(:each){allow(order).to receive(:paid_ago?).and_return true}
 
           it{is_expected.to eq 100}
         end
 
         context 'order paid more then 24 hours ago' do
-          before(:each){allow(order).to receive(:paid_less_then?).and_return false}
+          before(:each){allow(order).to receive(:paid_ago?).and_return false}
           it{is_expected.to eq 100 + 192}
         end
       end
@@ -78,7 +78,7 @@ RSpec.describe Order::Verbal::RejectService do
 
             context "order's half cost more than 1 day price" do
               before(:each){allow(order.language).to receive(:verbal_price).and_return 10}
-              it{is_expected.to eq 80}
+              it{is_expected.to eq 20}
             end
 
 

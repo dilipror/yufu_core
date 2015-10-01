@@ -65,7 +65,7 @@ module Order
       def half
         one_day_cost = @order.language.verbal_price(@order.level) * 8
         half = cost / 2
-        half >= one_day_cost ? half : one_day_cost
+        [(half >= one_day_cost ? half : cost - one_day_cost), 0].max
       end
 
       def sector_zero
