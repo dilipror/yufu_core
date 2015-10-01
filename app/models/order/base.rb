@@ -8,7 +8,7 @@ module Order
     include OrderWorkflow
     include Priced
 
-    SCOPES = %w(open in_progress close paying correct control done all_orders)
+    SCOPES = %w(open in_progress close paying correct control done all_orders rejected)
     PAY_WAYS = %w(card bank alipay credit_card local_balance)
     # [:bank, :alipay, :local_balance, :credit_card, :paypal]
 
@@ -24,11 +24,6 @@ module Order
     belongs_to :assignee,        class_name: 'Profile::Translator'
     belongs_to :pay_way,         class_name: 'Gateway::PaymentGateway'
 
-    # Additional Options
-    embeds_one :airport_pick_up, class_name: 'Order::AirportPickUp'
-    embeds_one :car_rent,        class_name: 'Order::CarRent'
-    embeds_one :hotel,           class_name: 'Order::Hotel'
-
     has_many :payments,    class_name: 'Order::Payment', inverse_of: :order
     has_many :invoices,    inverse_of: :subject
 
@@ -38,8 +33,6 @@ module Order
     belongs_to :referral_link
     belongs_to :banner
 
-    accepts_nested_attributes_for :airport_pick_up, :car_rent, :hotel
-
     # before_save :create_invoice, if: -> (order) {order.step == 2}
 
     after_save :check_pay_way, :create_additional_services
@@ -47,6 +40,7 @@ module Order
 
     scope :for_everyone,-> { where is_private: false }
     scope :private,     -> { where is_private: true }
+    scope :rejected,      -> (profile) { where state: 'rejected' }
     scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) {profile.orders.where :state.in => [:new, :paying]}
     scope :in_progress, -> (profile) do
@@ -85,8 +79,6 @@ module Order
     end
 
     def create_additional_services
-      create_car_rent if car_rent.nil?
-      create_hotel if hotel.nil?
       create_airport_pick_up if airport_pick_up.nil?
     end
 

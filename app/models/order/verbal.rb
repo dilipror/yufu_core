@@ -24,21 +24,21 @@ module Order
     belongs_to :location, class_name: 'City'
     belongs_to :translator_native_language, class_name: 'Language'
     belongs_to :native_language,            class_name: 'Language'
-
-
     belongs_to :language
-    has_many   :reserve_language_criterions, class_name: 'Order::LanguageCriterion', inverse_of: :reserve_socket, dependent: :destroy
-    has_one    :main_language_criterion,      class_name: 'Order::LanguageCriterion', inverse_of: :main_socket, dependent: :destroy
+
+    embeds_one :airport_pick_up, class_name: 'Order::AirportPickUp'
 
     embeds_many :reservation_dates,  class_name: 'Order::ReservationDate'
     has_many :translators_queues, class_name: 'Order::Verbal::TranslatorsQueue', dependent: :destroy
+    has_many :offers,             class_name: 'Order::Offer',   dependent: :destroy
 
-    accepts_nested_attributes_for :reserve_language_criterions,  allow_destroy: true
-    accepts_nested_attributes_for :main_language_criterion
-    accepts_nested_attributes_for :reservation_dates,            allow_destroy: true
+    has_one  :main_language_criterion,     class_name: 'Order::LanguageCriterion', inverse_of: :main_socket,    dependent: :destroy
+    has_many :reserve_language_criterions, class_name: 'Order::LanguageCriterion', inverse_of: :reserve_socket, dependent: :destroy
 
     has_and_belongs_to_many :directions
-    has_many :offers,      class_name: 'Order::Offer',   dependent: :destroy
+
+    accepts_nested_attributes_for :reserve_language_criterions, :reservation_dates, allow_destroy: true
+    accepts_nested_attributes_for :main_language_criterion, :airport_pick_up
 
     delegate :name, to: :location, prefix: true, allow_nil: true
 
@@ -217,7 +217,7 @@ module Order
       if reservation_dates.first.present?
         reservation_dates.first.date.change({hour: greeted_at_hour, min: greeted_at_minute})
       else
-        DateTime.now
+        Time.now
       end
     end
 
@@ -269,7 +269,7 @@ module Order
     end
 
     def will_begin_less_than?(time)
-      (first_date_time - DateTime.now) <= time && (first_date_time - DateTime.now) > 0
+      (first_date_time.to_time - Time.now) <= time && (first_date_time.to_time - Time.now) > 0
     end
 
     def will_begin_at?(time)
