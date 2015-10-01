@@ -8,17 +8,7 @@ RSpec.describe Invoice, :type => :model do
     Currency.create iso_code: 'EUR'
   end
 
-  describe 'build client info' do
-    let(:order) {create :order_verbal}
-    let(:invoice) {order.invoices.create cost: 100, user: create(:user)}
-
-    subject{invoice}
-
-    it 'expect client info' do
-      subject
-      expect(invoice.client_info).not_to be_nil
-    end
-  end
+  # TODO specs for client info attributs
 
   describe '#paying' do
     let(:order) {create :order_verbal}
@@ -27,7 +17,7 @@ RSpec.describe Invoice, :type => :model do
 
     subject{invoice.paying}
 
-    before(:each) {invoice.client_info.update_attributes wechat: 'd', phone: '23111'}
+    before(:each) {invoice.update_attributes wechat: 'd'}
 
     it 'invoice is paying' do
       subject
@@ -46,7 +36,7 @@ RSpec.describe Invoice, :type => :model do
 
     before(:each)do
       invoice =  order.invoices.create user: user
-      invoice.client_info.update_attributes wechat: 'd', phone: '23111'
+      invoice.update_attributes first_name: 'a', last_name: '3', email: 'dd3@ss.s'
       invoice.paying
       invoice.update cost: BigDecimal(100)
     end
@@ -150,7 +140,7 @@ RSpec.describe Invoice, :type => :model do
     let!(:tax_cny1) {create :tax_add_surch, company: cny_company, payment_gateways: [bank]}
     let!(:tax_cny2) {create :tax_add_bus_tax, company: cny_company, payment_gateways: [bank, local_balance]}
 
-    before(:each) {invoice.client_info.update_attributes wechat: 'd', phone: '23111'}
+    # before(:each) {invoice.update_attributes wechat: 'd', phone: '23111'}
 
     subject{invoice.amount_tax}
 
@@ -167,7 +157,7 @@ RSpec.describe Invoice, :type => :model do
                            pay_company: tax_gbp1.company, pay_way: tax_gbp1.payment_gateways.first,
                            subject: order_verbal}
       before :each do
-        invoice.client_info.update_attributes country: country
+        invoice.update_attributes country: country
         invoice.save
       end
 
@@ -181,7 +171,7 @@ RSpec.describe Invoice, :type => :model do
                            pay_company: tax_gbp2.company, pay_way: tax_gbp2.payment_gateways.first,
                            subject: order_verbal}
       before :each do
-        invoice.client_info.update_attributes country: country
+        invoice.update_attributes country: country
         invoice.save
       end
 
@@ -196,7 +186,7 @@ RSpec.describe Invoice, :type => :model do
                            subject: order_verbal}
       before :each do
         invoice.pay_way.taxes << tax_cny1
-        invoice.client_info.update_attributes country: country
+        invoice.update_attributes country: country
         invoice.save
       end
 
@@ -210,7 +200,7 @@ RSpec.describe Invoice, :type => :model do
                            pay_company: tax_cny2.company, pay_way: tax_cny2.payment_gateways.last,
                            subject: order_verbal, need_invoice_copy: true}
       before :each do
-        invoice.client_info.update_attributes country: country
+        invoice.update_attributes country: country
         invoice.save
       end
 

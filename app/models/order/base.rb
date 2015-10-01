@@ -69,10 +69,6 @@ module Order
       Office.head
     end
 
-    def client_info
-      invoices.first.try(:client_info)
-    end
-
     def set_owner!(user)
       self.update_attribute :owner, user.profile_client
       invoices.update_all user_id: user.id

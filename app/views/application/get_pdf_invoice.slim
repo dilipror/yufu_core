@@ -42,9 +42,9 @@ table#smth_else rules="all"
       td style="width: 120px; font-size: 13px;border:none"
         = I18n.t('billing.to')
       td style="width: 300px; color: gray; font-size: 13px; text-align: left;border:none"
-        = invoice.client_info.name
+        = invoice.client_name
         br
-        = invoice.client_info.country.name
+        = invoice.country.name
         br
         | #{I18n.t('billing.reg_num')} #{user.identification_number}
         - if user.phone

@@ -14,7 +14,7 @@ RSpec.describe Order::Payment, :type => :model do
       Currency.create iso_code: 'USD'
       Currency.create iso_code: 'CNY'
       Currency.create iso_code: 'EUR'
-      invoice.client_info.update_attributes wechat: 's'
+      invoice.update_attributes wechat: 's'
     end
 
     subject{payment.pay}

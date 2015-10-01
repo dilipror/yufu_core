@@ -222,7 +222,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:bank) {create :payment_bank}
 
     before(:each) {order.invoices.create cost: 100.0}
-    before(:each) {order.invoices.last.client_info.update_attributes wechat: 's', phone: '23'}
+    # before(:each) {order.invoices.last.update_attributes wechat: 's', phone: '23'}
 
     subject{order.update! step: 3, pay_way: bank}
 
@@ -295,7 +295,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:offer) {create :order_offer, order: order, translator: translator}
 
     before(:each) {order.invoices.create cost: 100.0}
-    before(:each) {order.invoices.last.client_info.update_attributes wechat: 's', phone: '211'}
+    # before(:each) {order.invoices.last.update_attributes wechat: 's', phone: '211'}
 
 
     subject{order.update airport_pick_up: {departure_city: 'Dushanbe'}}
@@ -678,7 +678,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
       let(:invoice){create :invoice}
       before(:each) do
-        invoice.client_info.stub(:invoice).and_return(invoice)
+        # invoice.client_info.stub(:invoice).and_return(invoice)
         allow(order).to receive(:will_begin_less_than?).with(4.hours).and_return true
         allow(order).to receive(:will_begin_less_than?).with(36.hours).and_return true
         order.invoices.first.transactions.create sum: 100, state: 'executed', debit: order.owner.user, credit: Office.head

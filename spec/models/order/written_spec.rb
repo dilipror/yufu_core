@@ -233,10 +233,10 @@ RSpec.describe Order::Written, type: :model do
       Currency.create iso_code: 'USD'
       Currency.create iso_code: 'CNY'
       Currency.create iso_code: 'EUR'
-      Invoice.all.each do |invoice|
-        invoice.client_info.update_attributes wechat: 's', phone: '23'
-      end
-      invoice.client_info.update_attributes wechat: 'a', phone: '22'
+      # Invoice.all.each do |invoice|
+      #   invoice.update_attributes wechat: 's', phone: '23'
+      # end
+      # invoice.update_attributes wechat: 'a', phone: '22'
       order.stub(:price){1000}
       client.user.update balance: 10000
       order.invoices.last.stub(:cost){1000}
