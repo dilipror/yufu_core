@@ -124,6 +124,7 @@ module Order
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion
+    after_save :create_additional_services
 
     scope :paid_orders, -> {where state: :in_progress}
 
@@ -281,6 +282,9 @@ module Order
     end
 
     private
+    def create_additional_services
+      create_airport_pick_up if airport_pick_up.nil?
+    end
 
     def set_langvel
       unless main_language_criterion.nil?

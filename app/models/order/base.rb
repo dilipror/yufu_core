@@ -35,7 +35,7 @@ module Order
 
     # before_save :create_invoice, if: -> (order) {order.step == 2}
 
-    after_save :check_pay_way, :create_additional_services
+    after_save :check_pay_way
     before_save :check_close
 
     scope :for_everyone,-> { where is_private: false }
@@ -80,10 +80,6 @@ module Order
 
     def can_update?
       true
-    end
-
-    def create_additional_services
-      create_airport_pick_up if airport_pick_up.nil?
     end
 
     def check_pay_way
