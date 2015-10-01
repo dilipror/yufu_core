@@ -40,7 +40,7 @@ module Order
               return minus_one_day if @order.will_begin_less_than? 14.days
             end
           else
-            return @order.paid_less_then?(24.hours) ? full : full_with_cover
+            return @order.paid_ago?(24.hours) ? full : full_with_cover
           end
         end
         0
