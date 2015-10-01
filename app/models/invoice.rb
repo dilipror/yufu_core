@@ -58,8 +58,8 @@ class Invoice
   #
   # validates_presence_of :wechat
   validates_presence_of :company_name, :company_uid, :company_address, if: -> {company_name.present? || company_uid.present? || company_address.present?}
-  validate :uniq_phone#, if: -> {client_info.present? && client_info.phone.present?}
-  validates_presence_of :first_name, :last_name, :email, if: -> {state != 'new' && persisted?}
+  validate :uniq_phone, if: -> {new? && persisted? && phone.present?}
+  validates_presence_of :first_name, :last_name, :identification_number, if: -> {new? && persisted?}
 
   state_machine initial: :new do
     state :pending
