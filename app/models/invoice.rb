@@ -50,7 +50,7 @@ class Invoice
 
   # TODO need use build_client_info
   before_create :build_client_info_attributes
-  # before_save :pending_invoice
+  after_create :pending_invoice
   after_save :update_taxes, :check_pay_way#, :pending_invoice
 
   after_save :append_profile, if: -> {subject.try(:owner).present?}
@@ -59,7 +59,7 @@ class Invoice
   # validates_presence_of :wechat
   validates_presence_of :company_name, :company_uid, :company_address, if: -> {company_name.present? || company_uid.present? || company_address.present?}
   validate :uniq_phone#, if: -> {client_info.present? && client_info.phone.present?}
-  validates_presence_of :first_name, :last_name, :email, if: -> {state != 'new'}
+  validates_presence_of :first_name, :last_name, :email, if: -> {state != 'new' && persisted?}
 
   state_machine initial: :new do
     state :pending
@@ -152,7 +152,7 @@ class Invoice
   end
 
   def pending_invoice
-    if subject.is_a? Order::LocalExpert
+    if subject.is_a?(Order::LocalExpert) && state == 'new'
       self.pending
     end
   end
