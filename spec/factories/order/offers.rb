@@ -2,7 +2,6 @@
 
 FactoryGirl.define do
   factory :offer, :class => 'Order::Offer' do
-    status 'primary'
     # association :profile_translator#, class: 'Profile::Translator'
     # association :order_verbal, class: 'Order::Verbal'
   end

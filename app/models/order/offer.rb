@@ -6,9 +6,7 @@ module Order
 
     STATUSES = %w(primary secondary)
 
-    field :status, default: 'secondary'
     field :state
-    field :is_confirmed, type: Mongoid::Boolean, default: false
 
     belongs_to :translator, class_name: 'Profile::Translator'
     belongs_to :order,      class_name: 'Order::Verbal'
@@ -17,19 +15,20 @@ module Order
     # validates_inclusion_of :status, in: STATUSES
     # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
     # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
-    validates_uniqueness_of :translator
+    validates_uniqueness_of :translator, scope: :order, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
     # scope :primary,   -> {where status: 'primary'}
     # scope :secondary, -> {where status: 'secondary'}
 
     #after_create :confirm_if_need
     # after_save
-    after_save :notify_about_confirm_for_translator, :notify_about_confirm_for_client, :process_order,
-               if: -> (offer) {offer.is_confirmed_changed? && offer.is_confirmed?}
+    # after_save :notify_about_confirm_for_translator, :notify_about_confirm_for_client, :process_order,
+    #            if: -> (offer) {offer.is_confirmed_changed? && offer.is_confirmed?}
     after_create :notify_about_create_offer_for_owner
     after_create :notify_about_become_main_int, if: :primary?
     after_create :notify_about_become_back_up_int, if: :back_up?
     after_create :notify_about_for_client
+    after_create :confirm_after_create
 
     has_notification_about :become_main_int,
                            message: 'notifications.become_main_int',
@@ -191,14 +190,9 @@ module Order
       order.process
     end
 
-    def confirm_if_need
-      if order.is_a?(Order::Written) && order.state == 'wait_offer'
-        order.process
-      end
-      unless order.try(:first_date).nil?
-        if ((order.first_date - Date.today()).day <= 1.day) && self.status == 'primary'
-          order.process
-        end
+    def confirm_after_create
+      if order.will_begin_less_than?(36.hours)
+        confirm
       end
     end
 

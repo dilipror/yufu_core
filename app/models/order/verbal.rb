@@ -217,7 +217,7 @@ module Order
       if reservation_dates.first.present?
         reservation_dates.first.date.change({hour: greeted_at_hour, min: greeted_at_minute})
       else
-        DateTime.now
+        Time.now
       end
     end
 
@@ -269,7 +269,7 @@ module Order
     end
 
     def will_begin_less_than?(time)
-      (first_date_time - DateTime.now) <= time && (first_date_time - DateTime.now) > 0
+      (first_date_time.to_time - Time.now) <= time && (first_date_time.to_time - Time.now) > 0
     end
 
     def will_begin_at?(time)
