@@ -8,7 +8,6 @@ class Order::VerbalSerializer < Order::BaseSerializer
   has_one :airport_pick_up
   has_one :car_rent
   has_one :hotel
-  has_one :client_info
   has_many :offers
   has_many :reserve_language_criterions
   has_many :reservation_dates

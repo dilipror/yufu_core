@@ -1,6 +1,8 @@
 class InvoiceSerializer < ActiveModel::Serializer
   attributes :id, :cost, :state, :subject_id, :number, :description, :subject_type,
-             :need_invoice_copy, :user_id, :company_name, :company_uid, :company_address
+             :need_invoice_copy, :user_id, :company_name, :company_uid, :company_address,
+             :first_name, :last_name, :email, :phone, :skype, :viber, :wechat, :identification_number,
+             :country_id
   #TODO:  Временно выпилил subject_type, так как на фронте связь не полиморфная.
   # Надо решить эту проблему.
   #
@@ -25,6 +27,4 @@ class InvoiceSerializer < ActiveModel::Serializer
     # Currency.exchange(@object.cost).to_f
     @object.cost
   end
-
-  has_one :client_info
 end

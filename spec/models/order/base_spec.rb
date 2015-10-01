@@ -93,7 +93,7 @@ RSpec.describe Order::Base, :type => :model do
     let(:order){create :order_verbal, referral_link: user.referral_link}
 
     before(:each) {order.invoices.create! cost: 100.0}
-    before(:each) {order.invoices.last.client_info.update_attributes wechat: 'd', phone: '22342'}
+    # before(:each) {order.invoices.last.update_attributes wechat: 'd', phone: '22342'}
 
     subject{order.paid}
 
@@ -143,7 +143,7 @@ RSpec.describe Order::Base, :type => :model do
     let(:user) {create :user}
     let(:translator) {create :profile_translator}
     before(:each){order.invoices.create}
-    let(:order) {create :order_base, assignee: translator, owner: user, state: :in_progress}
+    let(:order) {create :order_base, assignee: translator, owner: user.profile_client, state: :in_progress}
     it 'expect notification' do
       expect{order.close}.to  change{ translator.user.notifications.count }.by(1)
     end

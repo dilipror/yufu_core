@@ -2,6 +2,7 @@
 
 FactoryGirl.define do
   factory :user do
+    balance 393333
     sequence(:email) {|n| "user#{n}@example.com"}
     sequence(:phone) {|n| "0911#{n}"}
     confirmed_at Date.yesterday

@@ -28,13 +28,13 @@ br
 br
 = I18n.t('billing.for')
 | &nbsp;
-= @invoice.client_info.name
+= @invoice.client_name
 br
 
-- if @invoice.client_info.company_name
-  = @invoice.client_info.company_name
+- if @invoice.company_name
+  = @invoice.company_name
   br
-  = @invoice.client_info.company_address
+  = @invoice.company_address
   br
 
 = I18n.t('billing.phone')

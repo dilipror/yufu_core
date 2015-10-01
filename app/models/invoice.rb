@@ -6,9 +6,10 @@ class Invoice
 
   extend Enumerize
 
+  CLIENT_INFO_ATTRIBUTES = ['first_name', 'last_name', 'email', 'phone', 'identification_number', 'skype', 'viber', 'wechat',
+                            'company_name', 'company_uid', 'company_address']
+
   field :cost, type: BigDecimal
-  # field :pay_way
-  # field :pay_company
   field :state
   field :is_paid, default: false
   field :description
@@ -17,8 +18,18 @@ class Invoice
   field :company_uid
   field :company_address
 
+  field :first_name
+  field :last_name
+  field :email
+  field :phone
+  field :identification_number
+  field :skype
+  field :viber
+  field :wechat
+
   auto_increment :number
 
+  belongs_to :country
   belongs_to :subject,  class_name: 'Order::Base'
   belongs_to :user
   belongs_to :pay_company, class_name: 'Company'
@@ -29,9 +40,8 @@ class Invoice
 
   has_and_belongs_to_many :taxes
 
-  embeds_one :client_info, class_name: 'Order::ClientInfo', cascade_callbacks: true
   embeds_many :items, class_name: 'Invoice::Item', cascade_callbacks: true
-  accepts_nested_attributes_for :client_info, :items
+  accepts_nested_attributes_for :items
 
   # validates_presence_of :description
 
@@ -39,13 +49,17 @@ class Invoice
   # enumerize :pay_way, in: [:bank, :alipay, :local_balance, :credit_card, :paypal]
 
   # TODO need use build_client_info
-  before_create :create_client_info
+  before_create :build_client_info_attributes
   # before_save :pending_invoice
   after_save :update_taxes, :check_pay_way#, :pending_invoice
+
+  after_save :append_profile, if: -> {subject.try(:owner).present?}
+
   #
   # validates_presence_of :wechat
   validates_presence_of :company_name, :company_uid, :company_address, if: -> {company_name.present? || company_uid.present? || company_address.present?}
   validate :uniq_phone#, if: -> {client_info.present? && client_info.phone.present?}
+  validates_presence_of :first_name, :last_name, :email, if: -> {state != 'new'}
 
   state_machine initial: :new do
     state :pending
@@ -109,15 +123,12 @@ class Invoice
 
 
   def uniq_phone
-    if client_info.present? && client_info.phone?
-      tmp = User.where phone: client_info.phone
+    if phone?
+      tmp = User.where phone: phone
       if tmp.count > 1 || (tmp.count == 1 && tmp.first != user )
-        errors.add(:client_info, 'phone already taken')
+        errors.add(:phone, 'phone already taken')
       end
     end
-    # if client_info.present?
-    #   errors.add(:client_info, 'phone can not be blank') unless client_info.phone?
-    # end
   end
 
   # TODO: move this logic to gateway
@@ -144,11 +155,6 @@ class Invoice
     if subject.is_a? Order::LocalExpert
       self.pending
     end
-  end
-
-
-  def create_client_info
-    build_client_info
   end
 
   def cost_without_taxes
@@ -184,7 +190,7 @@ class Invoice
   end
 
   def update_taxes
-    if client_info.country.present? && pay_company.present? && pay_way.present?
+    if country.present? && pay_company.present? && pay_way.present?
       write_attribute :taxes, nil
       # taxes.delete_all
       get_taxes.each do |tax|
@@ -194,7 +200,7 @@ class Invoice
     end
   end
 
-  def get_taxes(country_id = client_info.country.id, company_id = pay_company.id, payway_id = pay_way.id, need_copy = need_invoice_copy)#, company_id, payment_gateway_id, need_copy)
+  def get_taxes(country_id = country.id, company_id = pay_company.id, payway_id = pay_way.id, need_copy = need_invoice_copy)#, company_id, payment_gateway_id, need_copy)
     # cntr_id = country_id ||
     copy_tax = []
     if (need_copy == 'true' || need_copy == true)# && Company.find(company_id).currency.iso_code == 'CNY'
@@ -218,5 +224,41 @@ class Invoice
     end
     res.capitalize
   end
+
+  def client_name
+    "#{first_name} #{last_name}"
+  end
+
+  def append_profile
+    append_profile_field :first_name
+    append_profile_field :last_name
+    append_profile_field :phone
+    append_profile_field :company_name
+    append_profile_field :company_uid
+    append_profile_field :company_address
+    append_profile_field :identification_number
+    append_profile_field :skype
+    append_profile_field :viber
+    append_profile_field :wechat
+
+    unless country.nil?
+      vl = self.country.id
+      subject.owner.update_attribute :country, vl if subject.owner.send(:country).nil? || vl.present?
+    end
+    subject.owner.save validate: false
+  end
+
+  def append_profile_field(field)
+    value =  self.try field
+    subject.owner.update_attribute field, value if subject.owner.send(field).nil? || value.present?
+  end
+
+  def build_client_info_attributes
+    CLIENT_INFO_ATTRIBUTES.each do |attr|
+      eval("def #{attr}();return read_attribute(:#{attr}).present? ? read_attribute(:#{attr}) : subject.try(:owner).try(:#{attr});end;")
+    end
+    eval("def country_id;read_attribute(:country).present? ? read_attribute(:country) : subject.try(:owner).try(:country).try(:id);end;")
+  end
+
 
 end

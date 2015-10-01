@@ -4,7 +4,6 @@ class Order::WrittenSerializer < Order::BaseSerializer
              :order_type_id, :order_subtype_id, :surcharge_for_postage
   has_one :get_original
   has_one :get_translation
-  # has_one :client_info
   has_many :work_reports
   has_many :attachments
 
