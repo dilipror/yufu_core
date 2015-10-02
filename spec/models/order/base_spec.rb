@@ -92,12 +92,19 @@ RSpec.describe Order::Base, :type => :model do
     let(:user){create :user}
     let(:order){create :order_verbal, referral_link: user.referral_link}
 
-    before(:each) {order.invoices.create! cost: 100.0}
+    let(:time){ Time.now}
+
+    before(:each) do
+      order.invoices.create! cost: 100.0
+      time
+      Time.stub(:now).and_return(time)
+    end
     # before(:each) {order.invoices.last.update_attributes wechat: 'd', phone: '22342'}
 
     subject{order.paid}
 
     it{expect{subject}.to change{order.state}.to 'wait_offer'}
+    it{expect{subject}.to change{order.paid_time}.to time}
   end
 
   describe '#offer_status_for' do

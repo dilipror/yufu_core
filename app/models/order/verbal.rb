@@ -20,6 +20,7 @@ module Order
     field :greeted_at_minute, type: Integer, default: 0
     field :meeting_in
     field :additional_info
+    field :paid_time,         type: Time
 
     belongs_to :location, class_name: 'City'
     belongs_to :translator_native_language, class_name: 'Language'
@@ -266,7 +267,7 @@ module Order
 
 
     def paid_ago?(time)
-      (Time.now - created_at) >= time
+      (Time.now - paid_time) >= time if paid_time.present?
     end
 
     def will_begin_less_than?(time)
