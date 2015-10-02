@@ -45,28 +45,6 @@ module Order
 
     has_notification_about :updated, message: 'notifications.order_updated',
                            observers: :subscribers
-    #
-    # has_notification_about :reminder_for_interpreter_24,
-    #                        observers: -> (order) {order.primary_offer},
-    #                        message: 'notification.change_status_main_intrp',
-    #                        mailer: -> (user, order) do
-    #                          NotificationMailer.reminder_for_backup_interpreter_24 user
-    #                        end
-    #
-    # has_notification_about :reminder_for_main_interpreter_36,
-    #                        observers: -> (order) {order.primary_offer},
-    #                        message: 'notification.change_status_main_intrp',
-    #                        mailer: -> (user, order) do
-    #                          NotificationMailer.reminder_for_main_interpreter_36 user
-    #                        end
-    #
-    # has_notification_about :reminder_to_the_client_48,
-    #                        observers: -> (order) {order.primary_offer},
-    #                        message: 'notification.appointment_with_interpreter',
-    #                        mailer: -> (user, order) do
-    #                          NotificationMailer.reminder_to_the_client_48 user, order
-    #                        end
-    # has_notification_about :
 
     has_notification_about :looking_for_int,
                            message: 'notifications.looking_for_int',
@@ -358,9 +336,9 @@ module Order
     end
 
     def update_notification
-      unless state=='new'
-        notify_about_updated
-      end
+      # unless state=='new'
+      #   notify_about_updated
+      # end
     end
 
     def subscribers
