@@ -127,11 +127,9 @@ module Order
     before_create :set_main_language_criterion
     after_save :create_additional_services
 
-    scope :paid_orders, -> {where state: :in_progress}
-
-    scope :all_orders,  -> (profile) { default_scope_for(profile).all }
-    scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
-    scope :paying,      -> (profile) { profile.orders.where :state.in => [:new, :paying] }
+    scope :paid_orders, -> { where state: :in_progress}
+    scope :wait_offer,  -> { where state: :wait_offer }
+    scope :unpaid,      -> { where :state.in => [:new, :paying] }
     scope :in_progress, -> (profile) do
       default_scope_for(profile).where :state.in => [:in_progress, :additional_paying],
                                        connected_method_for(profile) => profile

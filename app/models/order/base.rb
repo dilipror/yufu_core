@@ -40,8 +40,9 @@ module Order
 
     scope :for_everyone,-> { where is_private: false }
     scope :private,     -> { where is_private: true }
-    scope :rejected,      -> (profile) { where state: 'rejected' }
-    scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
+    scope :rejected,    -> { where state: 'rejected' }
+    scope :wait_offer,  -> { where state: :wait_offer }
+    scope :opened,      -> (profile) { default_scope_for(profile).where state: :wait_offer }
     scope :paying,      -> (profile) {profile.orders.where :state.in => [:new, :paying]}
     scope :in_progress, -> (profile) do
       default_scope_for(profile).where :state.in => [:in_progress, :additional_paying],
