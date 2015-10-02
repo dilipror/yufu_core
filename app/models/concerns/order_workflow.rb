@@ -50,6 +50,7 @@ module OrderWorkflow
           OrderWorkflowWorker.perform_in (order.first_date_time - 36.hours) - Time.now , order.id, 'before_36'
           OrderWorkflowWorker.perform_in (order.first_date_time - 24.hours) - Time.now, order.id, 'before_24'
           OrderWorkflowWorker.perform_in (order.first_date_time -  4.hours) - Time.now , order.id, 'before_4'
+          order.update paid_time: Time.now
         end
       end
 
