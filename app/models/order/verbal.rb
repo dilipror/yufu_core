@@ -411,7 +411,7 @@ module Order
 
     private
     def paying_items_per_day
-      lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{level}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
+      lalelo = "#{language.name}, #{I18n.t('mongoid.attributes.order/verbal.level')} - #{I18n.t(level, scope: 'enums.order/verbal.translation_levels')}, #{I18n.t('mongoid.attributes.order/verbal.location')} - #{location.name}"
       reservation_dates.map do |rd|
         if rd.hours < 8
           comment = " #{rd.hours} #{I18n.t('frontend.order.verbal.hours')} * 1.5"
