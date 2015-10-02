@@ -131,6 +131,21 @@ class Invoice
     end
   end
 
+  def paypal_url
+    values = {
+        cmd: '_xclick',
+        charset: 'utf-8',
+        business: 'mvleo.github-facilitator@gmail.com',
+        return: "payment-gateway/success-paid/#{id}",
+        cancel_return: '/',
+        item_number: id,
+        item_name: 'Interpretation service',
+        currency_code: 'GBP',
+        amount: cost.round(2),
+        notify_url: 'http://15507c2b.ngrok.com/hook'}
+    "https://www.sandbox.paypal.com/cgi-bin/webscr?#{values.to_query}"
+  end
+
   # TODO: move this logic to gateway
   def check_pay_way
     if pay_way.present?
