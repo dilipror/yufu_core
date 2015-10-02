@@ -467,7 +467,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
 
         before(:each)do
-          order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
+          order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
           Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
         end
 
@@ -477,7 +477,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
       context 'just in time' do
         before(:each)do
-          order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 12.hours)
+          order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 12.hours)
           Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
         end
 
@@ -487,7 +487,7 @@ RSpec.describe Order::Verbal, :type => :model do
       context 'after time'do
 
         before(:each)do
-          order.stub(:created_at).and_return(Time.parse('11:33 03.11.2015') - 10.hours)
+          order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 10.hours)
           Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
         end
 

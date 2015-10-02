@@ -15,7 +15,8 @@ module Order
     # validates_inclusion_of :status, in: STATUSES
     # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
     # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
-    validates_uniqueness_of :translator, scope: :order, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
+    validate :only_one_new_offer, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
+    # validates_uniqueness_of :translator, scope: :order_id, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
     # scope :primary,   -> {where status: 'primary'}
     # scope :secondary, -> {where status: 'secondary'}
@@ -186,6 +187,13 @@ module Order
     end
 
     private
+
+    def only_one_new_offer
+      if order.offers.where(translator: translator, state: 'new').count > 1
+        errors.add :translator_id, 'is_already_taken'
+      end
+    end
+
     def process_order
       order.process
     end

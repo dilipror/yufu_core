@@ -223,4 +223,39 @@ RSpec.describe Order::Offer, :type => :model do
 
   end
 
+  describe '#only_one_new_offer' do
+
+    let(:translator){create :profile_translator}
+
+    let(:order){create :order_verbal, offers: []}
+
+    subject do
+      offer = (build :offer, translator: translator, order: order)
+      order.offers << offer
+      offer.valid?
+    end
+
+    before(:each){order.stub(:will_begin_less_than?).with(36.hours).and_return(false)}
+
+    context 'no offers' do
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    context 'only rejected offer' do
+      before(:each){offer = create :offer, translator: translator, order: order, state: 'rejected'; order.offers << offer}
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    context 'has offer' do
+      before(:each){offer = create :offer, translator: translator, order: order; ; order.offers << offer}
+
+      it{is_expected.to be_falsey}
+    end
+
+  end
+
 end
