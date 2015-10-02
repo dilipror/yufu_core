@@ -12,18 +12,8 @@ module Order
     belongs_to :order,      class_name: 'Order::Verbal'
 
     validates_presence_of :order
-    # validates_inclusion_of :status, in: STATUSES
-    # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
-    # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
     validates_uniqueness_of :translator, scope: :order, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
-    # scope :primary,   -> {where status: 'primary'}
-    # scope :secondary, -> {where status: 'secondary'}
-
-    #after_create :confirm_if_need
-    # after_save
-    # after_save :notify_about_confirm_for_translator, :notify_about_confirm_for_client, :process_order,
-    #            if: -> (offer) {offer.is_confirmed_changed? && offer.is_confirmed?}
     after_create :notify_about_create_offer_for_owner
     after_create :notify_about_become_main_int, if: :primary?
     after_create :notify_about_become_back_up_int, if: :back_up?
