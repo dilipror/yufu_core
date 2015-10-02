@@ -2,8 +2,11 @@
 
 FactoryGirl.define do
   factory :order_offer, :class => 'Order::Offer' do
-    order {create :order_verbal, state: :wait_offer}
-    status 'primary'
     association :translator, factory: :profile_translator
+    association :order, factory: :order_verbal
+
+    trait :confirmed do
+      state 'confirmed'
+    end
   end
 end
