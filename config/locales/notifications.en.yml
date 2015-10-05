@@ -6,6 +6,10 @@ en:
       confirm_secondary_offer_for_client: Your backup interpreter has been approved
       confirm_secondary_offer_for_translator: You have become a back-up interpreter on order
       create_offer_for_owner: New offer has been created
+    order_details:
+      location: Location
+      language: language
+      greeted_at: greeted at
     become_main_int: You have become main interpreter for offer
     become_back_up_int: You have become back up interpreter for offer
     back_up_for_client: Your order have main translator

@@ -4,17 +4,6 @@ zh-CN:
     balance: 我的信息窗
     new_order: 重新下单
 
-    re_confirmed_translator:
-      subject: 再次确认成功
-      body: "亲爱的 %{client},
-
-             恭喜您成为此订单的译员。请到您的语富信息窗查看订单详情,以免耽误订单执行。
-
-             请点此链接进入网站: %{dashboard_link}
-
-             感谢您的合作并祝您生活愉快!
-
-             语富"
 
 
     re_confirm_back_up:

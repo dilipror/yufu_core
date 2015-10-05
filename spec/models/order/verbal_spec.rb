@@ -23,30 +23,13 @@ RSpec.describe Order::Verbal, :type => :model do
 
     let(:translator) {create :profile_translator}
     let(:order) {create :order_verbal, state: 'wait_offer'}
-    let!(:offer) {Order::Offer.create status: 'primary', translator: translator, order: order}
+    let!(:offer) {Order::Offer.create translator: translator, order: order}
 
     subject{order.process}
 
     it 'assignee should have busy days' do
       subject
       expect(order.assignee.busy_days.map &:date).to eq order.reservation_dates.map &:date
-    end
-  end
-
-  describe '#skip uncofirmed dates' do
-
-    before(:each)do
-      order = create(:order_verbal, state: 'wait_offer')
-      order.invoices.create cost: 100.0
-      create(:order_offer, status: 'primary', order: order)
-      create(:order_offer, status: 'secondary', order: order)
-    end
-
-    subject{Order::Verbal.skip_unconfirmed_offers}
-
-    it 'expect only secondary' do
-      subject
-      expect(Order::Verbal.last.offers.where(status: 'parimary').count).to eq(0)
     end
   end
 
@@ -554,7 +537,7 @@ RSpec.describe Order::Verbal, :type => :model do
       let(:translator_1){create :profile_translator}
       let(:translator_2){create :profile_translator}
 
-      subject{order.after_12}
+      subject{Order::Verbal::EventsService.new(order).after_12}
 
       let(:order){create :order_verbal, offers: []}
 
@@ -579,7 +562,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
       let(:translator){create :profile_translator}
 
-      subject{order.after_24}
+      subject{Order::Verbal::EventsService.new(order).after_24}
 
       context 'no offer' do
         let(:order){create :order_verbal, offers: []}
@@ -598,21 +581,43 @@ RSpec.describe Order::Verbal, :type => :model do
     end
     describe 'before_60' do
 
-      let(:translator_1){create :profile_translator}
-      let(:translator_2){create :profile_translator}
+      context 'has main_offer' do
 
-      subject{order.before_60}
+        let(:translator_1){create :profile_translator}
+        let(:translator_2){create :profile_translator}
 
-      let(:order){create :order_verbal, offers: []}
+        subject{Order::Verbal::EventsService.new(order).before_60}
 
-      before(:each) do
-        order.offers.create! translator: translator_1
-        order.offers.create! translator: translator_2
+        let(:order){create :order_verbal, offers: []}
+
+        before(:each) do
+          order.offers.create! translator: translator_1
+          order.offers.create! translator: translator_2
+        end
+
+        it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+        it{expect{subject}.to change{translator_1.user.reload.notifications.count}.by(1)}
+        it{expect{subject}.not_to change{translator_2.user.notifications.count}}
+
       end
 
-      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
-      it{expect{subject}.to change{translator_1.user.reload.notifications.count}.by(1)}
-      it{expect{subject}.not_to change{translator_2.user.notifications.count}}
+      context 'no main_offer' do
+
+        let(:translator_1){create :profile_translator}
+        let(:translator_2){create :profile_translator}
+
+        subject{Order::Verbal::EventsService.new(order).before_60}
+
+        let(:order){create :order_verbal, offers: []}
+
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+        it{expect{subject}.not_to change{translator_1.user.reload.notifications.count}}
+        it{expect{subject}.not_to change{translator_2.user.notifications.count}}
+
+      end
+
+
 
     end
 
@@ -621,7 +626,7 @@ RSpec.describe Order::Verbal, :type => :model do
       let(:translator_1){create :profile_translator}
       let(:translator_2){create :profile_translator}
 
-      subject{order.before_48}
+      subject{Order::Verbal::EventsService.new(order).before_48}
 
       let(:order){create :order_verbal, offers: []}
 
@@ -640,7 +645,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
     describe '#before_36' do
 
-      subject{order.before_36}
+      subject{Order::Verbal::EventsService.new(order).before_36}
 
       context 'translator re-confirmed' do
         let(:order){create :order_verbal, state: 'in_progress'}
@@ -656,7 +661,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
     describe '#before_24' do
 
-      subject{order.before_24}
+      subject{Order::Verbal::EventsService.new(order).before_24}
 
 
       context 'translator re-confirmed' do
@@ -674,7 +679,7 @@ RSpec.describe Order::Verbal, :type => :model do
 
     describe '#before_4' do
 
-      subject{order.before_4}
+      subject{Order::Verbal::EventsService.new(order).before_4}
 
       let(:invoice){create :invoice}
       before(:each) do
