@@ -131,19 +131,30 @@ class Invoice
     end
   end
 
-  def paypal_url
+  PAYPAL_CERT_PEM = File.read("#{Rails.root}/certs/paypal_cert_sandbox.pem")
+  APP_CERT_PEM = File.read("#{Rails.root}/certs/app_cert.pem")
+  APP_KEY_PEM = File.read("#{Rails.root}/certs/app_key.pem")
+  def encrypt_for_paypal(values)
+    signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(APP_CERT_PEM),        OpenSSL::PKey::RSA.new(APP_KEY_PEM, ''), values.map { |k, v| "#{k}=#{v}" }.join("\n"), [], OpenSSL::PKCS7::BINARY)
+    OpenSSL::PKCS7::encrypt([OpenSSL::X509::Certificate.new(PAYPAL_CERT_PEM)], signed.to_der, OpenSSL::Cipher::Cipher::new("DES3"),        OpenSSL::PKCS7::BINARY).to_s.gsub("\n", "")
+  end
+
+  def paypal_encrypted
     values = {
         cmd: '_xclick',
         charset: 'utf-8',
-        business: 'mvleo.github-facilitator@gmail.com',
-        return: "payment-gateway/success-paid/#{id}",
+        business: 'yufu-merchant@yandex.ru',
+        # return: "payment-gateway/success-paid/#{id}",
+        return: "google.com",
         cancel_return: '/',
         item_number: id,
-        item_name: 'Interpretation service',
+        item_name: I18n.t('mongoid.paypal.interpretation_service'),
         currency_code: 'GBP',
-        amount: cost.round(2),
-        notify_url: 'http://15507c2b.ngrok.com/hook'}
-    "https://www.sandbox.paypal.com/cgi-bin/webscr?#{values.to_query}"
+        cert_id: 'W8H4BDYKKN54U',
+        custom: '1+1=7',
+        amount: exchanged_cost('GBP').round(2),
+        notify_url: 'http://22d8be75.ngrok.com/hook'}
+    encrypt_for_paypal(values)
   end
 
   # TODO: move this logic to gateway
