@@ -105,6 +105,7 @@ module Order
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion, :build_events_manager
     after_save :create_additional_services
+    after_save :notify_about_updated, if: :persisted?
 
     scope :paid_orders, -> { where state: :in_progress}
     scope :wait_offer,  -> { where state: :wait_offer }

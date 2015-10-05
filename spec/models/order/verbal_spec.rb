@@ -286,7 +286,7 @@ RSpec.describe Order::Verbal, :type => :model do
     before(:each){offer}
 
     it 'expect notificaions' do
-      expect{subject}.to change{translator.user.notifications.count}.by 1
+      expect{subject}.to change{translator.user.reload.notifications.count}.by 1
     end
 
   end
