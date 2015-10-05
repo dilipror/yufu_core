@@ -28,6 +28,7 @@ module Order
     belongs_to :language
 
     embeds_one :airport_pick_up, class_name: 'Order::AirportPickUp'
+    embeds_one :events_manager, class_name: 'Order::Verbal::EventsManager'
 
     embeds_many :reservation_dates,  class_name: 'Order::ReservationDate'
     has_many :translators_queues, class_name: 'Order::Verbal::TranslatorsQueue', dependent: :destroy
@@ -102,7 +103,7 @@ module Order
     validates_length_of :offers, maximum: 2, unless: ->(order) {order.will_begin_less_than?(36.hours)}
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
-    before_create :set_main_language_criterion
+    before_create :set_main_language_criterion, :build_events_manager
     after_save :create_additional_services
 
     scope :paid_orders, -> { where state: :in_progress}
