@@ -21,6 +21,7 @@ RSpec.describe Translation, :type => :model do
     let(:translation_in_other_version){create :translation, key: 'key', version: version_in_other_locale}
     let(:new_translation){Translation.new(key: 'key', version: current_version)}
 
+    before(:each){Localization.destroy_all; I18n.locale = :en }
 
     subject{new_translation.save}
 

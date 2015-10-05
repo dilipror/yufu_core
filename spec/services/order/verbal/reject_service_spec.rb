@@ -25,13 +25,13 @@ RSpec.describe Order::Verbal::RejectService do
         before(:each){allow(order).to receive(:has_offer?).and_return false}
 
         context 'order paid less then 24 hours ago' do
-          before(:each){allow(order).to receive(:paid_ago?).and_return true}
+          before(:each){allow(order).to receive(:paid_ago?).and_return false}
 
           it{is_expected.to eq 100}
         end
 
         context 'order paid more then 24 hours ago' do
-          before(:each){allow(order).to receive(:paid_ago?).and_return false}
+          before(:each){allow(order).to receive(:paid_ago?).and_return true}
           it{is_expected.to eq 100 + 192}
         end
       end
