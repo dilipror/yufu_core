@@ -4,7 +4,7 @@ class Order::Verbal::EventsManager
   embedded_in :order_verbal, class_name: 'Order::Verbal'
   embeds_many :events, class_name: 'Order::Verbal::Event'
 
-  before_create do
+  after_initialize do
     events.new name: 'after_12'
     events.new name: 'after_24'
     events.new name: 'before_60'

@@ -28,7 +28,7 @@ module Order
     belongs_to :language
 
     embeds_one :airport_pick_up, class_name: 'Order::AirportPickUp'
-    embeds_one :events_manager, class_name: 'Order::Verbal::EventsManager'
+    embeds_one :events_manager, class_name: 'Order::Verbal::EventsManager', cascade_callbacks: true
 
     embeds_many :reservation_dates,  class_name: 'Order::ReservationDate'
     has_many :translators_queues, class_name: 'Order::Verbal::TranslatorsQueue', dependent: :destroy
