@@ -25,6 +25,7 @@ module Profile
 
     scope :only_written, -> {where only_written: true}
     scope :not_only_written, -> {where :only_written.ne => true}
+    scope :written_approved, -> {where :written_approves => true}
 
     after_save :change_translator_state, if: -> { (level_changed? || written_translate_type_changed?) &&
                                            translator.try(:state) == 'approved' }
@@ -32,6 +33,18 @@ module Profile
 
     after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
     after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
+
+    def self.cooperation_is(type)
+      finder = type.include?('From') ? 'From|to' : 'To|to'
+      # /To|to/
+      where written_translate_type: /#{finder}/
+      # if /From/.match(s.written_translate_type)
+      #   query << {translation_language_id: s.language.id}
+      # end
+      # if /To|to/.match(s.written_translate_type)
+      #   query << {original_language_id: s.language.id}
+      # end
+    end
 
     def change_translator_state
       translator.try :approving

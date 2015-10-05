@@ -34,6 +34,8 @@ module Profile
     has_many :assigned_languages, class_name: 'Language', inverse_of: :senior, dependent: :nullify
     has_and_belongs_to_many :order_verbal_translators_queues, :class_name => 'Order::Verbal::TranslatorsQueue',
                             inverse_of: :translators
+    has_and_belongs_to_many :order_written_translators_queues, :class_name => 'Order::Written::TranslatorsQueue',
+                            inverse_of: :translators
 
     accepts_nested_attributes_for :busy_days, :profile_steps_language, :profile_steps_service, :profile_steps_personal,
                                   :profile_steps_contact, :profile_steps_education, :city_approves
@@ -136,6 +138,12 @@ module Profile
       return lngs.uniq
     end
 
+    def self.support_written_order(order)
+      language = order.original_language.is_chinese? ? order.translation_language : order.original_language
+      ids_from_service = Profile::Service.written_approved.cooperation_is(order.translation_type).where(language: language)
+      where :id.in => ids_from_service
+    end
+
     def self.support_order(order)
       support_services order.language, order.location, order.level
     end
@@ -190,44 +198,6 @@ module Profile
 
 
     protected
-
-    # def partial_approved
-    #   (count_approved_cities > 0 && count_approved_services > 0) &&
-    #       (count_approved_cities != profile_steps_service.cities.count + profile_steps_service.cities_with_surcharge.count ||
-    #           count_approved_services != count_services)
-    # end
-    #
-    # def all_approved
-    #   count_approved_cities == profile_steps_service.cities.count + profile_steps_service.cities_with_surcharge.count &&
-    #       count_approved_services == services.count
-    # end
-    #
-    # def count_approved_cities
-    #   count = 0
-    #   city_approves.each do |city_approved|
-    #     count += 1 if city_approved.is_approved
-    #   end
-    #   count
-    # end
-    #
-    # def count_approved_services
-    #   count = 0
-    #   services.each do |service_approved|
-    #     count += 1 if service_approved.is_approved
-    #     count += 1 if service_approved.written_approves
-    #   end
-    #   count
-    # end
-    #
-    # def count_services
-    #   count = services.count
-    #   services.each do |service|
-    #     count += 1 if service.written_translate_type.present?
-    #   end
-    #   count
-    # end
-
-
 
     def build_steps
       build_profile_steps_language  if profile_steps_language.nil?

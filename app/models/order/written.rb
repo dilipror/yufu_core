@@ -29,6 +29,8 @@ module Order
     belongs_to :order_type,                          class_name: 'Order::Written::WrittenType'
     belongs_to :order_subtype,                       class_name: 'Order::Written::WrittenSubtype'
 
+    has_many :translators_queues, class_name: 'Order::Written::TranslatorsQueue', dependent: :destroy
+
     has_and_belongs_to_many :available_languages,    class_name: 'Language'
     has_and_belongs_to_many :attachments, dependent: :destroy
 
