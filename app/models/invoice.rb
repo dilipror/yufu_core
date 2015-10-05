@@ -78,6 +78,8 @@ class Invoice
     # end
 
     before_transition on: :paid do |invoice, transition|
+      # cost = invoice.cost.to_f
+      # cost = invoice.exchanged_cost(invoice.pay_company.currency.iso_code).to_f if invoice.pay_way.gateway_type == :paypal
       can_execute = invoice.user.balance.to_f >= invoice.cost.to_f
       if can_execute
         Transaction.create(sum: invoice.cost, debit: invoice.user, credit: Office.head, invoice: invoice).execute
@@ -131,29 +133,31 @@ class Invoice
     end
   end
 
-  PAYPAL_CERT_PEM = File.read("#{Rails.root}/certs/paypal_cert_sandbox.pem")
-  APP_CERT_PEM = File.read("#{Rails.root}/certs/app_cert.pem")
-  APP_KEY_PEM = File.read("#{Rails.root}/certs/app_key.pem")
   def encrypt_for_paypal(values)
-    signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(APP_CERT_PEM),        OpenSSL::PKey::RSA.new(APP_KEY_PEM, ''), values.map { |k, v| "#{k}=#{v}" }.join("\n"), [], OpenSSL::PKCS7::BINARY)
-    OpenSSL::PKCS7::encrypt([OpenSSL::X509::Certificate.new(PAYPAL_CERT_PEM)], signed.to_der, OpenSSL::Cipher::Cipher::new("DES3"),        OpenSSL::PKCS7::BINARY).to_s.gsub("\n", "")
+    paypal_cert_rem = File.read("#{Rails.root}/certs/paypal_cert_sandbox.pem")
+    app_cert_pem = File.read("#{Rails.root}/certs/app_cert.pem")
+    app_key_pem = File.read("#{Rails.root}/certs/app_key.pem")
+    signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(app_cert_pem), OpenSSL::PKey::RSA.new(app_key_pem, ''),
+                                  values.map { |k, v| "#{k}=#{v}" }.join("\n"), [], OpenSSL::PKCS7::BINARY)
+    OpenSSL::PKCS7::encrypt([OpenSSL::X509::Certificate.new(paypal_cert_rem)], signed.to_der, OpenSSL::Cipher::Cipher::new("DES3"),
+                            OpenSSL::PKCS7::BINARY).to_s.gsub("\n", "")
   end
 
   def paypal_encrypted
+    paypal_gw_id = Gateway::PaymentGateway.find_by(gateway_type: :paypal).id
     values = {
         cmd: '_xclick',
         charset: 'utf-8',
-        business: 'yufu-merchant@yandex.ru',
-        # return: "payment-gateway/success-paid/#{id}",
-        return: "google.com",
+        business: Rails.application.config.merchant_email,
+        return: "#{Rails.application.config.success_root_url}/payment-gateway/#{paypal_gw_id}/success",
         cancel_return: '/',
         item_number: id,
         item_name: I18n.t('mongoid.paypal.interpretation_service'),
         currency_code: 'GBP',
-        cert_id: 'W8H4BDYKKN54U',
-        custom: '1+1=7',
+        cert_id: Rails.application.config.cert_id,
+        custom: Rails.application.config.custom,
         amount: exchanged_cost('GBP').round(2),
-        notify_url: 'http://22d8be75.ngrok.com/hook'}
+        notify_url: Rails.application.config.notify_url}
     encrypt_for_paypal(values)
   end
 
