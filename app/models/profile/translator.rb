@@ -61,7 +61,7 @@ module Profile
 
     has_notification_about :approve_translator,
                            observers: :user,
-                           message: "yo!",
+                           message: "profile_approved",
                            mailer: -> (translator, rr) do
                              NotificationMailer.translator_approving translator
                            end,

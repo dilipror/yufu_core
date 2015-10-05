@@ -2,11 +2,32 @@ require 'rails_helper'
 
 RSpec.describe Order::Payment, :type => :model do
 
+  describe '#pay' do
+    let(:payment) {Order::Payment.create sum: 300, invoice: invoice, order: order}
+    let(:invoice) {create :invoice}
+    let(:order) {create :order_verbal}
+
+    subject{payment.pay}
+
+    it 'invoice should be paid' do
+      expect{subject}.to change{invoice.reload.state}.to('paid')
+    end
+
+    it 'payment balance should be eq 0' do
+      subject
+      expect(payment.balance).to eq 0
+    end
+
+
+  end
+
   describe '#difference_to_user' do
     let(:invoice) {create :invoice}
     let(:payment) {Order::Payment.create sum: 300, partial_sum: 400,
                                     invoice: invoice}
     subject{payment.difference_to_user}
+
+    before(:each) {invoice.user.update_attribute :balance, 0}
 
     it 'user balance should change' do
       expect{subject}.to change{payment.invoice.user.reload.balance}.from(0).to(100)

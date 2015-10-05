@@ -1,6 +1,7 @@
 en:
   mongoid:
-
+    paypal:
+      interpretation_service: Interpretation service
     surcharge: Surcharge
 
     main_menu:
