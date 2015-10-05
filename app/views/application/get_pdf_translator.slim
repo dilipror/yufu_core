@@ -1,3 +1,81 @@
-= @translator.user.first_name
-| &nbsp;
-= @translator.user.last_name
+.pdf-container style="vertical-align: top"
+  = image_tag "file://#{Rails.root.join('public', @translator.profile_steps_personal.avatar.url(:original).slice(1..-1))}", size: "300", align: 'left' ,style: "margin-right: 20px"
+  = @translator.user.first_name
+  | &nbsp;
+  = @translator.user.last_name
+  br
+  br
+  = I18n.t('mongoid.attributes.profile/translator.steps.native_language')
+  |&nbsp; - &nbsp;
+  = @translator.profile_steps_language.native_language.name
+  br
+  br
+  = I18n.t('mongoid.attributes.profile/translator.steps.cities') + ':'
+  |&nbsp;
+  - @translator.profile_steps_service.cities.each do |city|
+    = city.name
+    |&nbsp;
+  br
+  br
+  - if @translator.profile_steps_service.cities_with_surcharge.count > 0
+    = I18n.t('mongoid.attributes.profile/translator.steps.cities_with_surcharge') + ':'
+    |&nbsp;
+    - @translator.profile_steps_service.cities_with_surcharge.each do |city|
+      = city.name
+      |&nbsp;
+    br
+    br
+  = I18n.t('mongoid.models.service.other') + ':'
+  br
+  - @translator.services.each do |serv|
+    br
+    = I18n.t 'mongoid.attributes.order/verbal.language'
+    |&nbsp; - &nbsp;
+    = serv.language.name
+    br
+    = I18n.t 'mongoid.attributes.order/verbal.level'
+    |&nbsp; - &nbsp;
+    = serv.level
+    br
+    |___________________________________________________
+    br
+  = I18n.t('mongoid.attributes.profile/translator.steps.educations')+ ':'
+  br
+  br
+  - @translator.profile_steps_education.educations.each do |education|
+    = I18n.t('mongoid.attributes.profile/translator.steps.education')
+    |&nbsp; - &nbsp;
+    = education.grade
+    br
+    |_______________________________________________________________________________________
+    br
+    br
+    = I18n.t('mongoid.attributes.profile/translator.steps.major')
+    |&nbsp; - &nbsp;
+    = education.major.name
+    br
+    |_______________________________________________________________________________________
+    br
+    br
+    = I18n.t('mongoid.attributes.profile/translator.steps.university')
+    |&nbsp; - &nbsp;
+    = education.university
+    br
+    |_______________________________________________________________________________________
+    br
+    br
+    = I18n.t('mongoid.attributes.profile/translator.steps.country')
+    |&nbsp; - &nbsp;
+    = education.country.name
+    br
+    |_______________________________________________________________________________________
+  br
+  br
+  = I18n.t 'mongoid.attributes.user.phone'
+  |&nbsp; - &nbsp;
+  = @translator.phone
+  |,&nbsp;
+  = I18n.t 'mongoid.attributes.user.email'
+  |&nbsp; - &nbsp;
+  = @translator.email
+/.join @translator.profile_steps_personal.avatar.url(:original)
