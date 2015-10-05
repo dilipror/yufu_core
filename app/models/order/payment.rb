@@ -72,7 +72,7 @@ module Order
 
     def difference_to_user
       diff = partial_sum - sum
-      if diff
+      if diff > 0
         write_attribute :balance, diff
         Transaction.create(sum: diff, debit: self, credit: invoice.user).execute
       end
