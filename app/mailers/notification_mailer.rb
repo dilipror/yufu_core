@@ -213,7 +213,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   def order_details(order)
-    "#{order.location} - #{order.language}, #{order.meeting_in} - #{order.greeted_at_hour}:#{order.greeted_at_minute}"
+    "#{I18n.t('notifications.order_details.location')} - #{order.location.name}, #{I18n.t('notifications.order_details.language')} -  #{order.language.name}, #{I18n.t('notifications.order_details.greeted_at')} - #{order.meeting_in}, #{formatted_time order.greeted_at_hour, order.greeted_at_minute}"
   end
 
   def interpreter(order)
@@ -222,6 +222,12 @@ class NotificationMailer < ActionMailer::Base
 
   def backup_interpreter(order)
     "#{order.secondary_offer.try(:translator).try(:first_name)} #{order.secondary_offer.try(:translator).try(:last_name)}"
+  end
+
+  def formatted_time(hour, minute)
+    formatted_hour = hour < 10 ? "0#{hour}" : "#{hour}"
+    formatted_minute = minute < 10 ? "0#{minute}" : "#{minute}"
+    "#{formatted_hour}:#{formatted_minute}"
   end
 
 end

@@ -7,7 +7,7 @@ RSpec.describe Order::Offer, :type => :model do
     let(:translator){create :profile_translator}
 
     let(:order){create :order_verbal, offers: [], state: 'wait_offer'}
-    let(:offer){create :offer, order: order, translator: translator}
+    let(:offer){create :order_offer, order: order, translator: translator}
     before(:each){order.stub(:process).and_return(true)}
 
     subject{offer.confirm}
@@ -47,6 +47,7 @@ RSpec.describe Order::Offer, :type => :model do
         order.stub(:will_begin_less_than?).with(36.hours).and_return(false)
         offer.stub(:primary?).and_return(true)
         offer.stub(:back_up?).and_return(false)
+        offer.update state: 'new'
       end
 
       it{is_expected.to be_falsey}
@@ -61,6 +62,7 @@ RSpec.describe Order::Offer, :type => :model do
         order.stub(:will_begin_less_than?).with(36.hours).and_return(false)
         offer.stub(:primary?).and_return(false)
         offer.stub(:back_up?).and_return(true)
+        offer.update state: 'new'
       end
 
       it{is_expected.to be_falsey}
@@ -74,6 +76,7 @@ RSpec.describe Order::Offer, :type => :model do
         order.stub(:will_begin_less_than?).with(36.hours).and_return(true)
         offer.stub(:primary?).and_return(false)
         offer.stub(:back_up?).and_return(false)
+        offer.update state: 'new'
       end
 
       it{is_expected.to be_truthy}
@@ -104,7 +107,7 @@ RSpec.describe Order::Offer, :type => :model do
     context 'back_up offer' do
       let(:order){create :order_verbal, offers: []}
 
-      before(:each){create :offer, translator: translator, order: order}
+      before(:each){create :order_offer, translator: translator, order: order}
 
       let(:translator_back_up){create :profile_translator}
 
@@ -123,9 +126,9 @@ RSpec.describe Order::Offer, :type => :model do
     let(:translator_bu){create :profile_translator}
     let(:translator_other){create :profile_translator}
     let(:order){create :order_verbal}
-    let(:offer){create :offer, translator: translator, order: order}
-    let(:offer_1){create :offer, translator: translator_bu, order: order}
-    let(:offer_2){create :offer, translator: translator_other, order: order}
+    let(:offer){create :order_offer, translator: translator, order: order}
+    let(:offer_1){create :order_offer, translator: translator_bu, order: order}
+    let(:offer_2){create :order_offer, translator: translator_other, order: order}
 
     subject{offer.confirm}
 
@@ -166,8 +169,8 @@ RSpec.describe Order::Offer, :type => :model do
 
         subject{offer_2.confirm}
 
-        let(:offer){create :offer, translator: translator, order: order, state: 'rejected'}
-        let(:offer_1){create :offer, translator: translator_bu, order: order, state: 'rejected'}
+        let(:offer){create :order_offer, translator: translator, order: order, state: 'rejected'}
+        let(:offer_1){create :order_offer, translator: translator_bu, order: order, state: 'rejected'}
 
 
         before(:each){
@@ -177,6 +180,7 @@ RSpec.describe Order::Offer, :type => :model do
           offer
           offer_1
           offer_2
+          offer_2.update state: 'new'
         }
 
         it{expect{subject}.to change{translator_other.user.notifications.count}.by(1)}
@@ -204,7 +208,7 @@ RSpec.describe Order::Offer, :type => :model do
 
       let(:order){create :order_verbal, offers: []}
 
-      subject{create :offer, translator: translator, order: order}
+      subject{create :order_offer, translator: translator, order: order}
 
       context 'before 36' do
         before(:each){allow(order).to receive(:will_begin_less_than?).with(36.hours).and_return(true)}
@@ -230,7 +234,7 @@ RSpec.describe Order::Offer, :type => :model do
     let(:order){create :order_verbal, offers: []}
 
     subject do
-      offer = (build :offer, translator: translator, order: order)
+      offer = (build :order_offer, translator: translator, order: order)
       order.offers << offer
       offer.valid?
     end
@@ -244,14 +248,14 @@ RSpec.describe Order::Offer, :type => :model do
     end
 
     context 'only rejected offer' do
-      before(:each){offer = create :offer, translator: translator, order: order, state: 'rejected'; order.offers << offer}
+      before(:each){offer = create :order_offer, translator: translator, order: order, state: 'rejected'; order.offers << offer}
 
       it{is_expected.to be_truthy}
 
     end
 
     context 'has offer' do
-      before(:each){offer = create :offer, translator: translator, order: order; ; order.offers << offer}
+      before(:each){offer = create :order_offer, translator: translator, order: order; ; order.offers << offer}
 
       it{is_expected.to be_falsey}
     end

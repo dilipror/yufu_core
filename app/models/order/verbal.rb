@@ -128,7 +128,16 @@ module Order
 
       before_transition on: :paid do |order|
         OrderVerbalQueueFactoryWorker.perform_async order.id, I18n.locale
+        OrderWorkflowWorker.perform_in 24.hours, order.id, 'after_24'
+        OrderWorkflowWorker.perform_in 12.hours, order.id, 'after_12'
+        OrderWorkflowWorker.perform_in (order.first_date_time - 60.hours) - Time.now, order.id, 'before_60'
+        OrderWorkflowWorker.perform_in (order.first_date_time - 48.hours) - Time.now , order.id, 'before_48'
+        OrderWorkflowWorker.perform_in (order.first_date_time - 36.hours) - Time.now , order.id, 'before_36'
+        OrderWorkflowWorker.perform_in (order.first_date_time - 24.hours) - Time.now, order.id, 'before_24'
+        OrderWorkflowWorker.perform_in (order.first_date_time -  4.hours) - Time.now , order.id, 'before_4'
+        order.update paid_time: Time.now
       end
+
     end
 
     def additional_cost(currency = nil)
@@ -199,48 +208,6 @@ module Order
       end
     end
 
-    def after_12
-      if offers.count == 0
-        Support::Ticket.create assigned_to: main_language_criterion.language, order: self,
-                               theme: Support::Theme.where(type: 'no_translator_found').first, subject: I18n.t('tickets.subjects.no_translator_found')
-      end
-    end
-
-    def after_24
-      if offers.count == 0
-        notify_about_looking_for_int
-      end
-    end
-
-    def before_60
-      notify_about_check_dates
-      primary_offer.notify_about_re_confirm_main if primary_offer.present?
-    end
-
-    def before_48
-      secondary_offer.notify_about_re_confirm_back_up if secondary_offer.present?
-    end
-
-    def before_36
-      if state == 'wait_offer'
-        Support::Ticket.create! assigned_to: main_language_criterion.language.senior.try(:user), order: self,
-                               theme: Support::Theme.where(type: 'no_offers_confirmed').first, subject: I18n.t('tickets.subjects.no_offers_confirmed')
-      end
-    end
-
-    def before_24
-      if state == 'wait_offer'
-        notify_about_looking_for_int_before_24
-      end
-    end
-
-    def before_4
-      if wait_offer?
-        notify_about_cancel
-        RejectService.new(self).reject_order :yufu
-      end
-    end
-
 
     def paid_ago?(time)
       (Time.now - paid_time) >= time if paid_time.present?
@@ -294,12 +261,6 @@ module Order
             main_language_criterion.language.is_supported_by_office?
       end
       true
-    end
-
-    def self.skip_unconfirmed_offers
-      where(state: 'wait_offer').each do |order|
-          order.offers.where(status: 'primary').first.update status: 'secondary'
-      end
     end
 
     def office

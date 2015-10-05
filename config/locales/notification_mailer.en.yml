@@ -5,6 +5,45 @@ en:
     new_order: Place new order
     your_int: Your interpreter
 
+    re_confirmed_translator:
+      subject: Confirm successful again
+      body: "Dear %{client},
+
+            Congratulations, you become an interpreter of this order. Go to your language rich information window to view order details to avoid delays in order execution.
+     
+            Please Click here to enter the site: %{dashboard_link}
+
+            Thank you for your cooperation and wish you a happy life!
+
+            Language rich"
+    re_confirm_back_up:
+      subject: reaffirmed Order
+      body: "Dear %{client},
+
+            You are currently the alternative interpreter of this order. From now on within 12 hours of the order as soon as possible please confirm again, you will likely become this
+
+            Core translators orders. Please pay attention.
+
+            Please Click here to enter the site: %{dashboard_link}
+
+            Thank you for your cooperation and wish you a happy life!
+
+            Language rich"
+
+    re_confirm_main:
+      subject: reaffirmed Order
+      body: "Dear %{client},
+
+            You are currently the core interpreter of this order, from now on within 12 hours of you again as soon as possible to confirm whether the implementation of this order. If you can not
+
+            Completion Confirmation of the order by the alternative translators took over, and you account will be frozen for three months. Please pay attention.
+
+            Please Click here to enter the site: %{dashboard_link}
+
+            Thank you for your cooperation and wish you a happy life!
+
+            Language rich "
+
     re_confirmed_client:
       subject: "Interpreter`s changes"
       body: "Dear %{client},

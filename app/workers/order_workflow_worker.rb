@@ -3,6 +3,6 @@ class OrderWorkflowWorker
 
   def perform(id, stamp)
     order = Order::Verbal.find id
-    order.send stamp
+    Order::Verbal::EventsService.new(order).send stamp
   end
 end
