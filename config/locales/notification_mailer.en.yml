@@ -423,7 +423,7 @@ en:
 
              If you wish to ask a question, please follow the link below:\n
 
-             %%{new_verbal_order}\n
+             %{new_verbal_order}\n
 
              We sincerely apologize for any inconvenience!\n
 

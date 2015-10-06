@@ -19,7 +19,6 @@ module Order
     validate :translator_is_not_banned, unless: :persisted?
     # validates_uniqueness_of :translator, scope: :order_id, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
-    after_create :notify_about_create_offer_for_owner
     after_create :notify_about_become_main_int, if: :primary?
     after_create :notify_about_become_back_up_int, if: :back_up?
     after_create :notify_about_for_client
@@ -75,13 +74,6 @@ module Order
     #                            NotificationMailer.secondary_offer_confirmed_for_client user, offer
     #                          end
     #                        end
-
-    has_notification_about :create_offer_for_owner,
-                           observers: :translator,
-                           message: -> (offer) {"notifications.offers.create_offer_for_owner"},
-                           sms: -> (user, offer) do
-                             Yufu::SmsNotification.instance.new_offer_for_translator user
-                           end
 
     has_notification_about :re_confirm_main,
                            message: 'notifications.re_confirm',

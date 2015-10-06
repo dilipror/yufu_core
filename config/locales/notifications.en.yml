@@ -10,6 +10,7 @@ en:
       location: Location
       language: language
       greeted_at: greeted at
+    dashboard_link: My dashboard
     become_main_int: You have become main interpreter for offer
     become_back_up_int: You have become back up interpreter for offer
     back_up_for_client: Your order have main translator
