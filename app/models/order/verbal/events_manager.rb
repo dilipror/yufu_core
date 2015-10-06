@@ -5,12 +5,14 @@ class Order::Verbal::EventsManager
   embeds_many :events, class_name: 'Order::Verbal::Event'
 
   after_initialize do
-    events.new name: 'after_12'
-    events.new name: 'after_24'
-    events.new name: 'before_60'
-    events.new name: 'before_48'
-    events.new name: 'before_36'
-    events.new name: 'before_24'
-    events.new name: 'before_4'
+    if events.empty?
+      events.new name: 'after_12'
+      events.new name: 'after_24'
+      events.new name: 'before_60'
+      events.new name: 'before_48'
+      events.new name: 'before_36'
+      events.new name: 'before_24'
+      events.new name: 'before_4'
+    end
   end
 end

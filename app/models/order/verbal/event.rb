@@ -8,6 +8,7 @@ class Order::Verbal::Event
 
   def run
     Order::Verbal::EventsService.new(events_manager.order_verbal).send name
-    update is_complete: true
+    self.is_complete = true
+    events_manager.save!
   end
 end
