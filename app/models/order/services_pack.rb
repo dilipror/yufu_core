@@ -12,6 +12,11 @@ module Order
     field :title_number, type: String, localize: true
     field :position, type: Integer
 
+    field :meta_title, localize: true
+    field :meta_description, localize: true
+    field :meta_keywords, localize: true
+
+
     field :need_downpayments, type: Boolean, default: false
     field :tooltip, localize: true
 
