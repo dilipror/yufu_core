@@ -52,6 +52,8 @@ module Order
       default_scope_for(profile).where :state.in => [:close, :rated], connected_method_for(profile) => profile
     end
 
+    default_scope -> {desc :id}
+
     has_notification_about :processing, observers: :owner, message: 'notifications.processing_order'
     has_notification_about :closing, observers: :assignee, message: 'notifications.order_closed'
 
