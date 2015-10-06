@@ -276,7 +276,7 @@ module Order
     end
 
     def can_update?
-      state == 'close' ? false : (update_time.nil? ? true : (DateTime.now - update_time) >= 1)
+      state == 'close' ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
       # state == 'new' ? true : (update_time.nil? ? true : (DateTime.now - update_time) >= 1)
     end
     alias :can_update :can_update?
@@ -296,6 +296,7 @@ module Order
         assignee.busy_days << BusyDay.new(date: date.date, order_verbal: self.id)
       end
       assignee.save
+
     end
 
     def update_notification

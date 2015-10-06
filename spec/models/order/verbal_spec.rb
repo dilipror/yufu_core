@@ -17,6 +17,21 @@ RSpec.describe Order::Verbal, :type => :model do
   #   end
   # end
 
+  describe '#can_update?' do
+    subject{order.can_update?}
+
+    context 'when cant update' do
+      let(:order) {create :order_verbal, state: 'wait_offer'}
+      it{is_expected.to eq false}
+    end
+
+    context 'when can update' do
+      let(:order) {create :order_verbal, state: 'wait_offer'}
+      before(:each) {allow(order).to receive(:update_time) {Time.now - 45.hours}}
+      it{is_expected.to eq true}
+    end
+  end
+
   describe '#set_busy_days' do
 
     before(:each) {order.invoices.create cost: 100.0}
