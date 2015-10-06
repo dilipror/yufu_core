@@ -28,19 +28,18 @@ class Order::Written::TranslatorsQueue
     if partner.empty?
       nil
     else
-      Order::Written::TranslatorsQueue.create order_written: order, translators: partner, lock_to: lock_to
+      queue_builder order, partner, lock_to
     end
   end
 
   def self.create_chinese_translators_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a? Order::Written
     return nil if order.original_language.is_chinese
-    # chinese_translators = []
     chinese_translators = Profile::Translator.chinese.support_written_order(order)
     if chinese_translators.empty?
       nil
     else
-      Order::Written::TranslatorsQueue.create order_written: order, translators: chinese_translators, lock_to: lock_to
+      queue_builder order, chinese_translators, lock_to
     end
   end
 
@@ -55,7 +54,7 @@ class Order::Written::TranslatorsQueue
     if seniors.empty?
       nil
     else
-      Order::Written::TranslatorsQueue.create order_written: order, translators: seniors, lock_to: lock_to
+      queue_builder order, seniors, lock_to
     end
   end
 
@@ -66,7 +65,11 @@ class Order::Written::TranslatorsQueue
     if translators.empty?
       nil
     else
-      Order::Written::TranslatorsQueue.create order_verbal: order, translators: translators, lock_to: lock_to
+      queue_builder order, translators, lock_to
     end
+  end
+
+  def self.queue_builder(order, translators, lock_to)
+    create order_written: order, translators: translators, lock_to: lock_to
   end
 end

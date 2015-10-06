@@ -7,7 +7,7 @@ class OrderWrittenQueueFactoryWorker
     date_iterator = DateTime.now
     create_queue = proc do |queue_name|
       build_method = "create_#{queue_name}_queue"
-      queue = Order::Written::TranslationQueue.send build_method, order, date_iterator
+      queue = Order::Written::TranslatorsQueue.send build_method, order, date_iterator
       if queue.present?
         queue.lock_to <=DateTime.now ? queue.notify_about_create :
             Order::Written::TranslatorsQueue.delay_for(30.minutes).notify_queue(queue.id)
