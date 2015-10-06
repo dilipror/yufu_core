@@ -61,7 +61,7 @@ module Yufu
     end
 
     def dashboard_url
-      "#{Rails.application.config.host}/office"
+      "#{Rails.application.config.host}/#{I18n.locale}/office"
     end
 
   end

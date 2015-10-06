@@ -16,6 +16,7 @@ module Order
     # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
     # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
     validate :only_one_new_offer, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
+    validate :translator_is_not_banned, unless: :persisted?
     # validates_uniqueness_of :translator, scope: :order_id, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
     after_create :notify_about_create_offer_for_owner
@@ -147,6 +148,16 @@ module Order
         end
         offer.can_confirm?
       end
+
+      before_transition new: :rejected do |offer|
+        offer.translator.update is_banned: true
+        if offer.primary?
+          ban_time = 3.months
+        else
+          ban_time = 3.hours
+        end
+        BanExpireWorker.perform_in ban_time, offer.translator.id
+      end
     end
 
     def can_confirm?
@@ -180,6 +191,12 @@ module Order
     end
 
     private
+
+    def translator_is_not_banned
+      if translator.is_banned
+        errors.add :translator_id, 'is_banned'
+      end
+    end
 
     def only_one_new_offer
       if order.offers.where(translator: translator, state: 'new').count > 1

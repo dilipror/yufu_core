@@ -9,6 +9,7 @@ module Profile
     field :passport_number
     field :passport_num
     field :passport_country
+    field :is_banned, default: false
 
     # field :state
     field :last_sent_to_approvement, type: DateTime, default: DateTime.yesterday

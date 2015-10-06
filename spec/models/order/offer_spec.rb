@@ -227,6 +227,17 @@ RSpec.describe Order::Offer, :type => :model do
 
   end
 
+  describe '#reject' do
+
+    let(:translator){create :profile_translator}
+    let(:offer){create :order_offer, translator: translator}
+
+    subject{offer.reject}
+
+    it{expect{subject}.to change{translator.is_banned}.to true}
+
+  end
+
   describe '#only_one_new_offer' do
 
     let(:translator){create :profile_translator}
