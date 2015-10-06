@@ -24,7 +24,7 @@ class Order::Written::TranslatorsQueue
     return nil unless order.is_a? Order::Written
     return nil if order.referral_link.nil?
     partner = []
-    partner << order.referral_link.user.profile_translator if Order::Written.available_for(order.referral_link.user.profile_translator)
+    partner << order.referral_link.user.profile_translator if order.referral_link.user.profile_translator.support_written_order?(order)
     if partner.empty?
       nil
     else
@@ -34,8 +34,9 @@ class Order::Written::TranslatorsQueue
 
   def self.create_chinese_translators_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a? Order::Written
-    chinese_translators = []
-    chinese_translators << Profile::Translator.chinese.support_written_order(order)
+    return nil if order.original_language.is_chinese
+    # chinese_translators = []
+    chinese_translators = Profile::Translator.chinese.support_written_order(order)
     if chinese_translators.empty?
       nil
     else
@@ -45,11 +46,27 @@ class Order::Written::TranslatorsQueue
 
   def self.create_senior_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a? Order::Written
-
+    return nil unless (order.original_language.senior.present? || order.translation_language.senior.present?)
+    seniors = []
+    seniors << order.original_language.senior if order.original_language.senior.present? &&
+        order.original_language.senior.support_written_order?(order)
+    seniors << order.translation_language.senior if order.translation_language.senior.present? &&
+        order.translation_language.senior.support_written_order?(order)
+    if seniors.empty?
+      nil
+    else
+      Order::Written::TranslatorsQueue.create order_written: order, translators: seniors, lock_to: lock_to
+    end
   end
 
   def self.create_other_translators_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a? Order::Written
-
+    blacklist = order.translators_queues.inject([]){|arr, q| arr + q.translator_ids}
+    translators = Profile::Translator.support_written_order(order).and(:id.nin => blacklist)
+    if translators.empty?
+      nil
+    else
+      Order::Written::TranslatorsQueue.create order_verbal: order, translators: translators, lock_to: lock_to
+    end
   end
 end

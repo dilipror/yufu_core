@@ -138,9 +138,21 @@ module Profile
       return lngs.uniq
     end
 
+    def support_written_order?(order)
+      services.where(written_approves: true).each do |s|
+        if /From/.match(s.written_translate_type)
+          return true if order.translation_language_id == s.language.id
+        end
+        if /To|to/.match(s.written_translate_type)
+          return true if order.original_language_id == s.language.id
+        end
+      end
+      false
+    end
+
     def self.support_written_order(order)
       language = order.original_language.is_chinese? ? order.translation_language : order.original_language
-      ids_from_service = Profile::Service.written_approved.cooperation_is(order.translation_type).where(language: language)
+      ids_from_service = Profile::Service.written_approved.support_cooperation(order.translation_type).where(language: language).distinct(:translator_id)
       where :id.in => ids_from_service
     end
 

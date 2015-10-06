@@ -34,16 +34,11 @@ module Profile
     after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
     after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
 
-    def self.cooperation_is(type)
-      finder = type.include?('From') ? 'From|to' : 'To|to'
-      # /To|to/
-      where written_translate_type: /#{finder}/
-      # if /From/.match(s.written_translate_type)
-      #   query << {translation_language_id: s.language.id}
-      # end
-      # if /To|to/.match(s.written_translate_type)
-      #   query << {original_language_id: s.language.id}
-      # end
+    def self.support_cooperation(type)
+      types = ['From-To Chinese']
+      types << 'From Chinese' if type.include?('From')
+      types << 'To Chinese' if type.include?('To')
+      where :written_translate_type.in => types
     end
 
     def change_translator_state
