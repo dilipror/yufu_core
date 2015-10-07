@@ -239,6 +239,12 @@ module Order
       end
     end
 
+    def offer_status_for(profile)
+      return 'primary' if offers.where(translator: profile).first.try(:primary?)
+      return 'back_up' if offers.where(translator: profile).first.try(:back_up?)
+      return nil
+    end
+
     def first_date
       reservation_dates.order('date acs').first.date || Time.now
     end

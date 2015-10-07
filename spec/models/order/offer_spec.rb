@@ -97,9 +97,12 @@ RSpec.describe Order::Offer, :type => :model do
     subject{order.offers.create translator: translator}
 
     context 'main offer' do
+
+      before(:each){Order::Offer.any_instance.stub(:primary?).and_return(true)}
+
       let(:order){create :order_verbal, offers: []}
 
-      it{expect{subject}.to change{translator.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{translator.user.reload.notifications.count}.by(1)}
       it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
 
     end

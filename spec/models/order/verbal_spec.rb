@@ -722,4 +722,17 @@ RSpec.describe Order::Verbal, :type => :model do
     end
   end
 
+  describe '#offer_status_for' do
+    let(:offer) {create :order_offer}
+    let(:order) {offer.order}
+
+    it 'returns status of offer for profile' do
+      expect(order.offer_status_for offer.translator).to eq('primary')
+    end
+
+    it 'returns nil if offer is not exist' do
+      expect(order.offer_status_for create(:profile_translator)).to eq(nil)
+    end
+  end
+
 end

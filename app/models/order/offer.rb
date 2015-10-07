@@ -26,7 +26,7 @@ module Order
 
     has_notification_about :become_main_int,
                            message: 'notifications.become_main_int',
-                           observes: :translator,
+                           observers: :translator,
                            mailer: (-> (user, offer) do
                              NotificationMailer.become_main_int(user).deliver
                            end),
@@ -36,7 +36,7 @@ module Order
 
     has_notification_about :become_back_up_int,
                            message: 'notifications.become_main_int',
-                           observes: :translator,
+                           observers: :translator,
                            mailer: (-> (user, offer) do
                              NotificationMailer.become_back_up_int(user).deliver
                            end),

@@ -64,10 +64,6 @@ module Order
       [link_agent, link_agent.try(:overlord), banner_agent, banner_agent.try(:overlord), owner.try(:overlord)].compact
     end
 
-    def offer_status_for(profile)
-      offers.where(translator: profile).first.try(:status)
-    end
-
     def office
       Office.head
     end
