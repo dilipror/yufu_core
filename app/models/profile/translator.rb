@@ -28,6 +28,7 @@ module Profile
     belongs_to :city
     belongs_to :province
 
+    has_many :proof_orders,  class_name: 'Order::Written'
     has_many :orders,        class_name: 'Order::Base', inverse_of: :assignee
     has_many :offers,        class_name: 'Order::Offer'
     has_many :services,      class_name: 'Profile::Service', dependent: :destroy

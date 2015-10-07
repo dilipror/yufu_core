@@ -28,6 +28,7 @@ module Order
     belongs_to :translation_language,                class_name: 'Language'
     belongs_to :order_type,                          class_name: 'Order::Written::WrittenType'
     belongs_to :order_subtype,                       class_name: 'Order::Written::WrittenSubtype'
+    belongs_to :proof_reader,                        class_name: 'Profile::Translator'
 
     has_many :translators_queues, class_name: 'Order::Written::TranslatorsQueue', dependent: :destroy
 
@@ -57,6 +58,13 @@ module Order
     validates_presence_of :translation_type, :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'text'}
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
     validate :attachments_count, if: ->{step > 1}
+
+    has_notification_about :cancellation_by_yufu,
+                           message: 'notifications.cancel_by_yufu',
+                           observers: -> (order) {order.owner.user},
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancellation_by_yufu(user).deliver
+                           end
 
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
@@ -102,10 +110,16 @@ module Order
       end
 
       before_transition on: :correct do |order|
+        Order::Written::EventsService.create(order).after_translate_order
         order.notify_about_correct
       end
 
       before_transition on: :control do |order|
+        unless translation_type == 'translate_and_correct'
+          Order::Written::EventsService.create(order).after_translate_order
+        else
+          Order::Written::EventsService.create(order).after_proof_reading
+        end
         order.notify_about_control
       end
 
@@ -119,6 +133,24 @@ module Order
       before_transition on: :process do |order|
         if order.assignee.present?
           order.notify_about_processing
+        end
+      end
+
+      before_transition on: :paid do |order|
+        if order.translation_language.is_chinese
+          if (Profile::Translator.chinese.approved).count > 0
+            # set worker 30 min
+            OrderWrittenWorkflowWorker.perform_in 30.minutes, order.id, 'confirmation_order_in_30'
+          end
+        else
+          # есть ли переводчики с hsk_level > 4
+          if (Profile::Translator.approved.where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
+
+          else
+            # NOT WORKING
+            order.reject
+            order.notify_about_cancellation_by_yufu
+          end
         end
       end
 
@@ -235,10 +267,10 @@ module Order
     def close_cash_flow
       price_to_members = self.price * 0.95
       if translation_type == 'translate'
-        self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7
+        # self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7
         self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
       else
-        self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7*0.7
+        # self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7*0.7
         self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.7*0.3
         self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
       end

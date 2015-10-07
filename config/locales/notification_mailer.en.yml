@@ -44,6 +44,20 @@ en:
 
             Language rich "
 
+    cancellation_by_yufu:
+      subject: Order cancellation by YUFU.NET
+      body: "Dear %{client},
+
+             Unfortunately we have to inform you,  that your order  for the YUFU.NET service has beed cancelled, due to insurmountable reasons.
+
+             Your payment will be refunded in full amount according to the Refund Policy of YUFU.NET.
+
+             We sincerely apologize for any inconvenience!
+
+             Sincerely Yours,
+
+             YUFU.NET community"
+
     re_confirmed_client:
       subject: "Interpreter`s changes"
       body: "Dear %{client},
