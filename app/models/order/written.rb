@@ -122,6 +122,10 @@ module Order
         end
       end
 
+      before_transition on: :paid do |order|
+        order.update paid_time: Time.now
+      end
+
     end
 
     def self.available_for(profile)

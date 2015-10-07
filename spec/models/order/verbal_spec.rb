@@ -457,42 +457,6 @@ RSpec.describe Order::Verbal, :type => :model do
 
   describe 'timestamps' do
 
-    describe '#paid_ago?' do
-      subject{order.paid_ago?(12.hours)}
-      let(:order){create :order_verbal}
-
-      context 'before time' do
-
-
-        before(:each)do
-          order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
-          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
-        end
-
-        it{is_expected.to be_truthy}
-
-      end
-
-      context 'just in time' do
-        before(:each)do
-          order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 12.hours)
-          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
-        end
-
-        it{is_expected.to be_truthy}
-      end
-
-      context 'after time'do
-
-        before(:each)do
-          order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 10.hours)
-          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
-        end
-
-        it{is_expected.to be_falsey}
-      end
-    end
-
     describe 'will_begin_less_than?' do
 
       subject{order.will_begin_less_than?(60.hours)}
