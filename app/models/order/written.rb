@@ -200,6 +200,9 @@ module Order
       base_price
     end
 
+    def quantity_for_translate
+      read_attribute(:quantity_for_translate) || 0
+    end
 
     def days_for_translate
       days_for_work('translate')
