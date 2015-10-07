@@ -37,7 +37,7 @@ class Translation
     que = klass.find_by(id: id)
 
     I18n.locale = target_locale
-    que[field] = value
+    que.send "#{field}=", value
     que.save
   end
 
