@@ -11,6 +11,7 @@ module Order
             OrderWrittenWorkflowWorker.perform_in 1.minutes, @order.id, 'confirmation_order_in_30'
           else
             if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
+              OrderWrittenQueueFactoryWorker.perform_async @order.id, I18n.locale
               # MAIL to TR - NEW ORDER AVAIL
               # wait translation
             else
