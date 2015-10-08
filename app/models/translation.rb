@@ -55,6 +55,10 @@ class Translation
     Translation.where(:id.in => tr_ids).not_model_localizers
   end
 
+  def self.seo
+    Translation.where(key: /^frontend\.meta_tags\./)
+  end
+
   def self.active_ids_in(localization)
     approved_version_ids = localization.localization_versions.approved.distinct(:id)
     match = {"$match" => Translation.where(:version_id.in => approved_version_ids).selector}
