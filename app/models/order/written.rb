@@ -23,12 +23,18 @@ module Order
     has_notification_about :correct, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.correcting_order'
     has_notification_about :control, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.control_order'
     has_notification_about :finish, observers: :owner, message: 'notifications.done_order'
+    has_notification_about :cancellation_by_yufu,
+                           message: 'notifications.cancel_by_yufu',
+                           observers: -> (order) {order.owner.user},
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancellation_by_yufu(user).deliver
+                           end
 
     belongs_to :original_language,                   class_name: 'Language'
     belongs_to :translation_language,                class_name: 'Language'
     belongs_to :order_type,                          class_name: 'Order::Written::WrittenType'
     belongs_to :order_subtype,                       class_name: 'Order::Written::WrittenSubtype'
-    belongs_to :proof_reader,                        class_name: 'Profile::Translator'
+    belongs_to :proof_reader,                        class_name: 'Profile::Translator'#, inverse_of: :proof_orders
 
     has_many :translators_queues, class_name: 'Order::Written::TranslatorsQueue', dependent: :destroy
 
@@ -59,38 +65,9 @@ module Order
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
     validate :attachments_count, if: ->{step > 1}
 
-    has_notification_about :cancellation_by_yufu,
-                           message: 'notifications.cancel_by_yufu',
-                           observers: -> (order) {order.owner.user},
-                           mailer: -> (user, order) do
-                             NotificationMailer.cancellation_by_yufu(user).deliver
-                           end
-
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end
-
-    def senior
-      real_translation_language.senior
-    end
-
-    # def lang_price()
-    #
-    # def cost(currency = nil, curr_level = level)
-    #   (translation_languages.inject(0) {|sum, l| sum + l.written_cost(curr_level, currency) * words_number})
-    # end
-    #
-    # def price(currency = nil, curr_level = level)
-    #   if translation_type == 'translate' or translation_type.nil?
-    #     return Price.with_markup(cost currency, curr_level)
-    #   end
-    #   if translation_type == 'translate_and_correct'
-    #     Price.with_markup(cost currency, curr_level) * (1 + Price.get_increase_percent(translation_languages.first, level) / 100)
-    #   end
-    # end
-
-    #  test--------------------------------------------------------------
-
 
     state_machine initial: :new do
       state :correcting
@@ -110,15 +87,15 @@ module Order
       end
 
       before_transition on: :correct do |order|
-        Order::Written::EventsService.create(order).after_translate_order
+        Order::Written::EventsService.new(order).after_translate_order
         order.notify_about_correct
       end
 
       before_transition on: :control do |order|
         unless translation_type == 'translate_and_correct'
-          Order::Written::EventsService.create(order).after_translate_order
+          Order::Written::EventsService.new(order).after_translate_order
         else
-          Order::Written::EventsService.create(order).after_proof_reading
+          Order::Written::EventsService.new(order).after_proof_reading
         end
         order.notify_about_control
       end
@@ -137,21 +114,7 @@ module Order
       end
 
       before_transition on: :paid do |order|
-        if order.translation_language.is_chinese
-          if (Profile::Translator.chinese.approved).count > 0
-            # set worker 30 min
-            OrderWrittenWorkflowWorker.perform_in 30.minutes, order.id, 'confirmation_order_in_30'
-          end
-        else
-          # есть ли переводчики с hsk_level > 4
-          if (Profile::Translator.approved.where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
-
-          else
-            # NOT WORKING
-            order.reject
-            order.notify_about_cancellation_by_yufu
-          end
-        end
+        Order::Written::EventsService.new(order).after_paid_order
       end
 
     end
@@ -178,6 +141,10 @@ module Order
       else
         default
       end
+    end
+
+    def need_proof_reading?
+      translation_type == 'translate_and_correct'
     end
 
     def original_price(currency = nil)

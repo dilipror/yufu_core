@@ -37,6 +37,7 @@ module Profile
     def self.support_cooperation(type)
       types = ['From-To Chinese']
       types << 'From Chinese' if type.include?('From')
+      types << 'From Chinese + Corrector' if type.include?('From')
       types << 'To Chinese' if type.include?('To')
       where :written_translate_type.in => types
     end

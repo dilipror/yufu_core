@@ -10,7 +10,7 @@ class Language
   field :office_has_local_translators, type: Mongoid::Boolean, default: false
   field :communication,                type: Mongoid::Boolean, default: false
   field :is_chinese,                   type: Mongoid::Boolean, default: false
-  field :support_written_correctors,   type: Mongoid::Boolean, default: false
+  # field :support_written_correctors,   type: Mongoid::Boolean, default: false
   field :is_for_profile,               type: Mongoid::Boolean, default: false
   field :is_hieroglyph,                type: Mongoid::Boolean
 

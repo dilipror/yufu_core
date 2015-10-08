@@ -476,37 +476,11 @@ RSpec.describe Order::Written, type: :model do
 
   end
 
-  describe '#paid' do
-    let(:lang) {create :language}
-    let(:chinese_lang) {create :language, is_chinese: true}
-    subject{order.paid}
-
-    context 'cancellation by yufu' do
-      # before(:each) {allow{Profile::Translator.any_instance}.to receive}
-      before(:each) do
-        Profile::Translator.each do |tr|
-          tr.profile_steps_service.update_attributes hsk_level: 4
-        end
-      end
-
-      context 'when no chinese translators' do
-
-      end
-
-      context 'when order not to chinese' do
-        let(:order) {create :order_written, original_language: chinese_lang, translation_language: lang}
-        let!(:translator) {create :profile_translator, total_approve: true}
-
-        it{expect{subject}.to change{order.state}.to('rejected')}
-        it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
-
-      end
-
-      context 'when order not confirmed for 30 min' do
-
-      end
-
-    end
-  end
+  # describe '#paid' do
+  #   let(:lang) {create :language}
+  #   let(:chinese_lang) {create :language, is_chinese: true}
+  #   subject{order.paid}
+  #
+  # end
 
 end
