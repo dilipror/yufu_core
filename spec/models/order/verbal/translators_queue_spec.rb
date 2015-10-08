@@ -7,6 +7,16 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
     it{expect{subject}.to change{order.reload.translators_queues.count}.by(1)}
   end
 
+  describe '.create' do
+    let!(:translator1){create :profile_translator}
+    let!(:translator2){create :profile_translator}
+
+    subject{Order::Verbal::TranslatorsQueue.create translators: [translator1, translator2]}
+
+    it{expect{subject}.to change{translator1.reload.order_verbal_translators_queues.count}.by(1)}
+    it{expect{subject}.to change{translator2.reload.order_verbal_translators_queues.count}.by(1)}
+  end
+
   describe '.create_agent_queue' do
     subject{Order::Verbal::TranslatorsQueue.create_agent_queue order}
 
@@ -43,6 +53,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
 
       it{expect(subject.lock_to).to eq DateTime.now}
       it{expect(subject.translators).to include translator}
+      it{expect{subject}.to change{translator.reload.order_verbal_translators_queues.count}.by(1)}
     end
   end
 
@@ -75,6 +86,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
       it{expect(subject.translators).not_to include not_native_chinese.profile_translator}
 
       it_behaves_like 'queue builder'
+      it{expect{subject}.to change{native_chinese_translator.profile_translator.reload.order_verbal_translators_queues.count}.by(1)}
     end
 
     context 'order on not native chinese' do
@@ -105,6 +117,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
 
     it{expect(subject.translators).to include senior}
     it{expect(subject.translators).not_to include private_translator.profile_translator}
+    it{expect{subject}.to change{senior.reload.order_verbal_translators_queues.count}.by(1)}
   end
 
   describe '.create_without_surcharge_queue' do
@@ -131,6 +144,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
       let(:order){create :wait_offers_order, location: city, language: language, level: 'business', include_near_city: false}
       it{expect(subject.translators).to include translator_2}
       it{expect(subject.translators).not_to include translator_1}
+      it{expect{subject}.to change{translator_2.reload.order_verbal_translators_queues.count}.by(1)}
       it_behaves_like 'queue builder'
     end
 
@@ -138,6 +152,7 @@ RSpec.describe Order::Verbal::TranslatorsQueue, :type => :model do
       let(:order){create :wait_offers_order, location: city, language: language, level: 'guide', include_near_city: false}
       it{expect(subject.translators).to include translator_2}
       it{expect(subject.translators).not_to include translator_1}
+      it{expect{subject}.to change{translator_2.reload.order_verbal_translators_queues.count}.by(1)}
       it_behaves_like 'queue builder'
     end
 

@@ -13,6 +13,11 @@ class Order::Verbal::TranslatorsQueue
   has_notification_about :create, observers: :translators, message: 'notifications.new_order',
                          mailer: -> (user, queue) { NotificationMailer.new_order_for_translator(user).deliver }
 
+  # HARD CODE!!!!!!!!!! HABTM doesn't work
+  after_create do
+    translators.each {|t| t.order_verbal_translators_queues << self}
+  end
+
   def self.notify_queue(queue_id)
     queue = Order::Verbal::TranslatorsQueue.find queue_id
     queue.notify_about_create
@@ -37,7 +42,7 @@ class Order::Verbal::TranslatorsQueue
 
   def self.create_native_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a?(Order::Verbal) && order.want_native_chinese
-    translators = Profile::Translator.support_order(order).chinese.without_surcharge(order.location)
+    translators = Profile::Translator.support_order(order).chinese.without_surcharge(order.location).to_a
     if translators.nil? || translators.empty?
       nil
     else
