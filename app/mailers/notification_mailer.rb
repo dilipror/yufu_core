@@ -47,7 +47,7 @@ class NotificationMailer < ActionMailer::Base
 
   def inter_invoice_cancel(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      new_verbal_order: (link_to I18n.t('notification_mailer.new_order'), new_verbal_order_url),
+                                      new_verbal_order:  new_verbal_order_url,
                                       dashboard_link: dashboard_link)
   end
 
@@ -84,7 +84,7 @@ class NotificationMailer < ActionMailer::Base
 
   def signup_reminder(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      confirmation_url: (link_to I18n.t('notification_mailer.log_in'), confirmation_url(user, confirmation_token: user.confirmation_token) ))
+                                      confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
   end
 
   def trans_invoice(user, order)
@@ -95,7 +95,7 @@ class NotificationMailer < ActionMailer::Base
 
   def trans_invoice_cancel(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      new_verbal_order: (link_to I18n.t('notification_mailer.new_order'), new_verbal_order_url),
+                                      new_verbal_order:  new_verbal_order_url,
                                       dashboard_link: dashboard_link)
   end
 
@@ -107,13 +107,13 @@ class NotificationMailer < ActionMailer::Base
 
   def trans_norefund(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      balance_url: (link_to I18n.t('notification_mailer.balance'), balance_url),
+                                      balance_url:  balance_url,
                                       dashboard_link: dashboard_link)
   end
 
   def trans_cancel_immed(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      balance_url: (link_to I18n.t('notification_mailer.balance'), balance_url),
+                                      balance_url:  balance_url,
                                       dashboard_link: (dashboard_link))
   end
 
@@ -153,7 +153,7 @@ class NotificationMailer < ActionMailer::Base
   def for_client(user, offer)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user), client_id: offer.order.number,
                                       order_details: order_details(offer.order),
-                                      interpreter_link: (link_to I18n.t('notification_mailer.your_int'), "#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}.pdf"),
+                                      interpreter_link: "#{Rails.application.config.host}/#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}.pdf",
                                       dashboard_link: dashboard_link)
 
   end
@@ -201,7 +201,7 @@ class NotificationMailer < ActionMailer::Base
   def re_confirmed_client(user, offer)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user), client_id: offer.order.number,
                                       order_details: order_details(offer.order),
-                                      interpreter_link: (link_to I18n.t('notification_mailer.your_int'), "#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}.pdf"),
+                                      interpreter_link: "#{Rails.application.config.host}/#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}.pdf",
                                       dashboard_link: dashboard_link)
 
   end
@@ -209,7 +209,7 @@ class NotificationMailer < ActionMailer::Base
   private
 
   def dashboard_link
-    link_to I18n.t('notifications.dashboard_link'), dashboard_url
+    dashboard_url
   end
 
   def client(user)

@@ -16,7 +16,7 @@ module YufuHelper
   end
 
   def new_verbal_order_url
-    "#{root_with_locale}verbals/new"
+    "#{root_with_locale}/verbals/new"
   end
 
   def balance_url

@@ -179,8 +179,22 @@ en:
             YUFU.NET community"
 
     become_main_int:
-      subject: English subject
-      body: English text
+      subject: Order Confirmation
+      body: "Dear %{client},
+
+      Congratulations, you become a core interpreter of this order you will receive
+
+      order confirmation information in order to perform again before 60 hours
+
+      if they fail to confirm the order again. the order by the other translators took over,
+
+      but your account will be frozen for three months please pay attention, please
+
+      Click here to enter the site:..!
+
+      %{dashboard_link}
+
+      thank you for your cooperation and wish you a happy life language rich "
 
     we_are_looking:
       subject: Confirmation delay
@@ -209,8 +223,18 @@ en:
             YUFU"
 
     become_back_up_int:
-      subject: English subject
-      body: English text
+      subject: Order Confirmation
+      body: "Dear %{client},
+
+             Congratulations, you become an alternative interpreter of this order. In 48 hours you will receive confirmation before order execution orders again. Please pay attention.
+
+             Please Click here to enter the site: %{dashboard_link}
+
+             Thank you for your cooperation and wish you a happy life!
+
+             Language rich "
+
+
     reminder_for_backup_interpreter_24:
       subject: Order reconfirmation
       body: "Dear Interpreter,\n
