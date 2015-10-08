@@ -11,6 +11,7 @@ class Translation
   field :key
   field :value
   field :is_model_localization, type: Mongoid::Boolean, default: false
+  field :value_is_array, type: Mongoid::Boolean, default: false
 
   belongs_to :version, class_name: 'Localization::Version'
   belongs_to :next, class_name: 'Translation', inverse_of: :previous
@@ -24,6 +25,7 @@ class Translation
 
   validates_presence_of :version
   after_save :wear_out
+  before_create :resolve_value_type
 
   def localize_model
     return unless is_model_localization?
@@ -37,7 +39,7 @@ class Translation
     que = klass.find_by(id: id)
 
     I18n.locale = target_locale
-    que[field] = value
+    que.send "#{field}=", value
     que.save
   end
 
@@ -51,6 +53,10 @@ class Translation
       tr_ids += active_ids_in l
     end
     Translation.where(:id.in => tr_ids).not_model_localizers
+  end
+
+  def self.seo
+    Translation.where(key: /^frontend\.meta_tags\./)
   end
 
   def self.active_ids_in(localization)
@@ -112,8 +118,18 @@ class Translation
     end
   end
 
+  def value
+    value = super
+    value.is_a?(String) && value_is_array ? value.split(',')  : value
+  end
+
 
   private
+  def resolve_value_type
+    self.value_is_array = true if value.is_a? Array
+    true
+  end
+
   def wear_out
     version_ids = version.localization.localization_versions.where(:_id.lt => id).distinct(:id)
     Translation.actual.where(:id.ne => id, :key => key, :version_id.in => version_ids).update_all next_id: id

@@ -20,7 +20,6 @@ module Order
     field :greeted_at_minute, type: Integer, default: 0
     field :meeting_in
     field :additional_info
-    field :paid_time,         type: Time
 
     belongs_to :location, class_name: 'City'
     belongs_to :translator_native_language, class_name: 'Language'
@@ -140,6 +139,7 @@ module Order
         order.update paid_time: Time.now
       end
 
+
     end
 
     def additional_cost(currency = nil)
@@ -211,10 +211,6 @@ module Order
     end
 
 
-    def paid_ago?(time)
-      (Time.now - paid_time) >= time if paid_time.present?
-    end
-
     def will_begin_less_than?(time)
       (first_date_time.to_time - Time.now) <= time && (first_date_time.to_time - Time.now) > 0
     end
@@ -237,6 +233,12 @@ module Order
         self.language = main_language_criterion.language if language.nil?
         self.level = main_language_criterion.level if level.nil?
       end
+    end
+
+    def offer_status_for(profile)
+      return 'primary' if offers.where(translator: profile).first.try(:primary?)
+      return 'back_up' if offers.where(translator: profile).first.try(:back_up?)
+      return nil
     end
 
     def first_date

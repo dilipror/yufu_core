@@ -107,31 +107,6 @@ RSpec.describe Order::Base, :type => :model do
     it{expect{subject}.to change{order.paid_time}.to time}
   end
 
-  describe '#offer_status_for' do
-    let(:offer) {create :order_offer}
-    let(:order) {offer.order}
-
-    it 'returns status of offer for prifile' do
-      expect(order.offer_status_for offer.translator).to eq(offer.status)
-    end
-
-    it 'returns nil if offer is not exist' do
-      expect(order.offer_status_for create(:profile_translator)).to eq(nil)
-    end
-  end
-
-  describe '#can_send_primary_offer?' do
-    it 'returns true if order has not primary offer' do
-      order = create :order_verbal
-      expect(order.can_send_primary_offer?).to be_truthy
-    end
-    it 'returns false if order has primary offer' do
-      order = create :order_verbal
-      order.offers << (create :order_offer, status: 'primary')
-      expect(order.can_send_primary_offer?).to be_falsey
-    end
-  end
-
   describe '#set_owner!' do
     before(:each){order.invoices.create}
 
@@ -188,4 +163,42 @@ RSpec.describe Order::Base, :type => :model do
 
     end
   end
+
+
+  describe '#paid_ago?' do
+    subject{order.paid_ago?(12.hours)}
+    let(:order){create :order_base}
+
+    context 'before time' do
+
+
+      before(:each)do
+        order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    context 'just in time' do
+      before(:each)do
+        order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 12.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'after time'do
+
+      before(:each)do
+        order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 10.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
+      end
+
+      it{is_expected.to be_falsey}
+    end
+  end
+
 end

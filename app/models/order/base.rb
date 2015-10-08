@@ -17,6 +17,7 @@ module Order
     # field :pay_way
     # Private orders is available only main office. Translators should not see these
     field :is_private, type: Mongoid::Boolean, default: false
+    field :paid_time,         type: Time
 
     auto_increment :number
 
@@ -64,10 +65,6 @@ module Order
       [link_agent, link_agent.try(:overlord), banner_agent, banner_agent.try(:overlord), owner.try(:overlord)].compact
     end
 
-    def offer_status_for(profile)
-      offers.where(translator: profile).first.try(:status)
-    end
-
     def office
       Office.head
     end
@@ -79,6 +76,10 @@ module Order
 
     def can_update?
       true
+    end
+
+    def paid_ago?(time)
+      (Time.now - paid_time) >= time if paid_time.present?
     end
 
     def check_pay_way

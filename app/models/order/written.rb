@@ -115,6 +115,7 @@ module Order
 
       before_transition on: :paid do |order|
         Order::Written::EventsService.new(order).after_paid_order
+        order.update paid_time: Time.now
       end
 
     end
@@ -199,6 +200,9 @@ module Order
       base_price
     end
 
+    def quantity_for_translate
+      read_attribute(:quantity_for_translate) || 0
+    end
 
     def days_for_translate
       days_for_work('translate')

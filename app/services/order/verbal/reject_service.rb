@@ -1,30 +1,6 @@
 module Order
   class Verbal
-    class RejectService
-      def initialize(order)
-        @order = order
-      end
-
-      def reject_order(inner = :client)
-        if @order.can_reject?
-          refund inner
-          @order.reject
-        end
-      end
-
-      def refund(inner = :client)
-        if @order.paid? && @order.owner.present?
-          sum = calculate_sum inner
-          if sum > 0
-            tr = Transaction.create debit: Office.head,
-                                    credit: @order.owner.user,
-                                    sum: sum,
-                                    message: 'Refund',
-                                    subject: @order
-            tr.execute
-          end
-        end
-      end
+    class RejectService < ::Order::RejectService
 
       def calculate_sum(cancel_by)
         if cancel_by == :yufu
@@ -48,16 +24,6 @@ module Order
 
       private
 
-      def cost
-        @order.invoices.first.cost
-      end
-
-      def full_with_cover
-        cost + 192
-      end
-
-      def full; cost end
-
       def minus_one_day
         cost - @order.language.verbal_price(@order.level) * 8
       end
@@ -68,9 +34,6 @@ module Order
         [(half >= one_day_cost ? half : cost - one_day_cost), 0].max
       end
 
-      def sector_zero
-        0
-      end
     end
   end
 end
