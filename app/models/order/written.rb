@@ -43,6 +43,8 @@ module Order
 
     embeds_one :get_translation,                     class_name: 'Order::GetTranslation'
     embeds_one :get_original,                        class_name: 'Order::GetOriginal'
+    embeds_one :events_manager,                      class_name: 'Order::Written::EventsManager', cascade_callbacks: true
+
     embeds_many :work_reports,                       class_name: 'Order::Written::WorkReport', cascade_callbacks: true
     accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments
 
@@ -73,13 +75,18 @@ module Order
       state :correcting
       state :quality_control
       state :sent_to_client
+      state :wait_corrector
 
       event :control do
         transition [:in_progress, :correcting] => :quality_control
       end
 
+      event :waiting_correcting do
+        transition in_progress: :wait_corrector
+      end
+
       event :correct do
-        transition in_progress: :correcting
+        transition wait_corrector: :correcting
       end
 
       event :finish do
@@ -87,16 +94,20 @@ module Order
       end
 
       before_transition on: :correct do |order|
-        Order::Written::EventsService.new(order).after_translate_order
         order.notify_about_correct
       end
 
+
+      after_transition on: :waiting_correcting do |order|
+        Order::Written::EventsService.new(order).after_translate_order
+      end
+
       before_transition on: :control do |order|
-        unless translation_type == 'translate_and_correct'
-          Order::Written::EventsService.new(order).after_translate_order
-        else
-          Order::Written::EventsService.new(order).after_proof_reading
-        end
+        # unless order.translation_type == 'translate_and_correct'
+        #   Order::Written::EventsService.new(order).after_translate_order
+        # else
+        #   Order::Written::EventsService.new(order).after_proof_reading
+        # end
         order.notify_about_control
       end
 

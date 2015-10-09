@@ -6,28 +6,31 @@ module Order
       end
 
       def after_paid_order
-        if @order.translation_language.is_chinese
-          if (Profile::Translator.approved.chinese.support_written_order(@order)).count > 0
-            OrderWrittenWorkflowWorker.perform_in 1.minutes, @order.id, 'confirmation_order_in_30'
-          else
-            if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
-              OrderWrittenQueueFactoryWorker.perform_async @order.id, I18n.locale
-              # MAIL to TR - NEW ORDER AVAIL
-              # wait translation
-            else
-              @order.notify_about_cancellation_by_yufu
-            end
-          end
-        else
-          if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
-            OrderWrittenQueueFactoryWorker.perform_async @order.id, I18n.locale
-            # @order.notify_about_new_order_available
-            # MAIL to TR - NEW ORDER AVAIL
-            # wait translation
-          else
-            @order.notify_about_cancellation_by_yufu
-          end
-        end
+        OrderWrittenQueueFactoryWorker.new.perform @order.id, I18n.locale
+
+        # if @order.translation_language.is_chinese
+        #   if (Profile::Translator.approved.chinese.support_written_order(@order)).count > 0
+        #     OrderWrittenQueueFactoryWorker.new.perform @order.id, I18n.locale
+        #     # OrderWrittenWorkflowWorker.perform_in 1.minutes, @order.id, 'confirmation_order_in_30'
+        #   else
+        #     if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
+        #       OrderWrittenQueueFactoryWorker.new.perform @order.id, I18n.locale
+        #       # MAIL to TR - NEW ORDER AVAIL
+        #       # wait translation
+        #     else
+        #       @order.notify_about_cancellation_by_yufu
+        #     end
+        #   end
+        # else
+        #   if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
+        #     OrderWrittenQueueFactoryWorker.new.perform @order.id, I18n.locale
+        #     # @order.notify_about_new_order_available
+        #     # MAIL to TR - NEW ORDER AVAIL
+        #     # wait translation
+        #   else
+        #     @order.notify_about_cancellation_by_yufu
+        #   end
+        # end
       end
 
       def after_proof_reading
@@ -40,15 +43,16 @@ module Order
           if @order.assignee.chinese?
             # 70% to tr
             if @order.need_proof_reading?
-              Support::Ticket.create name: 'written order', theme: Support::Theme.first,
+              Support::Ticket.create text: 'written order', theme: Support::Theme.first,
                   subject: 'some subject'
               # wait proofreading by BO
             else
               # qc
             end
-          else
+          else#обязательно пруф ридинг тк переводил не китаец
+            Support::Ticket.create text: 'written order', theme: Support::Theme.first,
+                                   subject: 'some subject'
             # 60% to tr
-            # create ticket
             # wait proofreading by BO
           end
         else# from ch to any
@@ -56,10 +60,14 @@ module Order
           if @order.need_proof_reading?
             if @order.assignee.can_proof_read? @order.translation_language
               @order.proof_reader = @order.assignee
+              @order.correct
+              #transition to state proof_read
             else
+              # ГОНКА ЗА ПРУФ РИДИНГ
               # MAIL to TR - NEW ORDER AVAIL
             end
           else
+            @order.control
             # qc
           end
         end
@@ -72,7 +80,7 @@ module Order
           # wait translation
         else
           if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
-            OrderWrittenQueueFactoryWorker.perform_async @order.id, I18n.locale
+            OrderWrittenQueueFactoryWorker.new.perform @order.id, I18n.locale
             # MAIL to TR - NEW ORDER AVAIL
             # wait translation
           else

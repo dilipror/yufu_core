@@ -11,6 +11,11 @@ class Order::Written::TranslatorsQueue
 
   scope :active, -> {where :lock_to.lte => DateTime.now}
 
+  # HARD CODE!!!!!!!!!! HABTM doesn't work
+  after_create do
+    translators.each {|t| t.order_written_translators_queues << self}
+  end
+
   has_notification_about :create, observers: :translators, message: 'notifications.new_order',
                          mailer: -> (user, queue) { NotificationMailer.new_order_for_translator(user).deliver }
 
@@ -25,6 +30,7 @@ class Order::Written::TranslatorsQueue
     return nil if order.referral_link.nil?
     partner = []
     partner << order.referral_link.user.profile_translator if order.referral_link.user.profile_translator.support_written_order?(order)
+    # partner << Profile::Translator.first
     if partner.empty?
       nil
     else
@@ -51,6 +57,9 @@ class Order::Written::TranslatorsQueue
         order.original_language.senior.support_written_order?(order)
     seniors << order.translation_language.senior if order.translation_language.senior.present? &&
         order.translation_language.senior.support_written_order?(order)
+
+    # seniors << User.find_by(email: 'maxim21214@gmail.com').profile_translator
+
     if seniors.empty?
       nil
     else
