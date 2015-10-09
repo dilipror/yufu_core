@@ -7,7 +7,6 @@ class Order::Written::EventsManager
   after_initialize do
     if events.empty?
       events.new name: 'confirmation_order_in_30'
-      events.new name: 'after_translate_order'
     end
   end
 end

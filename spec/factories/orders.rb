@@ -42,6 +42,10 @@ FactoryGirl.define do
     order_type {create(:written_type)}
   end
 
+  factory :wait_assignee_order, parent: :order_written do
+    state 'wait_offer'
+  end
+
   factory :order_local_expert, class: Order::LocalExpert do
     association :owner, factory: :profile_client
     service_orders {[build(:local_expert_service_order)]}

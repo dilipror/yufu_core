@@ -20,6 +20,7 @@ module Order
           end
         else
           if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
+            OrderWrittenQueueFactoryWorker.perform_async @order.id, I18n.locale
             # @order.notify_about_new_order_available
             # MAIL to TR - NEW ORDER AVAIL
             # wait translation
