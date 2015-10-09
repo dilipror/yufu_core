@@ -49,6 +49,30 @@ RSpec.describe Order::Verbal, :type => :model do
   end
 
 
+  describe '#remove_busy_days' do
+
+    let(:bd_1){(build :busy_day, date: '01.01.2016')}
+    let(:bd_2){(build :busy_day, date: '02.01.2016')}
+
+    let(:translator) {create :profile_translator, busy_days: [bd_1, bd_2]}
+    let(:order) {create :order_verbal, state: 'wait_offer', assignee: translator, reservation_dates: [(build :order_reservation_date, date: '01.01.2016')]}
+
+    subject{order.remove_busy_days}
+
+    it {expect{subject}.to change{translator.busy_days.count}.from(2).to(1)}
+
+    it do
+      subject
+      expect(translator.busy_days).to include(bd_2)
+    end
+
+    it do
+      subject
+      expect(translator.busy_days).not_to include(bd_1)
+    end
+
+  end
+
   describe '#first date' do
 
     before(:each) {order.invoices.create cost: 100.0}

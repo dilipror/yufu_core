@@ -38,6 +38,7 @@ module OrderWorkflow
 
       # It should be after, but it doesn't work with MongoId https://github.com/pluginaweek/state_machine/issues/277
       before_transition on: :reject do |order|
+        order.try :remove_busy_days
         order.assignee = nil
       end
 

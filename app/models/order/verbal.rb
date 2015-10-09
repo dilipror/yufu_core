@@ -301,6 +301,13 @@ module Order
 
     end
 
+    def remove_busy_days
+      reservation_dates.confirmed.each do |date|
+        assignee.busy_days.where(date: date.date).delete_all
+      end
+      assignee.save
+    end
+
     def update_notification
       # unless state=='new'
       #   notify_about_updated
