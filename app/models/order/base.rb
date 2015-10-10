@@ -132,7 +132,7 @@ module Order
       unless is_private
 
         if self.is_a? Order::Written
-          if @order.translation_language.is_chinese
+          if translation_language.is_chinese
             if assignee.chinese?
               charge_commission_to assignee.try(:user), :to_translator
             else

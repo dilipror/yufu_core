@@ -59,15 +59,16 @@ module Order
           # 70% to tr
           if @order.need_proof_reading?
             if @order.assignee.can_proof_read? @order.translation_language
+              @order.state_event = 'correct'
               @order.proof_reader = @order.assignee
-              @order.correct
               #transition to state proof_read
             else
+              @order.state_event = 'waiting_correcting'
               # ГОНКА ЗА ПРУФ РИДИНГ
               # MAIL to TR - NEW ORDER AVAIL
             end
           else
-            @order.control
+            @order.state_event = 'control'
             # qc
           end
         end

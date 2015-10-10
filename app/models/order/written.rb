@@ -67,9 +67,17 @@ module Order
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
     validate :attachments_count, if: ->{step > 1}
 
+    # after_validation :change_state_event
+
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end
+
+    # def change_state_event
+    #   if state_event == 'waiting_correcting'
+    #     Order::Written::EventsService.new(order).after_translate_order
+    #   end
+    # end
 
     state_machine initial: :new do
       state :correcting
@@ -86,7 +94,7 @@ module Order
       end
 
       event :correct do
-        transition wait_corrector: :correcting
+        transition [:in_progress, :wait_corrector] => :correcting
       end
 
       event :finish do
@@ -97,9 +105,13 @@ module Order
         order.notify_about_correct
       end
 
+      # before_transition on: :waiting_correcting do |order|
+      #   Order::Written::EventsService.new(order).after_translate_order
+      # end
 
-      after_transition on: :waiting_correcting do |order|
-        Order::Written::EventsService.new(order).after_translate_order
+      after_transition any => :waiting_correcting do |order, transition|
+        order.correct
+        # Order::Written::EventsService.new(order).after_translate_order
       end
 
       before_transition on: :control do |order|
