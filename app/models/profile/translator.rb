@@ -10,6 +10,7 @@ module Profile
     field :passport_num
     field :passport_country
     field :is_banned, default: false
+    field :custom_city
 
     # field :state
     field :last_sent_to_approvement, type: DateTime, default: DateTime.yesterday
@@ -27,6 +28,7 @@ module Profile
     belongs_to :country_out_of_china, class_name: 'Country'
     belongs_to :city
     belongs_to :province
+    belongs_to :country
 
     has_many :orders,        class_name: 'Order::Base', inverse_of: :assignee
     has_many :offers,        class_name: 'Order::Offer'
@@ -47,6 +49,7 @@ module Profile
     before_create :build_steps
     before_save :build_default_service
     after_create {profile_steps_service.hard_resolve_city}
+    before_create {write_attributes country: Country.where(is_china: true).first}
 
     # filtering
     scope :filter_state, -> (state) {where state: state}

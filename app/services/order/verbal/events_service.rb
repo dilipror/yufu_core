@@ -30,14 +30,14 @@ module Order
       end
 
       def before_36
-        if @order.state == 'wait_offer'
+        if @order.wait_offer?
           Support::Ticket.create! assigned_to: @order.main_language_criterion.language.senior.try(:user), order: @order,
                                   theme: Support::Theme.where(type: 'no_offers_confirmed').first, subject: I18n.t('tickets.subjects.no_offers_confirmed')
         end
       end
 
       def before_24
-        if @order.state == 'wait_offer'
+        if @order.wait_offer?
           @order.notify_about_looking_for_int_before_24
         end
       end
