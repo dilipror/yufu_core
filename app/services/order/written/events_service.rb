@@ -45,13 +45,19 @@ module Order
             if @order.need_proof_reading?
               Support::Ticket.create text: 'written order', theme: Support::Theme.first,
                   subject: 'some subject'
+              @order.state_event = 'correct'
+
               # wait proofreading by BO
             else
+              @order.state_event = 'control'
+
               # qc
             end
           else#обязательно пруф ридинг тк переводил не китаец
             Support::Ticket.create text: 'written order', theme: Support::Theme.first,
                                    subject: 'some subject'
+            @order.state_event = 'correct'
+
             # 60% to tr
             # wait proofreading by BO
           end

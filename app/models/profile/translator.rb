@@ -38,6 +38,8 @@ module Profile
                             inverse_of: :translators
     has_and_belongs_to_many :order_written_translators_queues, :class_name => 'Order::Written::TranslatorsQueue',
                             inverse_of: :translators
+    has_and_belongs_to_many :order_written_correctors_queues, :class_name => 'Order::Written::CorrectorsQueue',
+                            inverse_of: :translators
 
     accepts_nested_attributes_for :busy_days, :profile_steps_language, :profile_steps_service, :profile_steps_personal,
                                   :profile_steps_contact, :profile_steps_education, :city_approves
@@ -140,6 +142,15 @@ module Profile
       return lngs.uniq
     end
 
+    def support_correcting_written_order?(order)
+      services.where(written_approves: true).each do |s|
+        if /Corrector/.match(s.written_translate_type)
+          return true if order.translation_language_id == s.language.id || order.original_language_id == s.language.id
+        end
+      end
+      false
+    end
+
     def support_written_order?(order)
       services.where(written_approves: true).each do |s|
         if /From/.match(s.written_translate_type)
@@ -150,6 +161,13 @@ module Profile
         end
       end
       false
+    end
+
+
+
+    def self.support_correcting_written_order(order)
+      correctors_ids = Profile::Service.where(written_translate_type: /.*Corrector.*/).distinct :translator_id
+      support_written_order(order).where(:id.in => correctors_ids)
     end
 
     def self.support_written_order(order)

@@ -37,6 +37,7 @@ module Order
     belongs_to :proof_reader,                        class_name: 'Profile::Translator'#, inverse_of: :proof_orders
 
     has_many :translators_queues, class_name: 'Order::Written::TranslatorsQueue', dependent: :destroy
+    has_many :correctors_queues,  class_name: 'Order::Written::CorrectorsQueue', dependent: :destroy
 
     has_and_belongs_to_many :available_languages,    class_name: 'Language'
     has_and_belongs_to_many :attachments, dependent: :destroy
@@ -105,14 +106,19 @@ module Order
         order.notify_about_correct
       end
 
+      before_transition on: :waiting_correcting do |order|
+        OrderWrittenCorrectorQueueFactoryWorker.new.perform order.id, I18n.locale
+        true
+      end
+
       # before_transition on: :waiting_correcting do |order|
       #   Order::Written::EventsService.new(order).after_translate_order
       # end
 
-      after_transition any => :waiting_correcting do |order, transition|
-        order.correct
-        # Order::Written::EventsService.new(order).after_translate_order
-      end
+      # after_transition any => :waiting_correcting do |order, transition|
+      #   order.correct
+      #   # Order::Written::EventsService.new(order).after_translate_order
+      # end
 
       before_transition on: :control do |order|
         # unless order.translation_type == 'translate_and_correct'
