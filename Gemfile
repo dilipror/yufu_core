@@ -27,7 +27,7 @@ gem 'sidekiq'
 gem 'money-rails'
 gem 'eu_central_bank'
 
-gem 'rails', '~>4.0.2'
+gem 'rails', "> 4.2.0"
 gem 'slim-rails'
 
 # gem 'i18n-js', '3.0.0.rc8'
