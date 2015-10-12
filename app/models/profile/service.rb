@@ -14,6 +14,7 @@ module Profile
     field :only_written,           type: Mongoid::Boolean, default: false
     field :written_translate_type
     field :additions
+    field :certificate
 
     belongs_to :language
     belongs_to :translator, class_name: 'Profile::Translator'
