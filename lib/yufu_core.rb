@@ -20,6 +20,7 @@ require 'humanize/cache'
 require 'humanize/humanize'
 require 'humanize/lots'
 
+require 'active_job'
 require 'devise/orm/mongoid'
 require 'autoinc'
 require 'paperclip'

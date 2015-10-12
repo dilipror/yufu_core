@@ -18,12 +18,6 @@ class Order::Verbal::TranslatorsQueue
     translators.each {|t| t.order_verbal_translators_queues << self}
   end
 
-  def self.notify_queue(queue_id)
-    queue = Order::Verbal::TranslatorsQueue.find queue_id
-    queue.notify_about_create
-  end
-
-
   # Queue builders
   def self.create_agent_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a? Order::Verbal

@@ -37,6 +37,7 @@ module TestApp
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {:address => "localhost", :port => 1025}
     ActionMailer::Base.default from: 'Yufu <postmaster@mg.yufu.net>'
+    config.active_job.queue_adapter = :test
   end
 end
 

@@ -3,7 +3,6 @@ module Order
     include Mongoid::Document
     include Mongoid::Timestamps
     include Notificable
-    include Sidekiq
     include Mongoid::Autoinc
     include OrderWorkflow
     include Priced
