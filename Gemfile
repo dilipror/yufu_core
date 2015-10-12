@@ -22,7 +22,6 @@ gem 'active_model_serializers'
 gem 'oj'
 
 gem 'state_machines-mongoid'
-# gem 'state_machine'
 gem 'sidekiq'
 
 gem 'money-rails'
