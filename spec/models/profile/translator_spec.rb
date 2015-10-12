@@ -429,24 +429,25 @@ RSpec.describe Profile::Translator, :type => :model do
 
     subject{Profile::Translator.support_written_order order}
 
-    before(:each) {not_support_order_lang.approve; written_not_approved.approve; not_support_coop.approve;
-    support_order.approve}
+    before(:each) {support_order.approve;not_support_order_lang.approve;written_not_approved.approve;not_support_coop.approve}
 
-    let!(:not_approved_translator) {create :profile_translator, state: 'new',
+    let!(:not_approved_translator) {create :profile_translator,
                                           services: [build(:service, written_approves: true, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_order_lang) {create :profile_translator, state: 'approved',
+    let!(:not_support_order_lang) {create :profile_translator,
                                      services: [build(:service, written_approves: true, language: other_lang,
                                                       written_translate_type: 'From-To Chinese')]}
-    let!(:written_not_approved) {create :profile_translator, state: 'approved',
+    let!(:written_not_approved) {create :profile_translator,
                                           services: [build(:service, written_approves: false, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_coop) {create :profile_translator, state: 'approved',
+    let!(:not_support_coop) {create :profile_translator,
                                         services: [build(:service, written_approves: true, language: lang,
                                                          written_translate_type: 'From Chinese')]}
-    let!(:support_order) {create :profile_translator, state: 'approved',
+    let!(:support_order) {create :profile_translator,
                                     services: [build(:service, written_approves: true, language: lang,
                                                      written_translate_type: 'To Chinese')]}
+    #
+    # let!(:support_order) {create :profile_translator}
 
     let(:order) {create :order_written, original_language: lang, translation_language: ch_lang}
 
