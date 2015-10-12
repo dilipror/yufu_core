@@ -49,27 +49,7 @@ RSpec.describe OrderWrittenQueueFactoryWorker, :type => :worker do
     it{expect{subject}.to change{trans.reload.order_written_translators_queues.count}.by(1)}
     it{expect{subject}.to change{trans.reload.order_written_translators_queues.active.count}.by(0)}
 
-    # context '+30min' do
-    #   before(:each) {Delorean.jump 31.minutes}
-    #   # it{expect{subject}.to change{order.reload.translators_queues.count}.by(4)}
-    #
-    #   # it{expect{subject}.to change{partner.reload.order_written_translators_queues.count}.by(1)}
-    #   # it{expect{subject}.to change{partner.reload.order_written_translators_queues.active.count}.by(1)}
-    #   #
-    #   # it{expect{subject}.to change{chinese_transl.reload.order_written_translators_queues.count}.by(1)}
-    #   it 'asd' do
-    #     subject
-    #     expect(chinese_transl.reload.order_written_translators_queues.active.count).to eq 1
-    #   end
-    #   # it{expect{subject}.to change{chinese_transl.reload.order_written_translators_queues.active.count}.by(1)}
-    #
-    #   # it{expect{subject}.to change{senior.reload.order_written_translators_queues.count}.by(1)}
-    #   # it{expect{subject}.to change{senior.reload.order_written_translators_queues.active.count}.by(0)}
-    #   #
-    #   # it{expect{subject}.to change{trans.reload.order_written_translators_queues.count}.by(1)}
-    #   # it{expect{subject}.to change{trans.reload.order_written_translators_queues.active.count}.by(0)}
-    #
-    # end
+
   end
 
 end
