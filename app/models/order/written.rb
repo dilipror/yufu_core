@@ -86,6 +86,10 @@ module Order
       state :sent_to_client
       state :wait_corrector
 
+      event :refuse do
+        transition in_progress: :wait_offer
+      end
+
       event :control do
         transition [:in_progress, :correcting] => :quality_control
       end
