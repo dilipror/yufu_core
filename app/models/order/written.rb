@@ -110,6 +110,11 @@ module Order
         order.notify_about_correct
       end
 
+      before_transition on: :refuse do |order|
+        order.work_reports.delete_all
+        true
+      end
+
       before_transition on: :waiting_correcting do |order|
         OrderWrittenCorrectorQueueFactoryWorker.new.perform order.id, I18n.locale
         true
