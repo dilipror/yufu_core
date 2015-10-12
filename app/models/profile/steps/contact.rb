@@ -12,7 +12,7 @@ module Profile
       validates_presence_of :phone, :wechat, if: :persisted?
       validates :additional_email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }, allow_blank: true
       validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }
-      validate :uniq_phone
+      #validate :uniq_phone
 
 
       after_save do

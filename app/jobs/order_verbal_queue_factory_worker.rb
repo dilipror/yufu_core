@@ -1,5 +1,5 @@
-class OrderVerbalQueueFactoryWorker
-  include Sidekiq::Worker
+class OrderVerbalQueueFactoryWorker < ActiveJob::Base
+  queue_as :default
 
   def perform(order_id, locale = 'en')
     I18n.locale = locale
@@ -10,7 +10,7 @@ class OrderVerbalQueueFactoryWorker
       queue = Order::Verbal::TranslatorsQueue.send build_method, order, date_iterator
       if queue.present?
         queue.lock_to <= DateTime.now ? queue.notify_about_create :
-            Order::Verbal::TranslatorsQueue.delay_for(30.minutes).notify_queue(queue.id)
+            ActivateVerbalTranslationQueueJob.set(wait: 30.minutes).perform_later(queue.id.to_s)
         date_iterator += 30.minutes
         true
       else

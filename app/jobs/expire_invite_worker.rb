@@ -1,5 +1,5 @@
-class ExpireInviteWorker
-  include Sidekiq::Worker
+class ExpireInviteWorker < ActiveJob::Base
+  queue_as :default
 
   def perform(invite_id)
     invite = Invite.find invite_id

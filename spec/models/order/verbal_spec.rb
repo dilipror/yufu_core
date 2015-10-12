@@ -101,8 +101,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:observer) {observers_profile.user}
     subject{order.paid}
 
-    it{expect{subject}.to change(OrderVerbalQueueFactoryWorker.jobs, :size).by(1)}
-
+    it{expect{subject}.to change(OrderVerbalQueueFactoryWorker.queue_adapter.enqueued_jobs, :size)}
     let(:city) {create :city, name: 'NewVasjuki'}
     let(:client) {create :client, email: 'client@example.com'}
     let(:office){create :office, city: city}
