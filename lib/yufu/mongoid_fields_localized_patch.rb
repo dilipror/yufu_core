@@ -16,6 +16,15 @@ module Mongoid
         end
         value || lookup(object)
       end
+
+      def lookup(object)
+        locale = ::I18n.locale
+        if ::I18n.respond_to?(:fallbacks)
+          object[::I18n.fallbacks[locale].map(&:to_s).find{ |loc| object.has_key?(loc) && !object[loc].blank? }]
+        else
+          object[locale.to_s]
+        end
+      end
     end
   end
 end
