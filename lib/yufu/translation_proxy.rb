@@ -1,7 +1,5 @@
-require 'active_model/serializable'
 module Yufu
   class TranslationProxy
-    include ActiveModel::Serializable
     EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
                     flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
                     admin.misc.filter_date_format ckeditor. admin.).join('|')}/
