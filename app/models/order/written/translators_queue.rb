@@ -34,8 +34,12 @@ class Order::Written::TranslatorsQueue
     return nil unless order.is_a? Order::Written
     return nil if order.referral_link.nil?
     partner = []
-    partner << order.referral_link.user.profile_translator if order.referral_link.user.profile_translator.support_written_order?(order)
-    # partner << Profile::Translator.first
+    if order.referral_link.present?
+      partner << order.referral_link.user.profile_translator if order.referral_link.user.profile_translator.support_written_order?(order)
+    end
+    if order.banner.present?
+      partner << order.banner.user.profile_translator if order.banner.user.profile_translator.support_correcting_written_order?(order)
+    end
     if partner.empty?
       nil
     else
