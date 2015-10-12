@@ -148,7 +148,7 @@ module Order
         else
           ban_time = 3.hours
         end
-        BanExpireWorker.perform_later ban_time, offer.translator.id
+        BanExpireWorker.set(wait: ban_time).perform_later offer.translator.id.to_s
       end
     end
 
