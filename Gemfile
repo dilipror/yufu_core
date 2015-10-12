@@ -21,7 +21,8 @@ gem 'iso-639'
 gem 'active_model_serializers'
 gem 'oj'
 
-gem 'state_machine'
+gem 'state_machines-mongoid'
+# gem 'state_machine'
 gem 'sidekiq'
 
 gem 'money-rails'

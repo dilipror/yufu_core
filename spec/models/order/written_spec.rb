@@ -476,4 +476,11 @@ RSpec.describe Order::Written, type: :model do
 
   end
 
+  # describe '#paid' do
+  #   let(:lang) {create :language}
+  #   let(:chinese_lang) {create :language, is_chinese: true}
+  #   subject{order.paid}
+  #
+  # end
+
 end

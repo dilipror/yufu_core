@@ -30,6 +30,7 @@ module Profile
     belongs_to :province
     belongs_to :country
 
+    has_many :proof_orders,  class_name: 'Order::Written', inverse_of: :proof_reader
     has_many :orders,        class_name: 'Order::Base', inverse_of: :assignee
     has_many :offers,        class_name: 'Order::Offer'
     has_many :services,      class_name: 'Profile::Service', dependent: :destroy
@@ -38,6 +39,8 @@ module Profile
     has_and_belongs_to_many :order_verbal_translators_queues, :class_name => 'Order::Verbal::TranslatorsQueue',
                             inverse_of: :translators
     has_and_belongs_to_many :order_written_translators_queues, :class_name => 'Order::Written::TranslatorsQueue',
+                            inverse_of: :translators
+    has_and_belongs_to_many :order_written_correctors_queues, :class_name => 'Order::Written::CorrectorsQueue',
                             inverse_of: :translators
 
     accepts_nested_attributes_for :busy_days, :profile_steps_language, :profile_steps_service, :profile_steps_personal,
@@ -142,6 +145,15 @@ module Profile
       return lngs.uniq
     end
 
+    def support_correcting_written_order?(order)
+      services.where(written_approves: true).each do |s|
+        if /Corrector/.match(s.written_translate_type)
+          return true if order.translation_language_id == s.language.id || order.original_language_id == s.language.id
+        end
+      end
+      false
+    end
+
     def support_written_order?(order)
       services.where(written_approves: true).each do |s|
         if /From/.match(s.written_translate_type)
@@ -154,10 +166,18 @@ module Profile
       false
     end
 
+
+
+    def self.support_correcting_written_order(order)
+      correctors_ids = Profile::Service.where(written_translate_type: /.*Corrector.*/).distinct :translator_id
+      support_written_order(order).where(:id.in => correctors_ids)
+    end
+
     def self.support_written_order(order)
       language = order.original_language.is_chinese? ? order.translation_language : order.original_language
-      ids_from_service = Profile::Service.written_approved.support_cooperation(order.translation_type).where(language: language).distinct(:translator_id)
-      where :id.in => ids_from_service
+      coop = order.original_language.is_chinese? ? 'From' : 'To'
+      ids_from_service = Profile::Service.written_approved.support_cooperation(coop).where(language: language).distinct(:translator_id)
+      where :id.in => ids_from_service, state: 'approved'
     end
 
     def self.support_order(order)
@@ -175,6 +195,14 @@ module Profile
 
     def chinese?
       profile_steps_language.citizenship.try(:is_china?) || false
+    end
+
+    def can_proof_read?(language)
+      serv = services.written_approved.where(language: language)
+      unless serv.empty?
+        return serv.first.written_translate_type.include? 'Corrector'
+      end
+      false
     end
 
 

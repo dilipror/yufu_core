@@ -422,4 +422,40 @@ RSpec.describe Profile::Translator, :type => :model do
 
   end
 
+  describe '.support_written_order' do
+    let(:ch_lang) {create :language, is_chinese: true}
+    let(:lang) {create :language}
+    let(:other_lang) {create :language}
+
+    subject{Profile::Translator.support_written_order order}
+
+    before(:each) {not_support_order_lang.approve; written_not_approved.approve; not_support_coop.approve;
+    support_order.approve}
+
+    let!(:not_approved_translator) {create :profile_translator, state: 'new',
+                                          services: [build(:service, written_approves: true, language: lang,
+                                                           written_translate_type: 'From-To Chinese')]}
+    let!(:not_support_order_lang) {create :profile_translator, state: 'approved',
+                                     services: [build(:service, written_approves: true, language: other_lang,
+                                                      written_translate_type: 'From-To Chinese')]}
+    let!(:written_not_approved) {create :profile_translator, state: 'approved',
+                                          services: [build(:service, written_approves: false, language: lang,
+                                                           written_translate_type: 'From-To Chinese')]}
+    let!(:not_support_coop) {create :profile_translator, state: 'approved',
+                                        services: [build(:service, written_approves: true, language: lang,
+                                                         written_translate_type: 'From Chinese')]}
+    let!(:support_order) {create :profile_translator, state: 'approved',
+                                    services: [build(:service, written_approves: true, language: lang,
+                                                     written_translate_type: 'To Chinese')]}
+
+    let(:order) {create :order_written, original_language: lang, translation_language: ch_lang}
+
+    it{is_expected.not_to include not_approved_translator}
+    it{is_expected.not_to include not_support_order_lang}
+    it{is_expected.not_to include written_not_approved}
+    it{is_expected.not_to include not_support_coop}
+    it{is_expected.to include support_order}
+
+  end
+
 end

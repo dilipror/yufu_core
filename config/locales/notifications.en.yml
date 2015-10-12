@@ -32,5 +32,6 @@ en:
     cancel: Your order is cancelled
     re_confirmed_translator: "Your confirmation has been re-confirmed"
     re_confirmed_client: "Interpreter for your offer has been changed"
+    cancel_by_yufu: Your order has been cancelled by yufu
 
 

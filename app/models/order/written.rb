@@ -23,19 +23,29 @@ module Order
     has_notification_about :correct, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.correcting_order'
     has_notification_about :control, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.control_order'
     has_notification_about :finish, observers: :owner, message: 'notifications.done_order'
+    has_notification_about :cancellation_by_yufu,
+                           message: 'notifications.cancel_by_yufu',
+                           observers: -> (order) {order.owner.user},
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancellation_by_yufu(user).deliver
+                           end
 
     belongs_to :original_language,                   class_name: 'Language'
     belongs_to :translation_language,                class_name: 'Language'
     belongs_to :order_type,                          class_name: 'Order::Written::WrittenType'
     belongs_to :order_subtype,                       class_name: 'Order::Written::WrittenSubtype'
+    belongs_to :proof_reader,                        class_name: 'Profile::Translator'#, inverse_of: :proof_orders
 
     has_many :translators_queues, class_name: 'Order::Written::TranslatorsQueue', dependent: :destroy
+    has_many :correctors_queues,  class_name: 'Order::Written::CorrectorsQueue', dependent: :destroy
 
     has_and_belongs_to_many :available_languages,    class_name: 'Language'
     has_and_belongs_to_many :attachments, dependent: :destroy
 
     embeds_one :get_translation,                     class_name: 'Order::GetTranslation'
     embeds_one :get_original,                        class_name: 'Order::GetOriginal'
+    embeds_one :events_manager,                      class_name: 'Order::Written::EventsManager', cascade_callbacks: true
+
     embeds_many :work_reports,                       class_name: 'Order::Written::WorkReport', cascade_callbacks: true
     accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments
 
@@ -58,43 +68,38 @@ module Order
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
     validate :attachments_count, if: ->{step > 1}
 
+    # after_validation :change_state_event
+
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end
 
-    def senior
-      real_translation_language.senior
-    end
-
-    # def lang_price()
-    #
-    # def cost(currency = nil, curr_level = level)
-    #   (translation_languages.inject(0) {|sum, l| sum + l.written_cost(curr_level, currency) * words_number})
-    # end
-    #
-    # def price(currency = nil, curr_level = level)
-    #   if translation_type == 'translate' or translation_type.nil?
-    #     return Price.with_markup(cost currency, curr_level)
-    #   end
-    #   if translation_type == 'translate_and_correct'
-    #     Price.with_markup(cost currency, curr_level) * (1 + Price.get_increase_percent(translation_languages.first, level) / 100)
+    # def change_state_event
+    #   if state_event == 'waiting_correcting'
+    #     Order::Written::EventsService.new(order).after_translate_order
     #   end
     # end
-
-    #  test--------------------------------------------------------------
-
 
     state_machine initial: :new do
       state :correcting
       state :quality_control
       state :sent_to_client
+      state :wait_corrector
+
+      event :refuse do
+        transition in_progress: :wait_offer
+      end
 
       event :control do
         transition [:in_progress, :correcting] => :quality_control
       end
 
+      event :waiting_correcting do
+        transition in_progress: :wait_corrector
+      end
+
       event :correct do
-        transition in_progress: :correcting
+        transition [:in_progress, :wait_corrector] => :correcting
       end
 
       event :finish do
@@ -105,7 +110,26 @@ module Order
         order.notify_about_correct
       end
 
+      before_transition on: :waiting_correcting do |order|
+        OrderWrittenCorrectorQueueFactoryWorker.new.perform order.id, I18n.locale
+        true
+      end
+
+      # before_transition on: :waiting_correcting do |order|
+      #   Order::Written::EventsService.new(order).after_translate_order
+      # end
+
+      # after_transition any => :waiting_correcting do |order, transition|
+      #   order.correct
+      #   # Order::Written::EventsService.new(order).after_translate_order
+      # end
+
       before_transition on: :control do |order|
+        # unless order.translation_type == 'translate_and_correct'
+        #   Order::Written::EventsService.new(order).after_translate_order
+        # else
+        #   Order::Written::EventsService.new(order).after_proof_reading
+        # end
         order.notify_about_control
       end
 
@@ -123,6 +147,7 @@ module Order
       end
 
       before_transition on: :paid do |order|
+        Order::Written::EventsService.new(order).after_paid_order
         order.update paid_time: Time.now
       end
 
@@ -150,6 +175,10 @@ module Order
       else
         default
       end
+    end
+
+    def need_proof_reading?
+      translation_type == 'translate_and_correct'
     end
 
     def original_price(currency = nil)
@@ -242,10 +271,10 @@ module Order
     def close_cash_flow
       price_to_members = self.price * 0.95
       if translation_type == 'translate'
-        self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7
+        # self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7
         self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
       else
-        self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7*0.7
+        # self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7*0.7
         self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.7*0.3
         self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
       end

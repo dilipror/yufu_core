@@ -89,7 +89,8 @@ RSpec.describe Order::Written::TranslatorsQueue, :type => :model do
       let(:order) {create :order_written, original_language: org_lang, translation_language: chinese_lang,
                           translation_type: 'To Chinese'}
 
-      before(:each) {user.profile_translator.profile_steps_language.update_attribute :citizenship, china}
+      before(:each) {user.profile_translator.profile_steps_language.update_attribute :citizenship, china;
+      user.profile_translator.approve}
 
       it_behaves_like 'queue builder'
 
@@ -152,6 +153,8 @@ RSpec.describe Order::Written::TranslatorsQueue, :type => :model do
       end
       let(:order) {create :order_written, original_language: org_lang, translation_language: chinese_lang,
                           translation_type: 'To Chinese'}
+
+      before(:each) {user.profile_translator.approve}
 
       it_behaves_like 'queue builder'
 

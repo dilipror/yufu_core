@@ -130,7 +130,19 @@ module Order
 
     def after_close_cashflow
       unless is_private
-        charge_commission_to assignee.try(:user), :to_translator
+
+        if self.is_a? Order::Written
+          if translation_language.is_chinese
+            if assignee.chinese?
+              charge_commission_to assignee.try(:user), :to_translator
+            else
+              charge_commission_to assignee.try(:user), 0.6
+            end
+          end
+        else
+          charge_commission_to assignee.try(:user), :to_translator
+        end
+
         charge_commission_to senior.try(:user), :to_senior
       end
       charge_commission_to referral_link.try(:user), :to_partner

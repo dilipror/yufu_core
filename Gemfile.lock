@@ -265,6 +265,13 @@ GEM
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.10)
     state_machine (1.2.0)
+    state_machines (0.4.0)
+    state_machines-activemodel (0.0.2)
+      activemodel (>= 3.2)
+      state_machines
+    state_machines-mongoid (0.1.1)
+      mongoid (>= 4.0.0)
+      state_machines-activemodel
     temple (0.7.6)
     term-ansicolor (1.3.2)
       tins (~> 1.0)
@@ -327,7 +334,7 @@ DEPENDENCIES
   sidekiq
   simplecov
   slim-rails
-  state_machine
+  state_machines-mongoid
   test-unit
   will_paginate_mongoid
   yufu_core!
