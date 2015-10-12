@@ -105,6 +105,8 @@ module Order
     before_create :set_main_language_criterion, :build_events_manager
     after_save :create_additional_services
     after_save :notify_about_updated, if: :persisted?
+    after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
+
 
     scope :paid_orders, -> { where state: :in_progress}
     scope :wait_offer,  -> { where state: :wait_offer }

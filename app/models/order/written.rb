@@ -70,6 +70,8 @@ module Order
 
     # after_validation :change_state_event
 
+    after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
+
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end
