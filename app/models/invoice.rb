@@ -149,7 +149,7 @@ class Invoice
         cmd: '_xclick',
         charset: 'utf-8',
         business: Rails.application.config.merchant_email,
-        return: "#{Rails.application.config.success_root_url}/payment-gateway/#{paypal_gw_id}/success",
+        return: "#{Rails.application.config.success_root_url}/#{I18n.locale.to_s}/payment-gateway/#{paypal_gw_id}/success",
         cancel_return: '/',
         item_number: id,
         item_name: I18n.t('mongoid.paypal.interpretation_service'),
