@@ -5,7 +5,7 @@ class Statistic::Link < Statistic::Base
   end
 
   def orders_count_percent
-    orders_count.to_f / clicked_count.to_f * 100
+    clicked_count == 0 ? 0 : orders_count.to_f / clicked_count.to_f * 100
   end
 
   def clicked_count
