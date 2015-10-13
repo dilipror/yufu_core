@@ -75,7 +75,7 @@ class Invite
 
   private
   def run_expire_worker
-    ExpireInviteWorker.perform_in(24.hours, self.id)
+    ExpireInviteWorker.set(wait: 24.hours).perform_later(self.id.to_s)
   end
 
   def only_one_invite_until_expired

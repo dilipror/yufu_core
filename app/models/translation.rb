@@ -20,6 +20,7 @@ class Translation
 
   scope :model_localizers, ->{where is_model_localization: true }
   scope :not_model_localizers, ->{where is_model_localization: false }
+  # DEPRECATED
   scope :actual, -> {where next_id: nil}
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
 

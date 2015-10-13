@@ -27,7 +27,6 @@ class Order::Written::TranslatorsQueue
   # Queue builders
   def self.create_partner_queue(order, lock_to = DateTime.now)
     return nil unless order.is_a? Order::Written
-    return nil unless order.is_a? Order::Written
     return nil unless order.referral_link.nil? || order.banner.nil?
     partner = []
     if order.referral_link.present?

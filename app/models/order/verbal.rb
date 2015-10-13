@@ -105,6 +105,8 @@ module Order
     before_create :set_main_language_criterion, :build_events_manager
     after_save :create_additional_services
     after_save :notify_about_updated, if: :persisted?
+    after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
+
 
     scope :paid_orders, -> { where state: :in_progress}
     scope :wait_offer,  -> { where state: :wait_offer }
@@ -128,14 +130,14 @@ module Order
       end
 
       before_transition on: :paid do |order|
-        OrderVerbalQueueFactoryWorker.perform_async order.id, I18n.locale
-        OrderWorkflowWorker.perform_in 24.hours, order.id, 'after_24'
-        OrderWorkflowWorker.perform_in 12.hours, order.id, 'after_12'
-        OrderWorkflowWorker.perform_in (order.first_date_time - 60.hours) - Time.now, order.id, 'before_60'
-        OrderWorkflowWorker.perform_in (order.first_date_time - 48.hours) - Time.now , order.id, 'before_48'
-        OrderWorkflowWorker.perform_in (order.first_date_time - 36.hours) - Time.now , order.id, 'before_36'
-        OrderWorkflowWorker.perform_in (order.first_date_time - 24.hours) - Time.now, order.id, 'before_24'
-        OrderWorkflowWorker.perform_in (order.first_date_time -  4.hours) - Time.now , order.id, 'before_4'
+        OrderVerbalQueueFactoryWorker.perform_later order.id.to_s, I18n.locale.to_s
+        OrderWorkflowWorker.set(wait: 24.hours).perform_later order.id.to_s, 'after_24'
+        OrderWorkflowWorker.set(wait: 12.hours).perform_later order.id.to_s, 'after_12'
+        OrderWorkflowWorker.set(wait: (order.first_date_time - 60.hours - Time.now)).perform_later order.id.to_s, 'before_60'
+        OrderWorkflowWorker.set(wait: (order.first_date_time - 48.hours - Time.now)).perform_later order.id.to_s, 'before_48'
+        OrderWorkflowWorker.set(wait: (order.first_date_time - 36.hours - Time.now)).perform_later order.id.to_s, 'before_36'
+        OrderWorkflowWorker.set(wait: (order.first_date_time - 24.hours - Time.now)).perform_later order.id.to_s, 'before_24'
+        OrderWorkflowWorker.set(wait: (order.first_date_time -  4.hours - Time.now)).perform_later order.id.to_s, 'before_4'
         order.update paid_time: Time.now
       end
 
