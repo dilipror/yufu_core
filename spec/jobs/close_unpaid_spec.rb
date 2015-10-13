@@ -1,5 +1,5 @@
 require 'rails_helper'
-RSpec.describe OrderCleanerWorker, :type => :worker do
+RSpec.describe CloseUnpaidJob, :type => :worker do
   describe '#perform' do
 
     subject{CloseUnpaidJob.new.perform(order.id.to_s)}
