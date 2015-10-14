@@ -19,9 +19,9 @@ module Order
     validate :translator_is_not_banned, unless: :persisted?
     # validates_uniqueness_of :translator, scope: :order_id, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
-    after_create :notify_about_become_main_int, if: :primary?
-    after_create :notify_about_become_back_up_int, if: :back_up?
-    after_create :notify_about_for_client
+    after_create :notify_about_become_main_int_17, if: :primary?
+    after_create :notify_about_become_back_up_int_18, if: :back_up?
+    after_create :notify_about_order_details_4
     after_create :confirm_after_create
 
     has_notification_about :become_main_int_17,

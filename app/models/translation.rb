@@ -23,6 +23,8 @@ class Translation
   # DEPRECATED
   scope :actual, -> {where next_id: nil}
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
+  scope :seo, -> {where(key: /^frontend\.meta_tags\./)}
+  scope :notifications, -> {where( key: /^notification_mailer\./)}
 
   validates_presence_of :version
   before_save :scrub_value
@@ -57,9 +59,13 @@ class Translation
     Translation.where(:id.in => tr_ids).not_model_localizers
   end
 
-  def self.seo
-    Translation.where(key: /^frontend\.meta_tags\./)
-  end
+  # def self.seo
+  #   Translation.where(key: /^frontend\.meta_tags\./)
+  # end
+
+  # def self.notifications
+  #   Translation.any_of( {key: /^notification_mailer\./}, {key: /^notifications\./} )
+  # end
 
   def self.active_ids_in(localization)
     approved_version_ids = localization.localization_versions.approved.distinct(:id)
@@ -126,7 +132,7 @@ class Translation
   end
 
   def scrub_value
-    self.value = Loofah.fragment(value).scrub!(:prune).to_s
+    self.value = Loofah.fragment(value).scrub!(:prune).to_s if value.is_a? String
   end
 
 

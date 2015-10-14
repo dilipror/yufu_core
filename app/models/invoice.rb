@@ -116,7 +116,7 @@ class Invoice
   end
 
   def self.hack_mailer
-    NotificationMailer.new_order_for_translator(User.first).deliver
+    NotificationMailer.new_order_for_translator_16(User.first).deliver
   end
 
   def currency

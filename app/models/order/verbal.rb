@@ -101,7 +101,7 @@ module Order
     validate :assign_reservation_to_criterion, if: -> (o) {o.step == 2}
     validates_length_of :offers, maximum: 2, unless: ->(order) {order.will_begin_less_than?(36.hours)}
 
-    before_save :set_update_time, :update_notification, :check_dates_5, :set_private, :set_langvel
+    before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion, :build_events_manager
     after_save :create_additional_services
     after_save :notify_about_updated, if: :persisted?

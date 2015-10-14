@@ -3,8 +3,8 @@ class NotificationMailer < ActionMailer::Base
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
-  def new_order_for_translator(user)
-    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link)
+  def new_order_for_translator_16(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
   end
 
   # def reminder_for_backup_interpreter_24(user)
@@ -82,10 +82,10 @@ class NotificationMailer < ActionMailer::Base
   #   mail to: user.email, body: I18n.t('.body', scope: scope)
   # end
 
-  # def signup_reminder(user)
-  #   mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-  #                                     confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
-  # end
+  def signup_reminder(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
+                                      confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
+  end
   #
   # def trans_invoice(user, order)
   #   mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
