@@ -1,6 +1,7 @@
 module Order
   class Written < Base
     include Mongoid::Paperclip
+    include Filterable
 
     before_create :build_relations
 
@@ -108,6 +109,16 @@ module Order
         transition quality_control: :sent_to_client
       end
 
+      event :reject_translation do
+        transition correcting: :in_progress
+      end
+
+
+
+      before_transition on: :reject_translation do
+      #   уведомить переводчика
+      end
+
       before_transition on: :correct do |order|
         order.notify_about_correct
       end
@@ -159,6 +170,37 @@ module Order
       end
 
     end
+
+    # filtering-------------------------------------------------------
+    def self.filter_state(state)
+      where state: state
+    end
+
+    def self.filter_cooperation(coop)
+      if coop.include? 'From'
+        where :'original_language.is_chinese' => true
+      else
+        where :'translation_language.is_chinese' => true
+      end
+    end
+
+    def self.filter_owner(owner_email)
+      client_ids = User.where(email: /.*#{owner_email}.*/).distinct :profile_client_id
+      where :owner_id.in => client_ids
+    end
+
+    def self.filter_assignee(assignee_email)
+      translators_ids = User.where(email: /.*#{assignee_email}.*/).distinct :profile_translator_id
+      where :assignee_id.in => translators_ids
+    end
+
+    def self.filter_proof_reader(proof_reader_email)
+      reader_ids = User.where(email: /.*#{proof_reader_email}.*/).distinct :profile_translator_id
+      where :proof_reader_id.in => reader_ids
+    end
+    # filtering-------------------------------------------------------
+
+
 
     def self.available_for(profile)
       if profile.is_a? Profile::Translator
