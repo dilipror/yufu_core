@@ -25,6 +25,7 @@ class Translation
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
 
   validates_presence_of :version
+  before_save :scrub_value
   after_save :wear_out
   before_create :resolve_value_type
 
@@ -122,6 +123,10 @@ class Translation
   def value
     value = super
     value.is_a?(String) && value_is_array ? value.split(',')  : value
+  end
+
+  def scrub_value
+    self.value = Loofah.fragment(value).scrub!(:prune).to_s
   end
 
 
