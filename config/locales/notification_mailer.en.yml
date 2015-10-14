@@ -5,7 +5,7 @@ en:
     new_order: Place new order
     your_int: Your interpreter
 
-    re_confirmed_translator:
+    re_confirmed_translator_21:
       subject: Confirm successful again
       body: "Dear %{client},
 
@@ -16,7 +16,7 @@ en:
             Thank you for your cooperation and wish you a happy life!
 
             Language rich"
-    re_confirm_back_up:
+    re_confirm_back_up_20:
       subject: reaffirmed Order
       body: "Dear %{client},
 
@@ -30,7 +30,7 @@ en:
 
             Language rich"
 
-    re_confirm_main:
+    re_confirm_main_19:
       subject: reaffirmed Order
       body: "Dear %{client},
 
@@ -58,7 +58,7 @@ en:
 
              YUFU.NET community"
 
-    re_confirmed_client:
+    re_confirmed_client_6:
       subject: "Interpreter`s changes"
       body: "Dear %{client},
 
@@ -84,7 +84,7 @@ en:
 
              YUFU.NET community"
 
-    cancel:
+    cancel_12:
       subject: Order cancellation by YUFU.NET
       body: Dear %{client},
 
@@ -100,7 +100,7 @@ en:
 
             YUFU.NET community
 
-    we_are_looking_before_24:
+    we_are_looking_before_24_11:
       subject: The order issue
       body: "Dear %{client},
 
@@ -124,7 +124,7 @@ en:
 
             YUFU.NET community"
 
-    for_client:
+    order_details_4:
       subjet: Order confirmation/voucher
       body: "Dear %{client},
 
@@ -166,7 +166,7 @@ en:
 
             We do it professionally!"
 
-    check_dates:
+    check_dates_5:
       subject: Order reminder
       body: "Dear %{client},
 
@@ -192,7 +192,7 @@ en:
 
             YUFU.NET community"
 
-    become_main_int:
+    become_main_int_17:
       subject: Order Confirmation
       body: "Dear %{client},
 
@@ -210,7 +210,7 @@ en:
 
       thank you for your cooperation and wish you a happy life language rich "
 
-    we_are_looking:
+    we_are_looking_10:
       subject: Confirmation delay
       body: "Dear %{client},
 
@@ -236,7 +236,7 @@ en:
 
             YUFU"
 
-    become_back_up_int:
+    become_back_up_int_18:
       subject: Order Confirmation
       body: "Dear %{client},
 

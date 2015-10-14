@@ -24,93 +24,70 @@ module Order
     after_create :notify_about_for_client
     after_create :confirm_after_create
 
-    has_notification_about :become_main_int,
-                           message: 'notifications.become_main_int',
+    has_notification_about :become_main_int_17,
+                           message: 'notifications.become_main_int_17',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.become_main_int(user).deliver
+                             NotificationMailer.become_main_int_17(user).deliver
                            end),
                            sms: -> (user, offer) do
-                             Yufu::SmsNotification.instance.become_main_int user
+                             Yufu::SmsNotification.instance.become_main_int_17 user
                            end
 
-    has_notification_about :become_back_up_int,
-                           message: 'notifications.become_main_int',
+    has_notification_about :become_back_up_int_18,
+                           message: 'notifications.become_back_up_int_18',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.become_back_up_int(user).deliver
+                             NotificationMailer.become_back_up_int_18(user).deliver
                            end),
                            sms: -> (user, offer) do
-                             Yufu::SmsNotification.instance.become_back_up_int user
+                             Yufu::SmsNotification.instance.become_back_up_int_18 user
                            end
 
-    has_notification_about :for_client,
-                           message: 'notifications.for_client',
+    has_notification_about :order_details_4,
+                           message: 'notifications.order_details_4',
                            observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
-                             NotificationMailer.for_client(user, offer).deliver
+                             NotificationMailer.order_details_4(user, offer).deliver
                            end
 
-    # has_notification_about :confirm_for_translator,
-    #                        observers: :translator,
-    #                        message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_translator"},
-    #                        mailer: -> (user, offer) do
-    #                          if offer.primary?
-    #                            NotificationMailer.primary_offer_confirmed offer.translator.user
-    #                          else
-    #                            NotificationMailer.secondary_offer_confirmed offer.translator.user
-    #                          end
-    #                        end,
-    #                       sms: -> (user, offer) do
-    #                         Yufu::SmsNotification.instance.offer_confirmed_for_translator(user)
-    #                       end
-    # has_notification_about :confirm_for_client,
-    #                        observers: -> (offer){ offer.order.owner.user },
-    #                        message: -> (offer) {"notifications.offers.confirm_#{offer.status}_offer_for_client"},
-    #                        mailer: ->(user, offer) do
-    #                          if offer.primary?
-    #                            NotificationMailer.primary_offer_confirmed_for_client user, offer
-    #                          else
-    #                            NotificationMailer.secondary_offer_confirmed_for_client user, offer
-    #                          end
-    #                        end
 
-    has_notification_about :re_confirm_main,
-                           message: 'notifications.re_confirm',
+    has_notification_about :re_confirm_main_19,
+                           message: 'notifications.re_confirm_main_19',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.re_confirm_main(user).deliver
+                             NotificationMailer.re_confirm_main_19(user).deliver
                            end),
                            sms: -> (user, offer) do
-                             Yufu::SmsNotification.instance.re_confirm_main user
+                             Yufu::SmsNotification.instance.re_confirm_main_19 user
                            end
 
 
-    has_notification_about :re_confirm_back_up,
-                           message: 'notifications.re_confirm',
+    has_notification_about :re_confirm_back_up_20,
+                           message: 'notifications.re_confirm_back_up_20',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.re_confirm_back_up(user).deliver
+                             NotificationMailer.re_confirm_back_up_20(user).deliver
                            end),
                            sms: -> (user, offer) do
-                             Yufu::SmsNotification.instance.re_confirm_back_up user
+                             Yufu::SmsNotification.instance.re_confirm_back_up_20 user
                            end
 
-    has_notification_about :re_confirmed_translator,
-                           message: 'notifications.re_confirmed_translator',
+    has_notification_about :re_confirmed_translator_21,
+                           message: 'notifications.re_confirmed_translator_21',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.re_confirmed_translator(user).deliver
+                             NotificationMailer.re_confirmed_translator_21(user).deliver
                            end),
                            sms: -> (user, offer) do
-                             Yufu::SmsNotification.instance.re_confirmed_translator user
+                             Yufu::SmsNotification.instance.re_confirmed_translator_21 user
                            end
 
-    has_notification_about :re_confirmed_client,
-                           message: 'notifications.re_confirmed_client',
+    has_notification_about :re_confirmed_client_6,
+                           message: 'notifications.re_confirmed_client_6',
                            observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
-                             NotificationMailer.re_confirmed_client(user, offer).deliver
+                             NotificationMailer.re_confirmed_client_6(user, offer).deliver
                            end
 
     scope :state_new, -> {where state: :new}
@@ -133,9 +110,9 @@ module Order
       before_transition new: :confirmed do |offer|
         if offer.can_confirm?
           offer.order.process
-          offer.notify_about_re_confirmed_translator
+          offer.notify_about_re_confirmed_translator_21
           if offer.translator != offer.order.offers.first.translator && offer.translator != offer.order.offers[1].translator
-            offer.notify_about_re_confirmed_client
+            offer.notify_about_re_confirmed_client_6
           end
         end
         offer.can_confirm?

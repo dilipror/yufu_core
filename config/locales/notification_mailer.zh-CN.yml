@@ -6,7 +6,7 @@ zh-CN:
 
 
 
-    re_confirm_back_up:
+    re_confirm_back_up_20:
       subject: 再次确认订单
       body: "亲爱的 %{client},
 
@@ -20,7 +20,7 @@ zh-CN:
 
             语富"
 
-    re_confirm_main:
+    re_confirm_main_19:
       subject: 再次确认订单
       body: "亲爱的 %{client},
 
@@ -34,7 +34,7 @@ zh-CN:
 
             语富"
 
-    become_main_int:
+    become_main_int_17:
       subject: 订单确认
       body: "亲爱的 %{client},
 
