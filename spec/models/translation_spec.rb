@@ -2,6 +2,18 @@ require 'rails_helper'
 
 RSpec.describe Translation, :type => :model do
 
+  describe 'sanitize value' do
+    let(:unsafe_html){'<p>good</p><script>script content</script>'}
+    let(:translation) {create :translation, value: unsafe_html}
+
+    subject{translation.value}
+
+    it{is_expected.to include '<p>good</p>'}
+    it{is_expected.not_to include '<script>script content</script>'}
+    it{is_expected.not_to include 'script content'}
+  end
+
+
   describe  '#localize_model' do
     let(:language){create :language}
     let(:translation){create :translation, key: "Language.name.#{language.id}", is_model_localization: true}
