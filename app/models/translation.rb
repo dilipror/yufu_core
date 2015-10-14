@@ -58,7 +58,7 @@ class Translation
   end
 
   def self.seo
-    Translation.where(key: /^frontend\.meta_tags\./)
+    Translation.where(key: /Order_ServicesPack.meta/).merge Translation.where(key: /^frontend\.meta_tags\./)
   end
 
   def self.active_ids_in(localization)
