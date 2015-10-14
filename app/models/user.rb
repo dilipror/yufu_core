@@ -133,7 +133,7 @@ class User
 
   token length: 9, contains: :alphanumeric
 
-  delegate :url, to: :referral_link, prefix: true, allow_nil: true
+  delegate :href, to: :referral_link, prefix: true, allow_nil: true
 
   def authorized_translator?
     role.translator? ? profile_translator.try(:authorized?) : false

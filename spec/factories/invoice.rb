@@ -5,5 +5,7 @@ FactoryGirl.define do
     last_name 'putin'
     email 'r@e.net'
     association :user
+    association :pay_company, factory: :gbp_company
+    association :country
   end
 end
