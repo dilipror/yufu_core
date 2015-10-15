@@ -28,10 +28,15 @@ module I18n
           key_array = k.split(".")
           last_key = key_array.delete_at(key_array.length - 1)
           key_array.each do |current|
-            unless trans_pointer.has_key?(current.to_sym)
-              trans_pointer[current.to_sym] = {}
+            begin
+              unless trans_pointer.has_key?(current.to_sym)
+                trans_pointer[current.to_sym] = {}
+              end
+              trans_pointer = trans_pointer[current.to_sym]
+            rescue => e
+              puts "Key: #{t.key} is deprecated. Remove it"
+              t.destroy
             end
-            trans_pointer = trans_pointer[current.to_sym]
           end
           begin
             key = k.gsub "#{locale}.", ''

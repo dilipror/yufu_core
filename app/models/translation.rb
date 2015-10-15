@@ -3,11 +3,6 @@ class Translation
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
-  MONGO_MODELS = %w(Language.name Order::Car.name City.name Order::Service.name Order::ServicesPack.name
-                    Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
-                    Order::Written::WrittenSubtype.name Order::Written::WrittenSubtype.description
-                    Order::Written::WrittenType.name Order::Written::WrittenType.description)
-
   field :key
   field :value
   field :is_model_localization, type: Mongoid::Boolean, default: false
@@ -23,30 +18,53 @@ class Translation
   # DEPRECATED
   scope :actual, -> {where next_id: nil}
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
+  scope :seo, -> {where(key: /^frontend\.meta_tags\./)}
+  scope :notifications, -> {where( key: /^notification_mailer\./)}
 
   validates_presence_of :version
   before_save :scrub_value
-  after_save :wear_out
+  #after_save :wear_out
   before_create :resolve_value_type
 
   def localize_model
     return unless is_model_localization?
-    tmp = key.split('.')
     target_locale = version.localization.name
-    klass = tmp[0].gsub('_', '::')
-    klass = klass.constantize
-    field = tmp[1].parameterize.underscore.to_sym
-    id = tmp[2]
+    hash = get_model_instance_hash
+    if hash.nil?
+      destroy
+    else
+      klass = hash[:klass]
+      field = hash[:field]
+      id = hash[:id]
 
-    que = klass.find_by(id: id)
+      que = klass.find_by(id: id)
 
-    I18n.locale = target_locale
-    que.send "#{field}=", value
-    que.save
+      I18n.locale = target_locale
+      que.send "#{field}=", value
+      que.save
+    end
   end
 
   def original
-    I18n.t key
+    if is_model_localization?
+      hash = get_model_instance_hash
+      return 'Deprecated translation' if hash.nil?
+      begin
+        hash[:klass].find_by(id: hash[:id]).send hash[:field]
+      rescue
+        'Deprecated translation'
+      end
+    else
+      I18n.t key
+    end
+  end
+
+  def get_model_instance_hash
+    return nil unless is_model_localization?
+    tmp = key.split('.')
+    {klass: tmp[0].gsub('_', '::').constantize, field: tmp[1].parameterize.underscore.to_sym, id: tmp[2]}
+  rescue
+    nil
   end
 
   def self.active
@@ -55,10 +73,6 @@ class Translation
       tr_ids += active_ids_in l
     end
     Translation.where(:id.in => tr_ids).not_model_localizers
-  end
-
-  def self.seo
-    Translation.where(key: /Order_ServicesPack.meta/).merge Translation.where(key: /^frontend\.meta_tags\./)
   end
 
   def self.active_ids_in(localization)
@@ -126,7 +140,7 @@ class Translation
   end
 
   def scrub_value
-    self.value = Loofah.fragment(value).scrub!(:prune).to_s
+    self.value = Loofah.fragment(value).scrub!(:prune).to_s if value.is_a? String
   end
 
 

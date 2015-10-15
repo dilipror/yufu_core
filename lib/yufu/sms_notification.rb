@@ -17,7 +17,7 @@ module Yufu
       sms to: transaltor.phone, text: text
     end
 
-    def become_main_int(user)
+    def become_main_int_17(user)
 
       text = "【语富翻译】订单确认:亲爱的 #{client(user)},恭喜您成为此订单的核心译员。您会在订单执行前60小时
 
@@ -29,13 +29,13 @@ module Yufu
       sms to: user.phone, text: text
     end
 
-    def become_back_up_int(user)
+    def become_back_up_int_17(user)
       text = "【语富翻译】订单确认:亲爱的 #{client(user)},恭喜您成为此订单的备选译员。您会在订单执行前48小时
               收到再次确认订单的信息。请您留意。祝您生活愉快!"
       sms to: user.phone, text: text
     end
 
-    def re_confirm_main(user)
+    def re_confirm_main_19(user)
       text = "【语富翻译】再次确认订单:亲爱的 #{client(user)},目前您是此订单的核心译员,从现在起12个小时之内
                 请您尽快再次确认能否执行此订单。如未能完成确认,该订单则由备选译员接手,同时您的账号
                 将被冻结3个月。请您留意。祝您生活愉快!
@@ -43,13 +43,13 @@ module Yufu
       sms to: user.phone, text: text
     end
 
-    def re_confirm_back_up(user)
+    def re_confirm_back_up_20(user)
       text = "【语富翻译】再次确认订单:亲爱的 #{client(user)},目前您是此订单的备选译员。从现在起12个小时之内
               请您尽快再次确认订单,您将有可能成为此订单的核心译员。请您留意。祝您生活愉快!"
       sms to: user.phone, text: text
     end
 
-    def re_confirmed_translator(user)
+    def re_confirmed_translator_21(user)
       text = "【语富翻译】恭喜您:亲爱的 #{client(user)},恭喜您成为此订单的译员。请到您的语富信息窗查看订单详
               情,以免耽误订单执行。感谢您的合作并祝您生活愉快!
               #{dashboard_url}"

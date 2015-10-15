@@ -20,13 +20,13 @@ module Order
 
       def before_60
         if @order.primary_offer.present?
-          @order.notify_about_check_dates
-          @order.primary_offer.notify_about_re_confirm_main if @order.primary_offer.present?
+          @order.notify_about_check_dates_5
+          @order.primary_offer.notify_about_re_confirm_main_19 if @order.primary_offer.present?
         end
       end
 
       def before_48
-        @order.secondary_offer.notify_about_re_confirm_back_up if @order.secondary_offer.present?
+        @order.secondary_offer.notify_about_re_confirm_back_up_20 if @order.secondary_offer.present?
       end
 
       def before_36
@@ -38,13 +38,13 @@ module Order
 
       def before_24
         if @order.wait_offer?
-          @order.notify_about_looking_for_int_before_24
+          @order.notify_about_we_are_looking_before_24_11
         end
       end
 
       def before_4
         if @order.wait_offer?
-          @order.notify_about_cancel
+          @order.notify_about_cancel_12
           RejectService.new(@order).reject_order :yufu
         end
       end
