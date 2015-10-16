@@ -129,6 +129,7 @@ class User
   after_create :create_profile_client,     if: 'profile_client.nil?'
   after_create :create_profile_translator, if: 'profile_translator.nil?'
   after_create :create_default_invitation_texts
+  after_create ->(user) {ConfirmationReminderJob.set(wait: 3.days).perform_later(user.id.to_s)}
   # before_save :downcase_email
 
   token length: 9, contains: :alphanumeric
