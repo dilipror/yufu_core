@@ -14,7 +14,7 @@ module Order
 
       def after_24
         if @order.offers.count == 0
-          @order.notify_about_looking_for_int
+          @order.notify_about_we_are_looking_10
         end
       end
 

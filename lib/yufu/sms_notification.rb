@@ -29,7 +29,7 @@ module Yufu
       sms to: user.phone, text: text
     end
 
-    def become_back_up_int_17(user)
+    def become_back_up_int_18(user)
       text = "【语富翻译】订单确认:亲爱的 #{client(user)},恭喜您成为此订单的备选译员。您会在订单执行前48小时
               收到再次确认订单的信息。请您留意。祝您生活愉快!"
       sms to: user.phone, text: text
