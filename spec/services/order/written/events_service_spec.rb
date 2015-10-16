@@ -65,7 +65,7 @@ RSpec.describe Order::Written::EventsService do
   describe '#after_translate_order' do
     subject{event_service.after_translate_order}
 
-    let!(:theme) {Support::Theme.create name: 'lol'}
+    let!(:theme) {Support::Theme.create name: 'lol', theme_type: :order_written}
 
     context 'order to ch' do
       context 'translator is chinese' do
