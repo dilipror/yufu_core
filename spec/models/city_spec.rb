@@ -54,6 +54,26 @@ RSpec.describe City, type: :model do
     end
   end
 
+  describe '.available_for_order' do
+    let(:city_1){create :city}
+    let(:city_2){create :city}
+    let(:city_3){create :city}
+    let(:city_4){create :city}
+    let(:city_5){create :city}
+
+    let!(:translator_1){create :profile_translator, city_approves: [(create :city_approve, city: city_1)]}
+    let!(:translator_2){create :profile_translator, city_approves: [(create :city_approve, city: city_2)]}
+    let!(:translator_3){create :profile_translator, city_approves: [(create :city_approve, city: city_2)],
+                               services: [(create :service, is_approved: false)]}
+    let!(:translator_4){create :profile_translator, city_approves: [(create :city_approve, city: city_2)], services:[]}
+
+    subject{City.available_for_order}
+    it{expect(subject.count).to eq(2)}
+    it{is_expected.to include(city_1)}
+    it{is_expected.to include(city_2)}
+
+  end
+
   describe '.supported' do
     let(:approved_approve) {create :city_approve}
     let(:approved_with_surcharge) {create :city_approve, with_surcharge: true}
