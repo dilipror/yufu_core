@@ -62,6 +62,18 @@ RSpec.describe Invoice, :type => :model do
 
       it{expect{subject}.not_to change{invoice.reload.state}}
     end
+
+    context 'order is rejected' do
+      let(:user){create :user, balance: 10000}
+      let(:order){create :order_verbal, owner: user.profile_client, state: 'rejected'}
+      let(:invoice){order.invoices.last}
+
+      it{expect{subject}.not_to change{invoice.reload.paid?}}
+      it{expect{subject}.not_to change{user.reload.balance}}
+      it{expect{subject}.not_to change{Office.head.reload}}
+      it{expect{subject}.not_to change{order.reload.paid?}}
+
+    end
   end
 
   describe '#check_pay_way' do
@@ -84,7 +96,6 @@ RSpec.describe Invoice, :type => :model do
         expect(invoice.payments.last.sum).to eq invoice.cost
       end
     end
-
   end
 
   describe '#cost' do

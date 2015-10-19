@@ -18,12 +18,12 @@ class Translation
   # DEPRECATED
   scope :actual, -> {where next_id: nil}
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
-  scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
+  scope :seo, -> {where key: /meta_/}
+  #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
   scope :notifications, -> {where( key: /^notification_mailer\./)}
 
   validates_presence_of :version
   before_save :scrub_value
-  #after_save :wear_out
   before_create :resolve_value_type
 
   def localize_model
