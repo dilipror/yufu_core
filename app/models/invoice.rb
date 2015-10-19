@@ -80,12 +80,16 @@ class Invoice
     before_transition on: :paid do |invoice, transition|
       # cost = invoice.cost.to_f
       # cost = invoice.exchanged_cost(invoice.pay_company.currency.iso_code).to_f if invoice.pay_way.gateway_type == :paypal
-      can_execute = invoice.user.balance.to_f >= invoice.cost.to_f
-      if can_execute
-        Transaction.create(sum: invoice.cost, debit: invoice.user, credit: Office.head, invoice: invoice).execute
-        invoice.subject.try(:paid)
+      if invoice.subject.rejected?
+        false
+      else
+        can_execute = invoice.user.balance.to_f >= invoice.cost.to_f
+        if can_execute
+          Transaction.create(sum: invoice.cost, debit: invoice.user, credit: Office.head, invoice: invoice).execute
+          invoice.subject.try(:paid)
+        end
+        can_execute
       end
-      can_execute
     end
 
     event :pending do
