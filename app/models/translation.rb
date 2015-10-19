@@ -3,6 +3,20 @@ class Translation
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
+  EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
+                    flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
+                    admin.misc.filter_date_format ckeditor. admin.).join('|')}/
+
+  MONGO_MODELS = %w(Language.name City.name Order::Service.name Order::Service.short_description Order::ServicesPack.name
+                    Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
+                    Order::Written::WrittenSubtype.name Order::Written::WrittenSubtype.description
+                    Order::Written::WrittenType.name Order::Written::WrittenType.description
+                    Gateway::PaymentGateway.title Gateway::PaymentGateway.description Gateway::PaymentGateway.tooltip
+                    Company.name Company.address
+                    Company.registration_number Company.tooltip Company.bank_name Company.bank_account_number Company.bank_swift
+                    Company.bank_address Company.email Order::ServicesPack.meta_title Order::ServicesPack.meta_description
+                    Order::ServicesPack.meta_keywords Order::Service.name)
+
   field :key
   field :value
   field :is_model_localization, type: Mongoid::Boolean, default: false
@@ -18,12 +32,12 @@ class Translation
   # DEPRECATED
   scope :actual, -> {where next_id: nil}
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
-  scope :seo, -> {where(key: /^frontend\.meta_tags\./)}
+  scope :seo, -> {where key: /meta_/}
+  #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
   scope :notifications, -> {where( key: /^notification_mailer\./)}
 
   validates_presence_of :version
   before_save :scrub_value
-  #after_save :wear_out
   before_create :resolve_value_type
 
   def localize_model
