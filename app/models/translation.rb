@@ -23,7 +23,6 @@ class Translation
 
   validates_presence_of :version
   before_save :scrub_value
-  #after_save :wear_out
   before_create :resolve_value_type
 
   def localize_model
