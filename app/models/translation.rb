@@ -18,7 +18,7 @@ class Translation
   # DEPRECATED
   scope :actual, -> {where next_id: nil}
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
-  scope :seo, -> {where(key: /^frontend\.meta_tags\./)}
+  scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
   scope :notifications, -> {where( key: /^notification_mailer\./)}
 
   validates_presence_of :version
