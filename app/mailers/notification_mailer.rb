@@ -6,7 +6,7 @@ class NotificationMailer < ActionMailer::Base
 
 
   def cancel_not_paid_3(user)
-    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+    mail to: user.email, body: I18n.t('.body', scope: scope, root: root_url, client: client(user))
   end
 
   def order_confirmation_7(user)

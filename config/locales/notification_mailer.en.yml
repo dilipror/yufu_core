@@ -6,8 +6,22 @@ en:
     your_int: Your interpreter
 
     cancel_not_paid_3:
-      subject:
-      body:
+      subject: Order cancellation due to non payment
+      body: "Dear %{client},\n
+
+           Unfortunately we have to inform you, that your order for YUFU.NET service has been cancelled due to non-payment.\n
+
+           If you didn’t get through the payment on time, but still would like to order this service, please follow the link below for a new order placement:\n
+
+           %{root}\n
+
+           In case you made a payment, but YUFU.NET haven`t received the payment on time, the money will be stored at your personal balance. You can place a new order and pay the order using remaining balance.\n
+
+           We sincerely apologize for any inconvenience!\n
+
+           Sincerely Yours,\n
+
+           YUFU.NET community"
 
     order_confirmation_7:
       subject: Order confirmation
