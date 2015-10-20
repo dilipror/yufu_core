@@ -55,38 +55,16 @@ module Order
     embeds_many :work_reports,                       class_name: 'Order::Written::WorkReport', cascade_callbacks: true
     accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments
 
-    scope :all_orders,  -> (profile) { default_scope_for(profile).all }
-    scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
-    scope :paying,      -> (profile) { profile.orders.where :state.in => [:new, :paying] }
-    scope :in_progress, -> (profile) do
-      default_scope_for(profile).where :state.in => [:in_progress, :additional_paying],
-                                       connected_method_for(profile) => profile
-    end
-    scope :correct, ->(profile) {default_scope_for(profile).where state: :correcting}
-    scope :control, ->(profile) {default_scope_for(profile).where state: :quality_control}
-    scope :done, ->(profile) {default_scope_for(profile).where state: :sent_to_client}
-    scope :close,       -> (profile) do
-      default_scope_for(profile).where :state.in => [:close, :rated], connected_method_for(profile) => profile
-    end
-
     validates_presence_of :original_language, :translation_language, :order_subtype, if: ->{step > 0}
     validates_presence_of :translation_type, :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'text'}
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
     validate :attachments_count, if: ->{step > 1}
-
-    # after_validation :change_state_event
 
     after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
 
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end
-
-    # def change_state_event
-    #   if state_event == 'waiting_correcting'
-    #     Order::Written::EventsService.new(order).after_translate_order
-    #   end
-    # end
 
     state_machine initial: :new do
       state :correcting
@@ -118,8 +96,6 @@ module Order
         transition correcting: :in_progress
       end
 
-
-
       before_transition on: :reject_translation do
       #   уведомить переводчика
       end
@@ -138,21 +114,7 @@ module Order
         true
       end
 
-      # before_transition on: :waiting_correcting do |order|
-      #   Order::Written::EventsService.new(order).after_translate_order
-      # end
-
-      # after_transition any => :waiting_correcting do |order, transition|
-      #   order.correct
-      #   # Order::Written::EventsService.new(order).after_translate_order
-      # end
-
       before_transition on: :control do |order|
-        # unless order.translation_type == 'translate_and_correct'
-        #   Order::Written::EventsService.new(order).after_translate_order
-        # else
-        #   Order::Written::EventsService.new(order).after_proof_reading
-        # end
         order.notify_about_control
       end
 
@@ -205,22 +167,6 @@ module Order
     end
     # filtering-------------------------------------------------------
 
-
-
-    def self.available_for(profile)
-      if profile.is_a? Profile::Translator
-        query = []
-        profile.services.where(written_approves: true).each do |s|
-          if /From/.match(s.written_translate_type)
-            query << {translation_language_id: s.language.id}
-          end
-          if /To|to/.match(s.written_translate_type)
-            query << {original_language_id: s.language.id}
-          end
-        end
-        Order::Written.any_of query
-      end
-    end
 
     def self.surcharge_for_postage(currency = nil)
       default = 30

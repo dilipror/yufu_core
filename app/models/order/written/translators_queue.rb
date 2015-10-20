@@ -33,7 +33,7 @@ class Order::Written::TranslatorsQueue
       partner << order.referral_link.user.profile_translator if order.referral_link.user.profile_translator.support_written_order?(order)
     end
     if order.banner.present?
-      partner << order.banner.user.profile_translator if order.banner.user.profile_translator.support_correcting_written_order?(order)
+      partner << order.banner.user.profile_translator if order.banner.user.profile_translator.support_written_order?(order)
     end
     if partner.empty?
       nil
