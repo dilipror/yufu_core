@@ -50,8 +50,6 @@ module Order
         else
           if (Profile::Translator.approved.support_written_order(@order).where(:'profile_steps_service.hsk_level'.gt => 4)).count > 0
             OrderWrittenQueueFactoryWorker.new.perform @order.id, I18n.locale
-          else
-            @order.notify_about_cancellation_by_yufu
           end
         end
 

@@ -113,10 +113,6 @@ class NotificationMailer < ActionMailer::Base
 
   end
 
-  # 12 doc
-  def cancellation_by_yufu(user)
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
-  end
 
   private
 

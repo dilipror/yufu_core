@@ -29,12 +29,6 @@ module Order
                            mailer: ->(user, order) do
                              NotificationMailer.order_completed_8(user).deliver
                            end
-    has_notification_about :cancellation_by_yufu,
-                           message: 'notifications.cancel_by_yufu',
-                           observers: -> (order) {order.owner.user},
-                           mailer: -> (user, order) do
-                             NotificationMailer.cancellation_by_yufu(user).deliver
-                           end
 
     belongs_to :original_language,                   class_name: 'Language'
     belongs_to :translation_language,                class_name: 'Language'
