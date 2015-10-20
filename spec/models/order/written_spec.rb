@@ -318,45 +318,6 @@ RSpec.describe Order::Written, type: :model do
   #   end
   # end
 
-  describe '#available_for' do
-
-    let(:lang1){create :language}
-    let(:lang2){create :language}
-    let(:lang3){create :language}
-    let(:chinese){create :language, is_hieroglyph: true}
-
-    let(:translator){create :profile_translator, services:
-                  [build(:service, written_approves: true, written_translate_type: 'From chinese', language: lang1),
-                   build(:service, written_approves: true, written_translate_type: 'From-to chinese', language: lang2)]}
-
-
-    subject{Order::Written.available_for(translator)}
-
-    let(:order1){create :order_written, original_language: chinese, translation_language: lang1}
-    let(:order2){create :order_written, original_language: chinese, translation_language: lang2}
-    let(:order3){create :order_written, original_language: lang2, translation_language: chinese}
-
-    before(:each) do
-      order1
-      order2
-      order3
-      create :order_written, original_language: lang3, translation_language: chinese
-      create :order_written, original_language: chinese, translation_language: lang3
-    end
-
-    it 'orders count' do
-      expect(subject.count).to eq(3)
-    end
-
-    it 'includes orders' do
-      expect(subject).to include(order1)
-      expect(subject).to include(order2)
-      expect(subject).to include(order3)
-    end
-
-
-  end
-
   describe '#paying_items' do
 
     subject{order.paying_items}

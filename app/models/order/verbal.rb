@@ -111,14 +111,6 @@ module Order
     scope :paid_orders, -> { where state: :in_progress}
     scope :wait_offer,  -> { where state: :wait_offer }
     scope :unpaid,      -> { where :state.in => [:new, :paying] }
-    scope :in_progress, -> (profile) do
-      default_scope_for(profile).where :state.in => [:in_progress, :additional_paying],
-                                       connected_method_for(profile) => profile
-    end
-    scope :wait_offer, -> {where state: :wait_offer}
-    scope :close,       -> (profile) do
-      default_scope_for(profile).where :state.in => [:close, :rated], connected_method_for(profile) => profile
-    end
 
     state_machine initial: :new do
 
@@ -320,11 +312,6 @@ module Order
 
     def subscribers
       offers.map &:translator
-    end
-
-    # TODO move all search logic to VerbalSearcher
-    def self.available_for(profile)
-      ::Searchers::Order::VerbalSearcher.new(profile).search  if profile.is_a? Profile::Translator
     end
 
     def assign_reservation_to_criterion

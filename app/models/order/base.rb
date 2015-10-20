@@ -40,19 +40,11 @@ module Order
 
     scope :writtens, -> {where _type: 'Order::Written'}
     scope :verbals, -> {where _type: 'Order::Verbal'}
+    scope :local_experts, -> {where _type: 'Order::LocalExpert'}
     scope :for_everyone,-> { where is_private: false }
     scope :private,     -> { where is_private: true }
     scope :rejected,    -> { where state: 'rejected' }
     scope :wait_offer,  -> { where state: :wait_offer }
-    scope :opened,      -> (profile) { default_scope_for(profile).where state: :wait_offer }
-    scope :paying,      -> (profile) {profile.orders.where :state.in => [:new, :paying]}
-    scope :in_progress, -> (profile) do
-      default_scope_for(profile).where :state.in => [:in_progress, :additional_paying],
-                                       connected_method_for(profile) => profile
-    end
-    scope :close,       -> (profile) do
-      default_scope_for(profile).where :state.in => [:close, :rated], connected_method_for(profile) => profile
-    end
 
     default_scope -> {desc :id}
 
@@ -98,22 +90,6 @@ module Order
 
     def paid?
       %w(close rated wait_offer).include? state
-    end
-
-    def self.connected_method_for(profile)
-      if profile.is_a? Profile::Translator
-        :assignee
-      else
-        :owner
-      end
-    end
-
-    def self.default_scope_for(profile)
-      if profile.is_a? Profile::Translator
-        available_for(profile).order('created_at desc')
-      else
-        profile.orders.order('created_at desc')
-      end
     end
 
     def create_and_execute_transaction(debit, credit, amount, commission = nil)
