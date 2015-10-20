@@ -38,6 +38,8 @@ module Order
     after_save :check_pay_way
     before_save :check_close
 
+    scope :writtens, -> {where _type: 'Order::Written'}
+    scope :verbals, -> {where _type: 'Order::Verbal'}
     scope :for_everyone,-> { where is_private: false }
     scope :private,     -> { where is_private: true }
     scope :rejected,    -> { where state: 'rejected' }
