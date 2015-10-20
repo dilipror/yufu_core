@@ -4,6 +4,100 @@ en:
     balance: My balance
     new_order: Place new order
     your_int: Your interpreter
+
+    cancel_not_paid_3:
+      subject:
+      body:
+
+    order_confirmation_7:
+      subject: Order confirmation
+      body: "Dear %{client},\n
+
+             We kindly inform you, that your order for the YUFU.NET service has been confirmed!\n
+
+             We have started to work on your order implementation.\n
+
+             As soon as your order is completed, you can find it at your personal YUFU.NET dashboard, in a message section.\n
+
+             If you wish to see your order details or ask a question, please follow the link below:\n
+
+             %{dashboard_link}\n
+
+             Thank you for choosing Yufu.net!\n
+
+             Sincerely Yours,\n
+
+             YUFU.NET community"
+    complete_interpreter_9:
+      subject: Your order is completed
+      body: "Dear %{client},\n
+
+             We kindly inform you, that your order has been successfully completed!\n
+
+             We hope, you are satisfied with the result. If you have any comments, please let us know. We highly appreciate any of your feedbacks.\n
+
+             To provide a feedback, please follow the link below:\n
+
+             %{dashboard_link}\n
+
+             Thank you for choosing Yufu.net!\n
+
+             Sincerely Yours,\n
+
+             YUFU.NET community"
+    cancel_by_user_13:
+      subject: Order cancellation by customer
+      body: "Dear %{client},\n
+             We kindly inform you, that your order for the YUFU.NET services has been successfully cancelled.\n
+
+             Your payment will be refunded according to the Refund Policy of YUFU.NET limited that you have read and agreed.\n
+
+             Remaining amount will be transferred to your Yufu.net balance immediately. Please see the details on the remaining balance withdrawal in the Methods of Payment of YUFU.NET.\n
+
+             If you wish to check your remaining balance, please follow the link below.\n
+
+              %{dashboard_link}\n
+
+             We sincerely apologize for any inconvenience!\n
+
+             Sincerely Yours,\n
+
+             YUFU.NET community"
+
+    cancel_by_user_due_conf_delay_14:
+      subject: Order cancellation due to confirmation delay
+      body: "Dear %{client},\n
+
+            We kindly inform you, that your order has been cancelled successfully.\n
+
+            Your payment will be refunded in full amount according to the YUFU.NET Refund Policy.\n
+
+            We sincerely apologize for any inconvenience!\n
+
+            Sincerely Yours,\n
+
+            YUFU.NET community"
+
+    order_completed_8:
+      subject: Your order is completed
+      body: "Dear %{client},\n
+
+             We kindly inform you, that your order has been successfully completed!\n
+
+             Please find the order at your personal YUFU.NET dashboard in a message section.\n
+
+              To check the order immediately, please follow the link below:\n
+
+             %{dashboard_link}\n
+
+             We hope, you are satisfied with the result. If you have any comments, please let us know. We highly appreciate any of your feedbacks.\n
+
+             Thank you for choosing Yufu.net!\n
+
+             Sincerely Yours,\n
+
+             YUFU.NET community"
+
     new_order_for_translator_16:
       subject: New order
       body:  "Dear %{client}, \n
@@ -317,8 +411,14 @@ Language rich "
                                                                     We do it professionally!\n
 
                                                                     Sincerely Yours,YUFU.NET Team \n"
-    translator_approving:
-      subject: Translator approving
-      body: "Dear Interpreter,\n
+    translator_approving_15:
+      subject: 通过认证
+      body: "亲爱的 %{client}，\n
 
-             We kindly inform you, that your profile translator has been approved"
+             恭喜您成功通过所有认证，成为语富翻译一员。您可从现在开始参与订单分配，所有订单详情都会在您的账户显示，您也可以通过信息和邮件接收订单通知，请您留意以免错失订单。\n
+
+             请点此链接进入网站：  %{dashboard_link}\n
+
+             感谢您的合作并祝您生活愉快！\n
+
+             语富"
