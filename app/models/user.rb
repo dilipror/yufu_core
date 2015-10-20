@@ -3,7 +3,6 @@ class User
   include Mongoid::Timestamps::Created
   include Personalized
   include Mongoid::Paperclip
-  include Mongoid::Token
   include Monetizeable
   include Accountable
   extend Enumerize
@@ -131,8 +130,6 @@ class User
   after_create :create_default_invitation_texts
   after_create ->(user) {ConfirmationReminderJob.set(wait: 3.days).perform_later(user.id.to_s)}
   # before_save :downcase_email
-
-  token length: 9, contains: :alphanumeric
 
   delegate :href, to: :referral_link, prefix: true, allow_nil: true
 

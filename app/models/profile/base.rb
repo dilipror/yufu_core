@@ -2,7 +2,6 @@ module Profile
   class Base
     include Mongoid::Document
     include Mongoid::Timestamps
-    include Mongoid::Token
     include Mongoid::Autoinc
 
     delegate :first_name, :middle_name, :last_name, :chinese_name, :chinese_name=, :first_name=, :last_name=,
@@ -16,6 +15,7 @@ module Profile
     field :total_approve, type: Boolean, default: false
     field :_type
     field :number, type: Integer
+
     increments :number
 
     belongs_to :profile_language, class_name: 'Language'
