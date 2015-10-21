@@ -106,11 +106,6 @@ module Order
     after_save :create_additional_services
     after_save :notify_about_updated, if: :persisted?
 
-
-    scope :paid_orders, -> { where state: :in_progress}
-    scope :wait_offer,  -> { where state: :wait_offer }
-    scope :unpaid,      -> { where :state.in => [:new, :paying] }
-
     state_machine initial: :new do
 
       before_transition on: :process do |order|
