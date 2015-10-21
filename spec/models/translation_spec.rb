@@ -59,14 +59,14 @@ RSpec.describe Translation, :type => :model do
   end
 
 
-  describe  '#localize_model' do
-    let(:language){create :language}
-    let(:translation){create :translation, key: "Language.name.#{language.id}", is_model_localization: true}
-
-    before(:each){I18n.locale = translation.version.localization.name}
-
-    subject{translation.localize_model}
-
-    it{expect{subject}.to change{language.reload.name}.to translation.value}
-  end
+  # describe  '#localize_model' do
+  #   let(:language){create :language}
+  #   let(:translation){create :translation, key: "Language.name.#{language.id}", is_model_localization: true}
+  # 
+  #   before(:each){I18n.locale = translation.version.localization.name}
+  #
+  #   subject{translation.localize_model}
+  #
+  #   it{expect{subject}.to change{language.reload.name}.to translation.value}
+  # end
 end
