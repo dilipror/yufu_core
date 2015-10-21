@@ -1,6 +1,12 @@
 module Order
   class Written
     class RejectService < ::Order::RejectService
+
+      def reject_order(inner = :client)
+        super
+        @order.notify_about_cancel_by_owner
+      end
+
       def calculate_sum(cancel_by)
         if cancel_by == :yufu
           return full

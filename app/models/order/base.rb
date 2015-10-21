@@ -60,6 +60,12 @@ module Order
                            mailer: -> (user, order) do
                              NotificationMailer.cancel_not_paid_3(user).deliver
                            end
+    has_notification_about :cancel_by_owner,
+                           message: 'notifications.cancel_by_owner',
+                           observers: :owner,
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancel_by_user_13(user).deliver
+                           end
 
     # All user promoted order
     def agents
