@@ -107,11 +107,6 @@ module Order
     after_save :notify_about_updated, if: :persisted?
     after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
 
-
-    scope :paid_orders, -> { where state: :in_progress}
-    scope :wait_offer,  -> { where state: :wait_offer }
-    scope :unpaid,      -> { where :state.in => [:new, :paying] }
-
     state_machine initial: :new do
 
       before_transition on: :process do |order|
