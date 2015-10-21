@@ -3,6 +3,6 @@ class ConfirmationReminderJob < ActiveJob::Base
 
   def perform(user_id)
     user = User.find user_id
-    UsersMailer.confirmation_reminder(user).deliver unless user.confirmed?
+    UsersMailer.confirmation_reminder_23(user).deliver unless user.confirmed?
   end
 end

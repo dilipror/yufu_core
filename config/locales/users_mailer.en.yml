@@ -2,7 +2,7 @@ en:
   users_mailer:
     invitation:
       subject: Welcome to My Awesome Site
-    confirmation_reminder:
+    confirmation_reminder_23:
       subject: Sign up reminder
       body: "Dear %{client}, \n
 

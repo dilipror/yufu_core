@@ -34,7 +34,7 @@ class Translation
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
   scope :seo, -> {where key: /meta_/}
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
-  scope :notifications, -> {where( key: /^notification_mailer\./)}
+  scope :notifications, -> {where( key: /^notification_mailer\.|^payments_mailer\.|^devise\.confirmations_22\.|^devise\.reset_password_24\.|^users_mailer\./)}
 
   validates_presence_of :version
   before_save :scrub_value

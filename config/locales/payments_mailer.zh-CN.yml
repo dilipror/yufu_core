@@ -1,0 +1,25 @@
+zh-CN:
+  payments_mailer:
+    send_billing_info_1:
+      subject: 发票
+      body: "亲爱的 %{client}，\n
+
+             感谢您的订单！您已下单成功，您将在付款后的24小时内收到订单确认。附件发票请查收\n
+
+            查看订单状态或其他问题请点击：%{dashboard_link}\n
+
+            感谢您选择语富有限公司！\n
+
+            语富祝您生活愉快！"
+    remind_billing_info_2:
+      subject: 提醒付款
+      body: "亲爱的 %{client}，
+
+            您在语富预约的服务还未付款，请您在24小时内付款，否则系统将会自动取消订单。\n
+
+            附件的发票请注意查收。\n
+
+            查看订单详情或其他问题请点击：%{dashboard_link} \n
+
+
+            语富祝您生活愉快！"

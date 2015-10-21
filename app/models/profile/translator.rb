@@ -72,10 +72,10 @@ module Profile
                            observers: :user,
                            message: "profile_approved",
                            mailer: -> (translator, rr) do
-                             NotificationMailer.translator_approving translator
+                             NotificationMailer.translator_approving_15 translator
                            end,
                            sms: -> (translator, rr) do
-                             Yufu::SmsNotification.instance.translator_approving translator
+                             Yufu::SmsNotification.instance.translator_approving_15 translator
                            end
 
     state_machine initial: :new do

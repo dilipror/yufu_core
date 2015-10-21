@@ -51,6 +51,13 @@ module Order
     has_notification_about :processing, observers: :owner, message: 'notifications.processing_order'
     has_notification_about :closing, observers: :assignee, message: 'notifications.order_closed'
 
+    has_notification_about :cancel_not_paid_3,
+                           message: 'notifications.cancel_not_paid_3',
+                           observers: -> (order){ order.owner.user },
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancel_not_paid_3(user).deliver
+                           end
+
     # All user promoted order
     def agents
       link_agent = referral_link.try(:user)

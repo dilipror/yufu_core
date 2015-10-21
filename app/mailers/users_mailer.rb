@@ -26,7 +26,7 @@ class UsersMailer < ActionMailer::Base
     mail(to: invitation.email, subject: 'Welcome to My Awesome Site')
   end
 
-  def confirmation_reminder(user)
+  def confirmation_reminder_23(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: user.email,  confirm: (confirmation_url(user, confirmation_token: user.confirmation_token)))
   end
 end

@@ -1,0 +1,38 @@
+en:
+  payments_mailer:
+    send_billing_info_1:
+      subject: Invoice
+      body: "Dear %{client},\n
+           Thank you for your order!\n
+
+           Your order has been accepted. You will receive   an order confirmation within 24 hours of payment.\n
+
+           An invoice is attached to this email.\n
+
+           To see your order status or for any questions or concerns:\n
+
+            %{dashboard_link}\n
+
+           Thank you for choosing YUFU.NET!\n
+
+           Sincerely yours,\n
+
+           YUFU"
+    remind_billing_info_2:
+      subject: Reminder about the payment
+      body: "Dear %{client},\n
+
+             We kindly remind you, that your order for the Yufu.net service has not been paid yet. Please, make a payment within 24 hours. Otherwise your order will be automatically cancelled.\n
+
+             Please, find an invoice in the attachment of this email.\n
+
+             To see your order details or to ask a question, please follow the link below:\n
+
+             %{dashboard_link}\n
+
+             Thank you for choosing Yufu.net!\n
+
+             Sincerely Yours,\n
+
+             YUFU.NET community"
+

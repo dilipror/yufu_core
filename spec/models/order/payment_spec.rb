@@ -4,7 +4,7 @@ RSpec.describe Order::Payment, :type => :model do
 
   describe '#pay' do
     let(:payment) {Order::Payment.create sum: 300, invoice: invoice, order: order}
-    let(:invoice) {create :invoice}
+    let(:invoice) {create :invoice, subject: order}
     let(:order) {create :order_verbal}
 
     subject{payment.pay}

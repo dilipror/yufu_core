@@ -1,7 +1,33 @@
 class NotificationMailer < ActionMailer::Base
   include Yufu::I18nMailerScope
+  include MailerHelper
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
+
+
+  def cancel_not_paid_3(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, root: root_url, client: client(user))
+  end
+
+  def order_confirmation_7(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+  end
+
+  def order_completed_8(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+  end
+
+  def complete_interpreter_9(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+  end
+
+  def cancel_by_user_13(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+  end
+
+  def cancel_by_user_due_conf_delay_14(user)
+    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
+  end
 
   def new_order_for_translator_16(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
@@ -12,7 +38,7 @@ class NotificationMailer < ActionMailer::Base
                                       confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
   end
 
-  def translator_approving(user)
+  def translator_approving_15(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
                                       dashboard_link: dashboard_link)
   end
@@ -87,20 +113,8 @@ class NotificationMailer < ActionMailer::Base
 
   end
 
-  # 12 doc
-  def cancellation_by_yufu(user)
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
-  end
 
   private
-
-  def dashboard_link
-    dashboard_url
-  end
-
-  def client(user)
-    "#{user.first_name} #{user.last_name}"
-  end
 
   def order_details(order)
     "#{I18n.t('notifications.order_details.location')} - #{order.location.name}, #{I18n.t('notifications.order_details.language')} -  #{order.language.name}, #{I18n.t('notifications.order_details.greeted_at')} - #{order.meeting_in}, #{formatted_time order.greeted_at_hour, order.greeted_at_minute}"
