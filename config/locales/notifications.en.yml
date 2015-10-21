@@ -35,5 +35,7 @@ en:
     re_confirmed_client_6: "Interpreter for your offer has been changed"
     cancel_by_yufu: Your order has been cancelled by yufu
     check_dates_5: Please, check dates
+    cancel_delayed_order: Your order is cancelled
+    cancel_by_owner: Your order is cancelled
 
 

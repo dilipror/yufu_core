@@ -2,6 +2,17 @@ module Order
   class Verbal
     class RejectService < ::Order::RejectService
 
+      def reject_order(inner = :client)
+        super
+        if @order.rejected?
+          if paid_ago?(24.hours) && @order.assignee.nil?
+            @order.notify_about_cancel_by_owner_delayed_order
+          else
+            @order.notify_about_cancel_by_owner
+          end
+        end
+      end
+
       def calculate_sum(cancel_by)
         if cancel_by == :yufu
           return full_with_cover if @order.will_begin_less_than?(4.hours)

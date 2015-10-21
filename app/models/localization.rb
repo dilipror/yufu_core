@@ -18,10 +18,14 @@ class Localization
 
   scope :enabled, -> {where enable: true}
 
-  validates :name, presence: true, uniqueness: true, inclusion: AVAILABLE_NAMES
+  validates :name, presence: true, uniqueness: true, inclusion: AVAILABLE_NAMES, unless: -> {Rails.env.test?}
   validates :language, presence: true, uniqueness: true
 
   delegate :name, :is_for_profile, to: :language, prefix: true
+
+  after_create do
+    I18n.available_locales << self.name.to_sym
+  end
 
   def current?
     name == I18n.locale.to_s

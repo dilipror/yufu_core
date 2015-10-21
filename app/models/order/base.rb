@@ -7,7 +7,6 @@ module Order
     include OrderWorkflow
     include Priced
 
-    SCOPES = %w(open in_progress close paying correct control done all_orders rejected)
     PAY_WAYS = %w(card bank alipay credit_card local_balance)
     # [:bank, :alipay, :local_balance, :credit_card, :paypal]
 
@@ -38,13 +37,17 @@ module Order
     after_save :check_pay_way
     before_save :check_close
 
-    scope :writtens, -> {where _type: 'Order::Written'}
-    scope :verbals, -> {where _type: 'Order::Verbal'}
+    scope :writtens,      -> {where _type: 'Order::Written'}
+    scope :verbals,       -> {where _type: 'Order::Verbal'}
     scope :local_experts, -> {where _type: 'Order::LocalExpert'}
-    scope :for_everyone,-> { where is_private: false }
-    scope :private,     -> { where is_private: true }
-    scope :rejected,    -> { where state: 'rejected' }
+
+    scope :for_everyone, -> { where is_private: false }
+    scope :private,      -> { where is_private: true }
+
+    scope :rejected,    -> { where state: :rejected }
     scope :wait_offer,  -> { where state: :wait_offer }
+    scope :paid_orders, -> { where state: :in_progress}
+    scope :unpaid,      -> { where :state.in => [:new, :paying] }
 
     default_scope -> {desc :id}
 
@@ -56,6 +59,12 @@ module Order
                            observers: -> (order){ order.owner.user },
                            mailer: -> (user, order) do
                              NotificationMailer.cancel_not_paid_3(user).deliver
+                           end
+    has_notification_about :cancel_by_owner,
+                           message: 'notifications.cancel_by_owner',
+                           observers: :owner,
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancel_by_user_13(user).deliver
                            end
 
     # All user promoted order

@@ -39,6 +39,11 @@ class Translation
     regexp = /^notification_mailer\.|^payments_mailer\.|^devise\.mailer\.confirmations_22\.|^devise\.mailer\.confirmation_instructions\.|^devise\.mailer\.reset_password_24\.|^devise\.mailer\.reset_password_instructions\.|^users_mailer\./
     where( key: regexp)
   end
+  scope :var_free, -> {Translation.not :value => /\%\{.*\}/}
+  scope :tag_free, -> {Translation.not :value => /<|>/}
+  scope :array_free, -> {Translation.not :value => /\[|\]/}
+  scope :simple_texts, -> {Translation.not :value => /\[|\]|\%\{.*\}|<|>|\[|\]/}
+  scope :not_array_value, -> {where :value_is_array.ne => true}
 
   validates_presence_of :version
   before_save :scrub_value
@@ -55,11 +60,15 @@ class Translation
       field = hash[:field]
       id = hash[:id]
 
-      que = klass.find_by(id: id)
+      obj = klass.where(id: id).first
 
-      I18n.locale = target_locale
-      que.send "#{field}=", value
-      que.save
+      if obj.present?
+        I18n.locale = target_locale
+        obj.send "#{field}=", value
+        obj.save
+      else
+        self.destroy
+      end
     end
   end
 
