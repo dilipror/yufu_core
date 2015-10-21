@@ -4,7 +4,8 @@ RSpec.describe Order::Payment, :type => :model do
 
   describe '#pay' do
     let(:bank) {create :payment_bank}
-    let(:invoice) {create :invoice, state: 'paying', pay_way: bank, cost: 10}
+    let(:order) {create :order_verbal}
+    let(:invoice) {create :invoice, state: 'paying', pay_way: bank, cost: 10, subject: order}
     let(:payment) {invoice.payments.last}
 
     before(:each) do
