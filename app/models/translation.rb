@@ -34,7 +34,11 @@ class Translation
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
   scope :seo, -> {where key: /meta_/}
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
-  scope :notifications, -> {where( key: /^notification_mailer\./)}
+  scope :notifications, -> {where( key: /^notification_mailer\.|^payments_mailer\.|^devise\.confirmations_22\.|^devise\.reset_password_24\.|^users_mailer\./)}
+  scope :var_free, -> {Translation.not :value => /\%\{.*\}/}
+  scope :tag_free, -> {Translation.not :value => /<|>/}
+  scope :array_free, -> {Translation.not :value => /\[|\]/}
+  scope :simple_texts, -> {Translation.not :value => /\[|\]|\%\{.*\}|<|>|\[|\]/}
 
   validates_presence_of :version
   before_save :scrub_value
@@ -51,11 +55,15 @@ class Translation
       field = hash[:field]
       id = hash[:id]
 
-      que = klass.find_by(id: id)
+      obj = klass.where(id: id).first
 
-      I18n.locale = target_locale
-      que.send "#{field}=", value
-      que.save
+      if obj.present?
+        I18n.locale = target_locale
+        obj.send "#{field}=", value
+        obj.save
+      else
+        self.destroy
+      end
     end
   end
 

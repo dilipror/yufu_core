@@ -182,7 +182,7 @@ class Invoice
   end
 
   def send_to_mail
-    PaymentsMailer.send_billing_info(user, self).deliver
+    PaymentsMailer.send_billing_info_1(user, self).deliver
   end
 
   def pending_invoice

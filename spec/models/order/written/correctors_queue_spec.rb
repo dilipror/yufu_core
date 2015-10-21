@@ -43,7 +43,7 @@ RSpec.describe Order::Written::CorrectorsQueue, :type => :model do
 
       it_behaves_like 'queue builder'
 
-      it{expect(subject.lock_to).to be_same_second_as DateTime.now}
+      it{expect(subject.lock_to).to be_within(1.second).of DateTime.now}
       it{expect(subject.translators).to include user.profile_translator}
     end
   end
