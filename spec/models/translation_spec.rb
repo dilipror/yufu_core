@@ -23,6 +23,41 @@ RSpec.describe Translation, :type => :model do
     it{is_expected.not_to include translation_with_varabale}
   end
 
+  describe '.tag_free' do
+    let!(:translation_with_tag){create :translation, value: 'text <p>}'}
+    let!(:translation_without_tag){create :translation, value: 'text'}
+
+    subject{Translation.tag_free}
+
+    it{is_expected.to include translation_without_tag}
+    it{is_expected.not_to include translation_with_tag}
+  end
+
+  describe '.array_free' do
+    let!(:translation_with_array){create :translation, value: 'text [var]'}
+    let!(:translation_without_array){create :translation, value: 'text'}
+
+
+    subject{Translation.array_free}
+
+    it{is_expected.to include translation_without_array}
+    it{is_expected.not_to include translation_with_array}
+  end
+
+  describe '.simple_text' do
+    let!(:translation_with_simple_text){create :translation, value: 'text'}
+    let!(:translation_with_tag){create :translation, value: 'text <p>}'}
+    let!(:translation_with_array){create :translation, value: '["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]'}
+    let!(:translation_with_varabale){create :translation, value: 'text %{var}'}
+
+    subject{Translation.simple_texts}
+
+    it{is_expected.to include translation_with_simple_text}
+    it{is_expected.not_to include translation_with_varabale}
+    it{is_expected.not_to include translation_with_tag}
+    it{is_expected.not_to include translation_with_array}
+  end
+
 
   describe  '#localize_model' do
     let(:language){create :language}

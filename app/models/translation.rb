@@ -36,6 +36,9 @@ class Translation
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
   scope :notifications, -> {where( key: /^notification_mailer\.|^payments_mailer\.|^devise\.confirmations_22\.|^devise\.reset_password_24\.|^users_mailer\./)}
   scope :var_free, -> {Translation.not :value => /\%\{.*\}/}
+  scope :tag_free, -> {Translation.not :value => /<|>/}
+  scope :array_free, -> {Translation.not :value => /\[|\]/}
+  scope :simple_texts, -> {Translation.not :value => /\[|\]|\%\{.*\}|<|>|\[|\]/}
 
   validates_presence_of :version
   before_save :scrub_value
