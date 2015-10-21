@@ -35,6 +35,7 @@ class Translation
   scope :seo, -> {where key: /meta_/}
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
   scope :notifications, -> {where( key: /^notification_mailer\.|^payments_mailer\.|^devise\.confirmations_22\.|^devise\.reset_password_24\.|^users_mailer\./)}
+  scope :var_free, -> {Translation.not :value => /\%\{.*\}/}
 
   validates_presence_of :version
   before_save :scrub_value
@@ -51,7 +52,7 @@ class Translation
       field = hash[:field]
       id = hash[:id]
 
-      obj = klass.where(id: id).first 
+      obj = klass.where(id: id).first
 
       if obj.present?
         I18n.locale = target_locale
