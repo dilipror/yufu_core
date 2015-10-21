@@ -51,11 +51,15 @@ class Translation
       field = hash[:field]
       id = hash[:id]
 
-      que = klass.find_by(id: id)
+      obj = klass.where(id: id).first 
 
-      I18n.locale = target_locale
-      que.send "#{field}=", value
-      que.save
+      if obj.present?
+        I18n.locale = target_locale
+        obj.send "#{field}=", value
+        obj.save
+      else
+        self.destroy
+      end
     end
   end
 
