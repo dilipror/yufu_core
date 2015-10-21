@@ -1,10 +1,5 @@
 en:
   notification_mailer:
-    log_in: 'Log in as a registered user'
-    balance: My balance
-    new_order: Place new order
-    your_int: Your interpreter
-
     cancel_not_paid_3:
       subject: Order cancellation due to non payment
       body: "Dear %{client},\n
@@ -174,21 +169,6 @@ en:
             Language rich "
 
     #remove
-    cancellation_by_yufu:
-      subject: Order cancellation by YUFU.NET
-      body: "Dear %{client},\n
-
-             Unfortunately we have to inform you,\n
-
-             that your order  for the YUFU.NET service has been cancelled, due to insurmountable reasons.\n
-
-             Your payment will be refunded in full amount according to the Refund Policy of YUFU.NET.\n
-
-             We sincerely apologize for any inconvenience!\n
-
-             Sincerely Yours,\n
-
-             YUFU.NET community"
     re_confirmed_client_6:
       subject: "Interpreter`s changes"
       body: "Dear %{client},\n
@@ -404,27 +384,6 @@ Language rich "
 
                                                                                                                          We do it professionally!"
 
-    signup_reminder:
-      subject: Reminder about confirmation
-      body: "Dear %{client},\n
-
-            We kindly remind you that confirmation of your registration in Yufu.net system has not been completed.\n
-
-            In case you don’t confirm your registration within 48 hours, it will be automatically canceled.\n
-
-            Please follow the link below to confirm your registration:\n
-
-            %{confirmation_url}\n
-
-            Thank you for choosing Yufu.net!\n
-
-                                                                  We do our best to make you feel always satisfied with our service!\n
-
-                                                                     Translation & Interpretation services all over China\n
-
-                                                                    We do it professionally!\n
-
-                                                                    Sincerely Yours,YUFU.NET Team \n"
     translator_approving_15:
       subject: 通过认证
       body: "亲爱的 %{client}，\n
