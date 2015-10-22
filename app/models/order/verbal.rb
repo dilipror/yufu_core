@@ -95,6 +95,12 @@ module Order
                            mailer: -> (user, order) do
                              NotificationMailer.cancel_12(user).deliver
                            end
+    has_notification_about :cancel_by_owner_delayed_order,
+                           message: 'notifications.cancel_delayed_order',
+                           observers: :owner,
+                           mailer: -> (user, order) do
+                             NotificationMailer.cancel_by_user_due_conf_delay_14(user).deliver
+                           end
 
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?
     validates_presence_of :location, if: :persisted?

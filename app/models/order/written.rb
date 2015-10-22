@@ -21,6 +21,13 @@ module Order
     has_mongoid_attached_file :translation
     do_not_validate_attachment_file_type :translation
 
+
+    has_notification_about :processing,
+                           observers: :owner,
+                           message: 'notifications.processing_order',
+                           mailer: ->(user, order) do
+                             NotificationMailer.order_confirmation_7(user).deliver
+                           end
     has_notification_about :correct, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.correcting_order'
     has_notification_about :control, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.control_order'
     has_notification_about :finish,
