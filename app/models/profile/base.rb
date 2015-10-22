@@ -24,7 +24,7 @@ module Profile
     validates_presence_of :user
     validates_presence_of :wechat, if: -> {persisted? && user.present? && user.role == :translator}
     validates_format_of :additional_email, :with => /(\A[^-][\w+\-.]*)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,  if: -> {additional_email.present?}
-    validate :uniq_phone, if: -> {phone.present?}
+    #validate :uniq_phone, if: -> {phone.present?}
 
     def uniq_phone
       tmp = User.where phone: phone
