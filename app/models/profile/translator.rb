@@ -88,7 +88,7 @@ module Profile
       end
 
       event :approve do
-        transition [:new, :approving] => :approved
+        transition [:approving] => :approved
       end
 
       event :approving do
