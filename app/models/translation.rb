@@ -34,7 +34,11 @@ class Translation
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
   scope :seo, -> {where key: /meta_/}
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
-    scope :notifications, -> {where( key: /^notification_mailer\.|^payments_mailer\.|^devise\.confirmations_22\.|^devise\.reset_password_24\.|^users_mailer\./)}
+
+  scope :notifications, -> do
+    regexp = /^notification_mailer\.|^payments_mailer\.|^devise\.mailer\.confirmations_22\.|^devise\.mailer\.confirmation_instructions\.|^devise\.mailer\.reset_password_24\.|^devise\.mailer\.reset_password_instructions\.|^users_mailer\./
+    where( key: regexp)
+  end
   scope :var_free, -> {Translation.not :value => /\%\{.*\}/}
   scope :tag_free, -> {Translation.not :value => /<|>/}
   scope :array_free, -> {Translation.not :value => /\[|\]/}
