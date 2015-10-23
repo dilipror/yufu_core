@@ -2,12 +2,11 @@ module Faq
   class Question
     include Mongoid::Document
 
-    field :text
+    field :text, localize: true
 
-    has_one :answer, class_name: 'Faq::Answer'
+    has_one :answer, class_name: 'Faq::Answer', dependent: :destroy
 
     belongs_to :category, class_name: 'Faq::Category'
-    belongs_to :user
 
     validates_presence_of :text
 

@@ -2,7 +2,7 @@ module Faq
   class Answer
     include Mongoid::Document
 
-    field :text
+    field :text, localize: true
 
     belongs_to :question, class_name: 'Faq::Question'
 
