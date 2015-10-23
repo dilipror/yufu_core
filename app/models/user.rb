@@ -106,7 +106,6 @@ class User
   has_and_belongs_to_many :groups
 
   embeds_many :permissions
-  embeds_many :questions, class_name: 'Faq::Question'
   embeds_many :notifications
   accepts_nested_attributes_for :permissions, :notifications, :profile_translator, :profile_client
 
