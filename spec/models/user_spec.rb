@@ -203,4 +203,13 @@ RSpec.describe User, :type => :model do
       it{expect(user.overlord).to be_nil}
     end
   end
+
+  describe 'creation default invitation text' do
+    let(:user) {build :user}
+    subject{user.save}
+    it 'invitation texts should be created' do
+      subject
+      expect(user.invitation_texts.count).to eq 3
+    end
+  end
 end
