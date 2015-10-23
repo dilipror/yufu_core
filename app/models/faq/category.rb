@@ -1,6 +1,7 @@
 module Faq
   class Category
     include Mongoid::Document
+    include BlankLocalizedFields
 
     field :name, localize: true
 
