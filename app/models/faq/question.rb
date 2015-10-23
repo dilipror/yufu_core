@@ -1,6 +1,7 @@
 module Faq
   class Question
     include Mongoid::Document
+    include BlankLocalizedFields
 
     field :text, localize: true
 

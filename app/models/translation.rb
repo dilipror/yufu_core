@@ -11,7 +11,7 @@ class Translation
                     Order::ServicesPack.short_description Order::ServicesPack.long_description Major.name
                     Order::Written::WrittenSubtype.name Order::Written::WrittenSubtype.description
                     Order::Written::WrittenType.name Order::Written::WrittenType.description
-                    Gateway::PaymentGateway.title Gateway::PaymentGateway.description Gateway::PaymentGateway.tooltip
+                    Gateway::PaymentGateway.title Gateway::PaymentGateway.description Gateway::PaymentGateway.name Gateway::PaymentGateway.tooltip
                     Company.name Company.address
                     Company.registration_number Company.tooltip Company.bank_name Company.bank_account_number Company.bank_swift
                     Company.bank_address Company.email Order::ServicesPack.meta_title Order::ServicesPack.meta_description
