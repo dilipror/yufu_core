@@ -15,7 +15,7 @@ class Translation
                     Company.name Company.address
                     Company.registration_number Company.tooltip Company.bank_name Company.bank_account_number Company.bank_swift
                     Company.bank_address Company.email Order::ServicesPack.meta_title Order::ServicesPack.meta_description
-                    Order::ServicesPack.meta_keywords Order::Service.name)
+                    Order::ServicesPack.meta_keywords Order::Service.name Faq::Answer.text Faq::Question.text Faq::Category.name)
 
   field :key
   field :value
