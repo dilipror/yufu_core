@@ -16,7 +16,7 @@ module Profile
 
     validates_presence_of :grade, :university, :major, :country
 
-    enumerize :grade, in: ["Bachelor's degree", "Master's degree", "MBA", "PhD", "Other"]
+    enumerize :grade, in: ['bachelor', 'master', 'mba', 'phd', 'other']
 
     def name
       university

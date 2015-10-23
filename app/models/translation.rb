@@ -31,6 +31,7 @@ class Translation
   scope :not_model_localizers, ->{where is_model_localization: false }
   # DEPRECATED
   scope :actual, -> {where next_id: nil}
+
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
   scope :seo, -> {where key: /meta_/}
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
@@ -44,6 +45,7 @@ class Translation
   scope :array_free, -> {Translation.not :value => /\[|\]/}
   scope :simple_texts, -> {Translation.not :value => /\[|\]|\%\{.*\}|<|>|\[|\]/}
   scope :not_array_value, -> {where :value_is_array.ne => true}
+  scope :terms_and_agree, ->{where key: Translation.terms_and_agree_regexp}
 
   validates_presence_of :version
   before_save :scrub_value
@@ -92,6 +94,10 @@ class Translation
     {klass: tmp[0].gsub('_', '::').constantize, field: tmp[1].parameterize.underscore.to_sym, id: tmp[2]}
   rescue
     nil
+  end
+
+  def self.terms_and_agree_regexp
+    /(^frontend\.conditions)|(frontend\.cooperation_greement_text)/
   end
 
   def self.active
