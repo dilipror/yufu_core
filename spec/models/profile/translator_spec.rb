@@ -306,7 +306,7 @@ RSpec.describe Profile::Translator, :type => :model do
       subject{translator.approve}
 
       context 'when translator is new' do
-        let(:translator) {create :profile_translator}
+        let(:translator) {create :profile_translator, state: 'approving'}
         it{expect{subject}.to change{translator.state}}
       end
 
@@ -434,16 +434,16 @@ RSpec.describe Profile::Translator, :type => :model do
     let!(:not_approved_translator) {create :profile_translator,
                                           services: [build(:service, written_approves: true, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_order_lang) {create :profile_translator,
+    let!(:not_support_order_lang) {create :profile_translator, state: 'approving',
                                      services: [build(:service, written_approves: true, language: other_lang,
                                                       written_translate_type: 'From-To Chinese')]}
-    let!(:written_not_approved) {create :profile_translator,
+    let!(:written_not_approved) {create :profile_translator, state: 'approving',
                                           services: [build(:service, written_approves: false, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_coop) {create :profile_translator,
+    let!(:not_support_coop) {create :profile_translator, state: 'approving',
                                         services: [build(:service, written_approves: true, language: lang,
                                                          written_translate_type: 'From Chinese')]}
-    let!(:support_order) {create :profile_translator,
+    let!(:support_order) {create :profile_translator, state: 'approving',
                                     services: [build(:service, written_approves: true, language: lang,
                                                      written_translate_type: 'To Chinese')]}
     #

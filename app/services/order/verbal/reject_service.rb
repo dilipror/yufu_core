@@ -3,14 +3,14 @@ module Order
     class RejectService < ::Order::RejectService
 
       def reject_order(inner = :client)
-        super
-        if @order.rejected?
-          if paid_ago?(24.hours) && @order.assignee.nil?
+        if @order.can_reject?
+          if @order.paid_ago?(24.hours) && @order.assignee.nil?
             @order.notify_about_cancel_by_owner_delayed_order
           else
             @order.notify_about_cancel_by_owner
           end
         end
+        super
       end
 
       def calculate_sum(cancel_by)

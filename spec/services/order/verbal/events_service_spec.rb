@@ -174,7 +174,7 @@ RSpec.describe Order::Verbal::EventsService do
     context 'no translator re-confirmed' do
       let(:order){create :order_verbal, state: 'wait_offer', invoices: [invoice]}
 
-      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(2)}
       it{expect{subject}.to change{order.state}.to('rejected')}
       it{expect{subject}.to change{order.owner.user.balance}}
     end
