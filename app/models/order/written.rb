@@ -61,8 +61,6 @@ module Order
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
     validate :attachments_count, if: ->{step > 1}
 
-    after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
-
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end

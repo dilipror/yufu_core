@@ -9,5 +9,7 @@ module Faq
 
     validates_presence_of :text, :question
 
+    clear_localized :text
+
   end
 end

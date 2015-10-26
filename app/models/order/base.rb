@@ -36,6 +36,7 @@ module Order
 
     after_save :check_pay_way
     before_save :check_close
+    after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
 
     scope :writtens,      -> {where _type: 'Order::Written'}
     scope :verbals,       -> {where _type: 'Order::Verbal'}
@@ -65,6 +66,13 @@ module Order
                            observers: :owner,
                            mailer: -> (user, order) do
                              NotificationMailer.cancel_by_user_13(user).deliver
+                           end
+
+    has_notification_about :remind_billing_info_2,
+                           message: 'notifications.remind_billing_info_2',
+                           observers: :owner,
+                           mailer: -> (user, order) do
+                             PaymentsMailer.remind_billing_info_2(user, order.invoices.first)
                            end
 
     # All user promoted order
