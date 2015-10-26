@@ -39,7 +39,7 @@ module I18n
             end
           end
           begin
-            key = k.gsub "#{locale}.", ''
+            key = k.sub "#{locale}.", ''
             trans_pointer[last_key.to_sym] = I18n.t key, locale: locale
           rescue => e
             puts 'Fail of get all translations'
