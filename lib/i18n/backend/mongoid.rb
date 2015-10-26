@@ -17,7 +17,7 @@ module I18n
         if version.nil?
           query = Translation.active
         else
-          query = Translation.all_translation_by_version(version)
+          query = Translation.not_model_localizers.all_translation_by_version(version)
           preset_locale = version.localization.name
         end
 
@@ -40,7 +40,7 @@ module I18n
           end
           begin
             key = k.sub "#{locale}.", ''
-            trans_pointer[last_key.to_sym] = I18n.t key, locale: locale
+            trans_pointer[last_key.to_sym] = t.value
           rescue => e
             puts 'Fail of get all translations'
             puts e.message
