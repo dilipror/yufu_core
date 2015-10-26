@@ -3,6 +3,7 @@ module Faq
     include Mongoid::Document
     include BlankLocalizedFields
 
+    field :position, type: Integer
     field :text, localize: true
 
     has_one :answer, class_name: 'Faq::Answer', dependent: :destroy
@@ -10,6 +11,8 @@ module Faq
     belongs_to :category, class_name: 'Faq::Category'
 
     validates_presence_of :text
+
+    default_scope -> {asc :position}
 
   end
 end
