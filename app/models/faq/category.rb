@@ -12,5 +12,7 @@ module Faq
 
     default_scope -> {asc :position}
 
+    clear_localized :name
+
   end
 end
