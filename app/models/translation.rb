@@ -34,6 +34,7 @@ class Translation
 
   scope :approved, -> {where :version_id.in => Localization::Version.approved.distinct(:id)}
   scope :seo, -> {where key: /meta_/}
+  scope :faq, -> {where key: /Faq_/}
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
 
   scope :notifications, -> do
