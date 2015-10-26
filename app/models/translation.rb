@@ -12,7 +12,7 @@ class Translation
                     Order::Written::WrittenSubtype.name Order::Written::WrittenSubtype.description
                     Order::Written::WrittenType.name Order::Written::WrittenType.description
                     Gateway::PaymentGateway.title Gateway::PaymentGateway.description Gateway::PaymentGateway.name Gateway::PaymentGateway.tooltip
-                    Company.name Company.address Support::Theme.name Tax.name
+                    Company.name Company.address Support::Theme.name Tax.name Country.name
                     Company.registration_number Company.tooltip Company.bank_name Company.bank_account_number Company.bank_swift
                     Company.bank_address Company.email Order::ServicesPack.meta_title Order::ServicesPack.meta_description
                     Order::ServicesPack.meta_keywords Order::Service.name Faq::Answer.text Faq::Question.text Faq::Category.name)
