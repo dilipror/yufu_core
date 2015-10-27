@@ -38,4 +38,5 @@ en:
     cancel_delayed_order: Your order is cancelled
     cancel_by_owner: Your order is cancelled
     remind_billing_info_2: You still have not paid order
+    cancel_not_paid_3: Your order was canceled after 7 days, have not been paid
 
