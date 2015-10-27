@@ -15,6 +15,17 @@ module Order
 
     delegate :name, to: :services_pack, prefix: true
 
+    state_machine initial: :new do
+
+      state :in_progress
+      state :close
+
+      event :paid do
+        transition [:new] => :in_progress
+      end
+    end
+
+
     def original_price
       BigDecimal.new (service_orders.inject(0) {|sum, service_order| service_order.cost + sum }*100).round(2) / 100, 2
     end
