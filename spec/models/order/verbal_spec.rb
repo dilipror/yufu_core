@@ -242,7 +242,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:order) {create :order_verbal, step: 2}
     let(:bank) {create :payment_bank}
 
-    before(:each) {order.invoices.create cost: 100.0}
+    before(:each) {order.invoices.create cost: 100.0, pay_way: (create :payment_bank)}
     # before(:each) {order.invoices.last.update_attributes wechat: 's', phone: '23'}
 
     subject{order.update! step: 3, pay_way: bank}
@@ -315,7 +315,7 @@ RSpec.describe Order::Verbal, :type => :model do
     let(:order) {create :order_verbal, state: 'wait_offer'}
     let(:offer) {create :order_offer, order: order, translator: translator}
 
-    before(:each) {order.invoices.create cost: 100.0}
+    before(:each) {order.invoices.create cost: 100.0, pay_way: (create :payment_bank)}
     # before(:each) {order.invoices.last.update_attributes wechat: 's', phone: '211'}
 
 

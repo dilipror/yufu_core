@@ -95,7 +95,7 @@ RSpec.describe Order::Base, :type => :model do
     let(:time){ Time.now}
 
     before(:each) do
-      order.invoices.create! cost: 100.0
+      order.invoices.create! cost: 100.0, pay_way: (create :payment_bank)
       time
       Time.stub(:now).and_return(time)
     end
