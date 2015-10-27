@@ -31,6 +31,37 @@ class Localization
     name == I18n.locale.to_s
   end
 
+  def get_translations_hash
+    trans = {}
+    Translation.active_in(self).not_model_localizers.each do |t|
+      trans_pointer = trans
+      key_array = t.key.to_s.split(".")
+      last_key = key_array.delete_at(key_array.length - 1)
+      key_array.each do |current|
+        begin
+          unless trans_pointer.has_key?(current.to_sym)
+            trans_pointer[current.to_sym] = {}
+          end
+          trans_pointer = trans_pointer[current.to_sym]
+        rescue => e
+          puts "Key: #{t.key} is deprecated. Remove it"
+          t.destroy
+        end
+      end
+      begin
+        trans_pointer[last_key.to_sym] = t.value
+      rescue => e
+        puts 'Fail of get all translations'
+        puts e.message
+        puts e.backtrace.join("\n")
+        puts "last key is #{last_key}"
+        puts "key is #{t.key}"
+        puts "End fail"
+      end
+    end
+    trans
+  end
+
   def self.get_current
     find_by name: I18n.locale.to_s
   end
