@@ -15,13 +15,29 @@ module Order
 
     delegate :name, to: :services_pack, prefix: true
 
+    has_notification_about :finish,
+                           observers: :owner,
+                           message: 'notifications.done_order',
+                           mailer: ->(user, order) do
+                             NotificationMailer.order_completed_8(user).deliver
+                           end
+
     state_machine initial: :new do
 
       state :in_progress
       state :close
+      state :reject
 
-      event :paid do
+      event :paid_expert do
         transition [:new] => :in_progress
+      end
+
+      before_transition on: :reject do |order|
+        order.notify_about_cancel_by_owner
+      end
+
+      before_transition on: :close do |order|
+        order.notify_about_finish
       end
     end
 

@@ -86,7 +86,11 @@ class Invoice
         can_execute = invoice.user.balance.to_f >= invoice.cost.to_f
         if can_execute
           Transaction.create(sum: invoice.cost, debit: invoice.user, credit: Office.head, invoice: invoice).execute
-          invoice.subject.try(:paid)
+          if invoice.subject.is_a? Order::LocalExpert
+            invoice.subject.try(:paid_expert)
+          else
+            invoice.subject.try(:paid)
+          end
         end
         can_execute
       end

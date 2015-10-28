@@ -2,6 +2,32 @@ require 'rails_helper'
 
 RSpec.describe Order::LocalExpert, :type => :model do
 
+  describe '#paid' do
+    let(:order) {create :order_local_expert, state: 'new'}
+    subject{order.paid_expert}
+
+    it{expect{subject}.to change{order.state}.to 'in_progress'}
+
+  end
+
+  describe '#reject' do
+    let(:order) {create :order_local_expert, state: 'in_progress'}
+    subject{order.reject}
+
+    it{expect{subject}.to change{order.state}.to 'rejected'}
+    it{expect{subject}.to change{order.owner.user.notifications.count}.by 1}
+
+  end
+
+  describe '#close' do
+    let!(:invoice) {create :invoice, subject: order}
+    let(:order) {create :order_local_expert, state: 'in_progress'}
+    subject{order.close}
+
+    it{expect{subject}.to change{order.state}.to 'close'}
+    it{expect{subject}.to change{order.owner.user.notifications.count}.by 1}
+  end
+
   describe '#original_price' do
     let(:srv_ord1) {build :local_expert_service_order}
     let(:srv_ord2) {build :local_expert_service_order}
