@@ -16,7 +16,7 @@ module Order
     # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
     # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
     validate :only_one_new_offer, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
-    validate :translator_is_not_banned, unless: :persisted?
+    # validate :translator_is_not_banned, unless: :persisted?
     # validates_uniqueness_of :translator, scope: :order_id, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
     after_create :notify_about_become_main_int_17, if: :primary?
