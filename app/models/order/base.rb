@@ -47,9 +47,9 @@ module Order
 
     scope :rejected,    -> { where state: :rejected }
     scope :closed,      -> { where state: :close }
-    scope :in_progress, -> { where state: :close }
+    scope :in_progress, -> { where state: :in_progress }
     scope :wait_offer,  -> { where state: :wait_offer }
-    scope :paid_orders, -> { where state: :in_progress}
+    # scope :paid_orders, -> { where state: :in_progress}
     scope :unpaid,      -> { where :state.in => [:new, :paying] }
 
     default_scope -> {desc :id}
