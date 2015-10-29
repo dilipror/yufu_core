@@ -39,7 +39,13 @@ class Ability
       end
 
       can :delete, Translation if user.can_approve_localization?
+
+      if user.role.translator?
+        can :create, Order::Offer unless user.profile_translator.is_banned
+      end
     end
+
+
 
     if user.is_a? Admin
       can :access, :rails_admin       # only allow admin users to access Rails Admin
