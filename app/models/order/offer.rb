@@ -12,12 +12,7 @@ module Order
     belongs_to :order,      class_name: 'Order::Verbal'
 
     validates_presence_of :order
-    # validates_inclusion_of :status, in: STATUSES
-    # validates_inclusion_of :status, in: %w(secondary), on: :create, unless: :can_be_primary?
-    # validates_inclusion_of :status, in: %w(primary), on: :create, unless: :can_be_secondary?
     validate :only_one_new_offer, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
-    # validate :translator_is_not_banned, unless: :persisted?
-    # validates_uniqueness_of :translator, scope: :order_id, unless: ->(offer) {offer.order.will_begin_less_than?(36.hours)}
 
     after_create :notify_about_become_main_int_17, if: :primary?
     after_create :notify_about_become_back_up_int_18, if: :back_up?
@@ -160,12 +155,6 @@ module Order
     end
 
     private
-
-    def translator_is_not_banned
-      if translator.is_banned
-        errors.add :translator_id, 'is_banned'
-      end
-    end
 
     def only_one_new_offer
       if order.offers.where(translator: translator, state: 'new').count > 1
