@@ -15,6 +15,7 @@ class Localization::Version
   scope :dependent, -> {ne parent_version_id: nil}
   scope :english, -> {where localization_id: Localization.default.id}
 
+  default_scope -> {desc :id}
 
   validates_presence_of :name, :localization
 
