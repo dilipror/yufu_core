@@ -142,7 +142,7 @@ class Invoice
   end
 
   def encrypt_for_paypal(values)
-    paypal_cert_rem = File.read("#{Rails.root}/certs/paypal_cert_sandbox.pem")
+    paypal_cert_rem = File.read("#{Rails.root}/certs/#{Rails.application.secrets.paypal_open_key}")
     app_cert_pem = File.read("#{Rails.root}/certs/app_cert.pem")
     app_key_pem = File.read("#{Rails.root}/certs/app_key.pem")
     signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(app_cert_pem), OpenSSL::PKey::RSA.new(app_key_pem, ''),
@@ -156,16 +156,16 @@ class Invoice
     values = {
         cmd: '_xclick',
         charset: 'utf-8',
-        business: Rails.application.config.merchant_email,
-        return: "#{Rails.application.config.success_root_url}/#{I18n.locale.to_s}/payment-gateway/#{paypal_gw_id}/success",
+        business: Rails.application.secrets.merchant_email,
+        return: "#{Rails.application.secrets.success_root_url}/payment-gateway/#{paypal_gw_id}/success",
         cancel_return: '/',
         item_number: id,
         item_name: I18n.t('mongoid.paypal.interpretation_service'),
         currency_code: 'GBP',
-        cert_id: Rails.application.config.cert_id,
-        custom: Rails.application.config.custom,
+        cert_id: Rails.application.secrets.cert_id,
+        custom: Rails.application.secrets.ipn_return_secret,
         amount: exchanged_cost('GBP').round(2),
-        notify_url: Rails.application.config.notify_url}
+        notify_url: Rails.application.secrets.notify_url}
     encrypt_for_paypal(values)
   end
 
