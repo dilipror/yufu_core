@@ -7,6 +7,6 @@ FactoryGirl.define do
     association :user
     association :pay_company, factory: :gbp_company
     association :country
-    association :pay_way, factory: :payment_bank
+    # association :pay_way, factory: :payment_bank
   end
 end
