@@ -4,6 +4,7 @@ module Gateway
     include Mongoid::Paperclip
     extend Enumerize
 
+    field :position, type: Integer
     field :name,    localize: true
     field :tooltip, localize: true
     field :gateway_type
@@ -16,6 +17,8 @@ module Gateway
 
     has_mongoid_attached_file :image, default_url: "/no-avatar.png", style: {normal: '120x120'}
     validates_attachment_content_type :image, content_type: %w(image/jpg image/jpeg image/png)
+
+    default_scope -> {asc :position}
 
     def afterCreatePayment
 
