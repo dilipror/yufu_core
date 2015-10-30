@@ -8,11 +8,13 @@ class Localization
                      'zh-CN', 'zh-HK', 'zh-TW', 'zh-YUE', 'cn-pseudo']
 
   AVAILABLE_NAMES = Localization::AVAILABLE_NAMES_SYM.map &:to_s
+  DEFAULT_CURRENCY = 'GBP'
 
   field :name
   field :enable, type: Mongoid::Boolean, default: false
 
   belongs_to :language
+  belongs_to :currency
   has_many :localization_versions, class_name: 'Localization::Version'
   has_and_belongs_to_many :users
 

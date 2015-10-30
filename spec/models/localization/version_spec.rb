@@ -52,4 +52,37 @@ RSpec.describe Localization::Version, type: :model do
     end
 
   end
+
+  describe '#removed_version' do
+    let(:version){create :localization_version, localization: localization, state: 'new',
+                         translations: [translation]}
+    let(:localization){Localization.default}
+    let(:translation){create :translation}
+
+    subject{version.remove_version}
+
+    it 'version should be deleted' do
+      subject
+      expect(version.deleted?).to eq true
+      expect(version.translations.first.deleted?).to eq true
+      expect(version.state_before_remove).to eq 'new'
+    end
+  end
+
+  describe '#restore_version' do
+    let(:version){create :localization_version, localization: localization, state: 'removed',
+                         translations: [translation], deleted_at: Time.now, state_before_remove: 'commited'}
+    let(:localization){Localization.default}
+    let(:translation){create :translation, deleted_at: Time.now}
+
+    subject{version.restore_version}
+
+    it 'version should be restored' do
+      subject
+      expect(version.deleted?).to eq false
+      expect(version.translations.first.deleted?).to eq false
+      expect(version.state).to eq 'commited'
+      expect(version.state_before_remove).to eq nil
+    end
+  end
 end
