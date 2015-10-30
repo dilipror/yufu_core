@@ -202,11 +202,11 @@ module Order
     end
 
     def can_send_primary_offer?
-      can_confirm? && primary_offer.empty?
+      can_confirm? && primary_offer.nil?
     end
 
     def can_send_secondary_offer?
-      can_confirm? && secondary_offer.empty?
+      can_confirm? && secondary_offer.nil?
     end
 
     def original_price
