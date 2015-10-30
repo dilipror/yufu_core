@@ -18,7 +18,9 @@ class PaymentsMailer < ActionMailer::Base
     mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
   end
 
-  def send_billing_info_1(user, invoice)
+  def send_billing_info_1(user_id, invoice_id)
+    user = User.find user_id
+    invoice = Invoice.find invoice_id
     BigDecimal.class_eval do
       include Humanize
     end
