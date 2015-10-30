@@ -309,25 +309,25 @@ RSpec.describe Order::Verbal, :type => :model do
   end
 
 
-  describe '#notify about updated' do
-
-    let(:translator){create :profile_translator}
-    let(:order) {create :order_verbal, state: 'wait_offer'}
-    let(:offer) {create :order_offer, order: order, translator: translator}
-
-    before(:each) {order.invoices.create cost: 100.0, pay_way: (create :payment_bank)}
-    # before(:each) {order.invoices.last.update_attributes wechat: 's', phone: '211'}
-
-
-    subject{order.update airport_pick_up: {departure_city: 'Dushanbe'}}
-
-    before(:each){offer}
-
-    it 'expect notificaions' do
-      expect{subject}.to change{translator.user.reload.notifications.count}.by 1
-    end
-
-  end
+  # describe '#notify about updated' do
+  #
+  #   let(:translator){create :profile_translator}
+  #   let(:order) {create :order_verbal, state: 'wait_offer'}
+  #   let(:offer) {create :order_offer, order: order, translator: translator}
+  #
+  #   before(:each) {order.invoices.create cost: 100.0, pay_way: (create :payment_bank)}
+  #   # before(:each) {order.invoices.last.update_attributes wechat: 's', phone: '211'}
+  #
+  #
+  #   subject{order.update airport_pick_up: {departure_city: 'Dushanbe'}}
+  #
+  #   before(:each){offer}
+  #
+  #   it 'expect notificaions' do
+  #     expect{subject}.to change{translator.user.reload.notifications.count}.by 1
+  #   end
+  #
+  # end
 
   describe '#set_langvel' do
 

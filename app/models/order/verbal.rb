@@ -110,9 +110,70 @@ module Order
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
     before_create :set_main_language_criterion, :build_events_manager
     after_save :create_additional_services
-    after_save :notify_about_updated, if: :persisted?
+    # after_save :notify_about_updated, if: :persisted?
 
     state_machine initial: :new do
+
+      state :confirmed
+      state :confirmation_delay
+      state :translator_not_found
+      state :need_reconfirm
+      state :main_reconfirm_delay
+      state :reconfirm_delay
+      state :in_progress
+      state :done
+      state :canceled_not_paid
+      state :canceled_by_client
+      state :canceled_by_yufu
+
+      event :confirm do
+        transition [:wait_offer, :confirmation_delay, :translator_not_found] => :confirmed
+      end
+
+      event :confirmation_delay do
+        transition paid: :confirmation_delay
+      end
+
+      event :translator_not_found do
+        transition confirmation_delay: :translator_not_found
+      end
+
+      event :to_reconfirm do
+        transition confirmed: :need_reconfirm
+      end
+
+      event :reject_confirm_before_12 do
+        transition confirmed: :wait_offer
+      end
+
+      event :reject_confirm_after_12 do
+        transition confirmed: :confirmation_delay
+      end
+
+      event :process do
+        transition [:need_reconfirmed, :main_reconfirm_delay, :reconfirm_delay] => :in_progress
+      end
+
+      event :main_reconfirm_delay do
+        transition need_reconfirm: :main_reconfirm_delay
+      end
+
+      event :reconfirm_delay do
+        transition main_reconfirm_delay: :reconfirm_delay
+      end
+
+      event :cancel_by_yufu do
+        transition [:reconfirm_delay, :confirmation_delay, :paying, :new] => :canceled_by_yufu
+      end
+
+      event :cancel_by_client do
+        transition all - [:done, :canceled_by_yufu, :canceled_not_paid, :canceled_by_client] => :cancel_by_client
+      end
+
+      event :cancel_not_paid do
+        transition [:new, :paying] => :canceled_not_paid
+      end
+
 
       before_transition on: :process do |order|
         order.update assignee: order.try(:primary_offer).try(:translator)
@@ -141,11 +202,11 @@ module Order
     end
 
     def can_send_primary_offer?
-      #offers.primary.empty?
+      can_confirm? && primary_offer.empty?
     end
 
     def can_send_secondary_offer?
-      #offers.secondary.empty?
+      can_confirm? && secondary_offer.empty?
     end
 
     def original_price

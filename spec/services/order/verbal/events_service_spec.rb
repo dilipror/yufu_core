@@ -14,14 +14,19 @@ RSpec.describe Order::Verbal::EventsService do
 
     subject{Order::Verbal::EventsService.new(order).after_12}
 
-    let(:order){create :order_verbal, offers: []}
+    let(:order){create :order_verbal, state: state}
 
-    context 'no offers' do
+    context 'state paid' do
+
+      let(:state){'paid'}
 
       it{expect{subject}.to change{Support::Ticket.count}.by(1)}
+      it{expect{subject}.to change{order.state}.to 'confirmation_delay'}
     end
 
-    context 'has offer' do
+    context 'state confirmed' do
+
+      let(:state){'confirmed'}
 
       before(:each) do
         order.offers.create! translator: translator_1
@@ -29,41 +34,51 @@ RSpec.describe Order::Verbal::EventsService do
       end
 
       it{expect{subject}.not_to change{Support::Ticket.count}}
+      it{expect{subject}.not_to change{order.state}}
 
     end
   end
 
   describe '#after_24' do
 
+    let(:order){create :order_verbal, offers: [], state: state}
+
     let(:translator){create :profile_translator}
 
     subject{Order::Verbal::EventsService.new(order).after_24}
 
-    context 'no offer' do
-      let(:order){create :order_verbal, offers: []}
+    context 'state confirmation_daley' do
+
+      let(:state){'confirmation_delay'}
 
       it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.state}.to 'translator_not_found'}
 
     end
 
-    context 'offers exist' do
-      let(:order){create :order_verbal, offers: []}
+    context 'state confirmed' do
+
+      let(:state){'confirmed'}
 
       before(:each){order.offers.create translator: translator }
 
       it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+      it{expect{subject}.not_to change{order.state}}
     end
   end
+
   describe 'before_60' do
 
-    context 'has main_offer' do
+    let(:translator_1){create :profile_translator}
+    let(:translator_2){create :profile_translator}
 
-      let(:translator_1){create :profile_translator}
-      let(:translator_2){create :profile_translator}
+    subject{Order::Verbal::EventsService.new(order).before_60}
 
-      subject{Order::Verbal::EventsService.new(order).before_60}
+    let!(:order){create :order_verbal, offers: [], state: state}
 
-      let(:order){create :order_verbal, offers: []}
+    context 'state confirmed' do
+
+      let(:state){'confirmed'}
 
       before(:each) do
         order.offers.create! translator: translator_1
@@ -73,46 +88,55 @@ RSpec.describe Order::Verbal::EventsService do
       it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
       it{expect{subject}.to change{translator_1.user.reload.notifications.count}.by(1)}
       it{expect{subject}.not_to change{translator_2.user.notifications.count}}
+      it{expect{subject}.to change{order.state}.to 'need_reconfirm'}
+
 
     end
 
-    context 'no main_offer' do
-
-      let(:translator_1){create :profile_translator}
-      let(:translator_2){create :profile_translator}
-
-      subject{Order::Verbal::EventsService.new(order).before_60}
-
-      let(:order){create :order_verbal, offers: []}
+    context 'state translator not found' do
+      let(:state){'translator_not_found'}
 
 
-      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
-      it{expect{subject}.not_to change{translator_1.user.reload.notifications.count}}
-      it{expect{subject}.not_to change{translator_2.user.notifications.count}}
-
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+      it{expect{subject}.not_to change{order.state}}
     end
-
-
 
   end
 
   describe 'before_48' do
 
-    let(:translator_1){create :profile_translator}
-    let(:translator_2){create :profile_translator}
+    let(:order){create :order_verbal, offers: [], state: state}
 
-    subject{Order::Verbal::EventsService.new(order).before_48}
+    context 'state need_reconfirm' do
 
-    let(:order){create :order_verbal, offers: []}
+      let(:state){'need_reconfirm'}
 
-    before(:each) do
-      order.offers.create! translator: translator_1
-      order.offers.create! translator: translator_2
+      let(:translator_1){create :profile_translator}
+      let(:translator_2){create :profile_translator}
+
+      subject{Order::Verbal::EventsService.new(order).before_48}
+
+
+      before(:each) do
+        order.offers.create! translator: translator_1
+        order.offers.create! translator: translator_2
+      end
+
+      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_1.user.notifications.count}}
+      it{expect{subject}.to change{translator_2.user.reload.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.state}.to 'main_reconfirm_delay'}
     end
 
-    it{expect{subject}.not_to change{order.owner.user.notifications.count}}
-    it{expect{subject}.not_to change{translator_1.user.notifications.count}}
-    it{expect{subject}.to change{translator_2.user.reload.notifications.count}.by(1)}
+    context 'state in_progress' do
+
+      let(:state){'in_progress'}
+
+      subject{Order::Verbal::EventsService.new(order).before_48}
+
+      it{expect{subject}.not_to change{order.state}}
+
+    end
 
   end
 
@@ -122,15 +146,19 @@ RSpec.describe Order::Verbal::EventsService do
 
     subject{Order::Verbal::EventsService.new(order).before_36}
 
+    let(:order){create :order_verbal, state: state}
+
     context 'translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'in_progress'}
+
+      let(:state){'in_progress'}
 
       it{expect{subject}.not_to change{Support::Ticket.count}}
     end
 
     context 'no translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'wait_offer'}
+      let(:state){'main_reconfirm_delay'}
       it{expect{subject}.to change{Support::Ticket.count}.by(1)}
+      it{expect{subject}.to change{order.state}.to 'reconfirm_delay'}
     end
   end
 
@@ -138,15 +166,16 @@ RSpec.describe Order::Verbal::EventsService do
 
     subject{Order::Verbal::EventsService.new(order).before_24}
 
+    let(:order){create :order_verbal, state: state}
 
     context 'translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'in_progress'}
+      let(:state){'in_progress'}
 
       it{expect{subject}.not_to change{order.owner.user.notifications.count}}
     end
 
     context 'no translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'wait_offer'}
+      let(:state){'reconfirm_delay'}
 
       it{expect{subject}.to change{order.owner.user.reload.notifications.count}.by(1)}
     end
@@ -156,27 +185,28 @@ RSpec.describe Order::Verbal::EventsService do
 
     subject{Order::Verbal::EventsService.new(order).before_4}
 
-    let(:invoice){create :invoice}
-    before(:each) do
-      # invoice.client_info.stub(:invoice).and_return(invoice)
-      allow(order).to receive(:will_begin_less_than?).with(4.hours).and_return true
-      allow(order).to receive(:will_begin_less_than?).with(36.hours).and_return true
-      order.invoices.first.transactions.create sum: 100, state: 'executed', debit: order.owner.user, credit: Office.head
+    let(:order){create :order_verbal, state: state}
+
+    context 'state reconfirmed_delay' do
+
+      let(:state){'reconfirm_delay'}
+
+      it{expect{subject}.to change{order.state}.to 'canceled_by_yufu'}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
     end
 
-    context 'translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'in_progress', invoices: [invoice]}
+    context 'state confirmation_delay' do
+      let(:state){'confirmation_delay'}
 
+      it{expect{subject}.to change{order.state}.to 'canceled_by_yufu'}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+    end
+
+    context 'state in_progress' do
+      let(:state){'in_progress'}
+
+      it{expect{subject}.not_to change{order.state}}
       it{expect{subject}.not_to change{order.owner.user.notifications.count}}
-      it{expect{subject}.not_to change{order.owner.user.balance}}
-    end
-
-    context 'no translator re-confirmed' do
-      let(:order){create :order_verbal, state: 'wait_offer', invoices: [invoice]}
-
-      it{expect{subject}.to change{order.owner.user.notifications.count}.by(2)}
-      it{expect{subject}.to change{order.state}.to('rejected')}
-      it{expect{subject}.to change{order.owner.user.balance}}
     end
 
   end

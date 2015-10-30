@@ -19,7 +19,7 @@ RSpec.describe CloseUnpaidJob, :type => :worker do
         let(:translator){create :profile_translator}
         let(:order){create :order_verbal, invoices: [(create :invoice)], assignee: translator, state: 'paying'}
 
-        it{expect{subject}.to change{order.reload.state}.to 'rejected'}
+        it{expect{subject}.to change{order.reload.state}.to 'canceled_by_yufu'}
       end
 
     end
