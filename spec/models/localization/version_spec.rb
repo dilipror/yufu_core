@@ -53,19 +53,19 @@ RSpec.describe Localization::Version, type: :model do
 
   end
 
-  describe '#removed_version' do
-    let(:version){create :localization_version, localization: localization, state: 'new',
+  describe '#delete_version' do
+    let(:version){create :localization_version, localization: localization, state: 'approved',
                          translations: [translation]}
     let(:localization){Localization.default}
     let(:translation){create :translation}
 
-    subject{version.remove_version}
+    subject{version.delete_version}
 
     it 'version should be deleted' do
       subject
       expect(version.deleted?).to eq true
       expect(version.translations.first.deleted?).to eq true
-      expect(version.state_before_remove).to eq 'new'
+      expect(version.state_before_delete).to eq 'approved'
     end
   end
 

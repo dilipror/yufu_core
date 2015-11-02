@@ -4,7 +4,7 @@ class Localization::Version
   include Mongoid::Timestamps
 
   field :name
-  field :state_before_remove
+  field :state_before_delete
 
   belongs_to :parent_version, class_name: 'Localization::Version'
   belongs_to :localization
@@ -25,14 +25,14 @@ class Localization::Version
     state :approved
     state :commited
     state :rejected
-    state :removed
+    state :deleted
 
-    event :remove_version do
-      transition any - [:approved, :commited, :rejected] => :removed
+    event :delete_version do
+      transition any => :deleted
     end
 
     event :restore_version do
-      transition :removed => any
+      transition :deleted => any
     end
 
     event :commit do
@@ -51,8 +51,8 @@ class Localization::Version
       transition :commited => :approved
     end
 
-    before_transition on: :remove_version do |version|
-      version.state_before_remove = version.state
+    before_transition on: :delete_version do |version|
+      version.state_before_delete = version.state
       version.destroy
     end
 
@@ -61,8 +61,8 @@ class Localization::Version
     end
 
     after_transition on: :restore_version do |version|
-      version.update_attribute :state, version.state_before_remove
-      version.update_attribute :state_before_remove, nil
+      version.update_attribute :state, version.state_before_delete || :new
+      version.update_attribute :state_before_delete, nil
     end
 
     before_transition on: :approve do |version|
@@ -95,7 +95,7 @@ class Localization::Version
   end
 
   def editable?
-    !(%w(commited approved removed).include? state)
+    !(%w(commited approved deleted).include? state)
   end
 
   def self.current(localization)
