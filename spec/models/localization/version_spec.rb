@@ -20,9 +20,9 @@ RSpec.describe Localization::Version, type: :model do
 
       describe 'created version after approve' do
         before(:each){version.approve}
-        subject{Localization::Version.last}
+        subject{Localization::Version.first}
 
-        it {expect(subject.parent_version).to eq version}
+        it {expect(subject.reload.parent_version).to eq version}
         it {expect(subject.name).to eq version.name}
       end
     end
@@ -39,7 +39,7 @@ RSpec.describe Localization::Version, type: :model do
 
       describe 'created version after approve' do
         before(:each){version.approve}
-        subject{Localization::Version.last}
+        subject{Localization::Version.first}
 
         it {expect(subject.parent_version).to eq english_version}
         it {expect(subject.name).to eq version.name}
@@ -70,19 +70,18 @@ RSpec.describe Localization::Version, type: :model do
   end
 
   describe '#restore_version' do
-    let(:version){create :localization_version, localization: localization, state: 'removed',
-                         translations: [translation], deleted_at: Time.now, state_before_remove: 'commited'}
+    let!(:version){create :localization_version, localization: localization, state: 'deleted', deleted_at: Time.now,
+                          state_before_delete: 'commited'}
     let(:localization){Localization.default}
-    let(:translation){create :translation, deleted_at: Time.now}
+    let!(:translation){create :translation, version: version, deleted_at: Time.now}
 
-    subject{version.restore_version}
+    before(:each){version.restore_version}
 
-    it 'version should be restored' do
-      subject
-      expect(version.deleted?).to eq false
-      expect(version.translations.first.deleted?).to eq false
-      expect(version.state).to eq 'commited'
-      expect(version.state_before_remove).to eq nil
-    end
+    subject{version}
+
+    it{expect(subject.deleted?).to eq false}
+    it{expect(translation.deleted?).to eq false}
+    it{expect(subject.state).to eq 'commited'}
+
   end
 end
