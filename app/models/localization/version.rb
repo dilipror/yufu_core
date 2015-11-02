@@ -19,6 +19,9 @@ class Localization::Version
 
   default_scope -> {desc :id}
 
+  # after_remove :after_remove_action
+  # after_restore :after_restore_action
+
   validates_presence_of :name, :localization
 
   state_machine initial: :new do
@@ -26,14 +29,6 @@ class Localization::Version
     state :commited
     state :rejected
     state :deleted
-
-    event :delete_version do
-      transition any => :deleted
-    end
-
-    event :restore_version do
-      transition :deleted => any
-    end
 
     event :commit do
       transition [:new, :rejected] => :commited
@@ -101,4 +96,17 @@ class Localization::Version
   def self.current(localization)
     approved.where(localization_id: localization.id).desc(:version_number_id)
   end
+
+  # private
+  #
+  # def after_restore_action
+  #   version.update_attribute :state, version.state_before_delete || :new
+  #   version.update_attribute :state_before_delete, nil
+  # end
+  #
+  # def after_remove_action
+  #   version.state_before_delete = version.state
+  #   version.update_attribute :state, :deleted
+  # end
+
 end

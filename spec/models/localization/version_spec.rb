@@ -53,35 +53,35 @@ RSpec.describe Localization::Version, type: :model do
 
   end
 
-  describe '#delete_version' do
-    let(:version){create :localization_version, localization: localization, state: 'approved',
-                         translations: [translation]}
-    let(:localization){Localization.default}
-    let(:translation){create :translation}
-
-    subject{version.delete_version}
-
-    it 'version should be deleted' do
-      subject
-      expect(version.deleted?).to eq true
-      expect(version.translations.first.deleted?).to eq true
-      expect(version.state_before_delete).to eq 'approved'
-    end
-  end
-
-  describe '#restore_version' do
-    let!(:version){create :localization_version, localization: localization, state: 'deleted', deleted_at: Time.now,
-                          state_before_delete: 'commited'}
-    let(:localization){Localization.default}
-    let!(:translation){create :translation, version: version, deleted_at: Time.now}
-
-    before(:each){version.restore_version}
-
-    subject{version}
-
-    it{expect(subject.deleted?).to eq false}
-    it{expect(translation.deleted?).to eq false}
-    it{expect(subject.state).to eq 'commited'}
-
-  end
+  # describe '#delete_version' do
+  #   let(:version){create :localization_version, localization: localization, state: 'approved',
+  #                        translations: [translation]}
+  #   let(:localization){Localization.default}
+  #   let(:translation){create :translation}
+  #
+  #   subject{version.delete_version}
+  #
+  #   it 'version should be deleted' do
+  #     subject
+  #     expect(version.deleted?).to eq true
+  #     expect(version.translations.first.deleted?).to eq true
+  #     expect(version.state_before_delete).to eq 'approved'
+  #   end
+  # end
+  #
+  # describe '#restore_version' do
+  #   let!(:version){create :localization_version, localization: localization, state: 'deleted', deleted_at: Time.now,
+  #                         state_before_delete: 'commited'}
+  #   let(:localization){Localization.default}
+  #   let!(:translation){create :translation, version: version, deleted_at: Time.now}
+  #
+  #   before(:each){version.restore_version}
+  #
+  #   subject{version}
+  #
+  #   it{expect(subject.deleted?).to eq false}
+  #   it{expect(translation.deleted?).to eq false}
+  #   it{expect(subject.state).to eq 'commited'}
+  #
+  # end
 end
