@@ -61,18 +61,6 @@ module Order
       end
     end
 
-    def primary_supported_translators
-      []
-    end
-
-    def secondary_supported_translators
-      []
-    end
-
-    def paid_cash_flow
-      # self.create_and_execute_transaction owner.user, Office.head, price
-    end
-
     def create_invoice
       self.invoices.create! user: owner.try(:user), state: 'pending'
     end

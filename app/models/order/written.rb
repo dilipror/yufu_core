@@ -268,26 +268,6 @@ module Order
       real_translation_language.try :senior
     end
 
-    def close_cash_flow
-      price_to_members = self.price * 0.95
-      if translation_type == 'translate'
-        # self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7
-        self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
-      else
-        # self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7*0.7
-        self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.7*0.3
-        self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
-      end
-    end
-
-    def primary_supported_translators
-      []
-    end
-
-    def secondary_supported_translators
-      []
-    end
-
     def real_translation_language
       return translation_language unless translation_language.nil? || translation_language.try(:is_chinese)
       return original_language unless original_language.nil? || original_language.try(:is_chinese)

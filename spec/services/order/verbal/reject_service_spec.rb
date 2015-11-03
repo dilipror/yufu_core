@@ -50,7 +50,7 @@ RSpec.describe Order::Verbal::RejectService do
 
           context 'order will begin less than 14 days' do
             before(:each){allow(order).to receive(:will_begin_less_than?).with(7.days).and_return false}
-            before(:each){allow(order).to receive(:will_begin_at?).with(7.days).and_return false}
+            before(:each){allow(order).to receive(:will_begin_less_than?).with(8.days).and_return false}
             before(:each){allow(order).to receive(:will_begin_less_than?).with(14.days).and_return true}
             before(:each){allow(order.language).to receive(:verbal_price).and_return 1}
 
@@ -59,7 +59,7 @@ RSpec.describe Order::Verbal::RejectService do
 
           context 'order will begin less than 7 days' do
             before(:each){allow(order).to receive(:will_begin_less_than?).with(7.days).and_return true}
-            before(:each){allow(order).to receive(:will_begin_at?).with(7.days).and_return false}
+            before(:each){allow(order).to receive(:will_begin_less_than?).with(8.days).and_return false}
             before(:each){allow(order).to receive(:will_begin_less_than?).with(14.days).and_return false}
 
             it{is_expected.to eq 0}
@@ -67,8 +67,8 @@ RSpec.describe Order::Verbal::RejectService do
 
           context 'order will begin at 7 day' do
             before(:each){allow(order).to receive(:will_begin_less_than?).with(7.days).and_return false}
-            before(:each){allow(order).to receive(:will_begin_at?).with(7.days).and_return true}
             before(:each){allow(order).to receive(:will_begin_less_than?).with(14.days).and_return false}
+            before(:each){allow(order).to receive(:will_begin_less_than?).with(8.days).and_return true}
 
 
             context "order's hals cost less than 1 day price" do

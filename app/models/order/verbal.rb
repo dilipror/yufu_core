@@ -199,12 +199,6 @@ module Order
         OrderWorkflowWorker.set(wait: (order.first_date_time -  4.hours - Time.now)).perform_later order.id.to_s, 'before_4'
         order.update paid_time: Time.now
       end
-
-
-    end
-
-    def additional_cost(currency = nil)
-      0
     end
 
     def can_send_primary_offer?
@@ -233,11 +227,6 @@ module Order
         return true if tmp.count > 0
       end
       false
-    end
-
-    # Deprecated
-    def general_cost(currency = nil)
-      reservation_dates.to_a.inject(0) { |sum, n| sum + n.cost(currency) }
     end
 
     def different_dates
@@ -271,20 +260,13 @@ module Order
       end
     end
 
-
     def will_begin_less_than?(time)
       (first_date_time.to_time - Time.now) <= time && (first_date_time.to_time - Time.now) > 0
     end
-
-    def will_begin_at?(time)
-      # TODO: implement
-    end
-
     def has_offer?
       offers.new_or_confirmed.count > 0
     end
 
-    private
     def create_additional_services
       create_airport_pick_up if airport_pick_up.nil?
     end
@@ -340,7 +322,6 @@ module Order
 
     def can_update?
       state == 'close' ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
-      # state == 'new' ? true : (update_time.nil? ? true : (DateTime.now - update_time) >= 1)
     end
     alias :can_update :can_update?
 
@@ -359,7 +340,6 @@ module Order
         assignee.busy_days << BusyDay.new(date: date.date, order_verbal: self.id)
       end
       assignee.save
-
     end
 
     def remove_busy_days
@@ -391,26 +371,6 @@ module Order
 
     def senior
       main_language_criterion.language.try :senior
-    end
-
-    # Need refactor with new cash system
-    def close_cash_flow
-      unless self.is_private
-        price_to_members = self.price * 0.95
-        self.create_and_execute_transaction(Office.head, self.assignee.user.overlord, price_to_members * 0.015)
-        # senior = self.location.senior
-        senior = main_language_criterion.language.senior
-        if senior == self.assignee
-          self.create_and_execute_transaction(Office.head, self.assignee.user, price_to_members*0.7)
-        else
-          self.create_and_execute_transaction(Office.head, self.assignee.user, price_to_members*0.7)
-          self.create_and_execute_transaction(Office.head, senior.user, price_to_members*0.03)
-        end
-      end
-    end
-
-    def paid_cash_flow
-      self.create_and_execute_transaction owner.user, Office.head, price
     end
 
     def paying_items

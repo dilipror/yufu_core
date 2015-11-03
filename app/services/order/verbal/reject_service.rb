@@ -25,7 +25,7 @@ module Order
               return sector_zero
             else
               return sector_zero if @order.will_begin_less_than? 7.days
-              return half if  @order.will_begin_at? 7.days
+              return half if  @order.will_begin_less_than? 8.days
               return minus_one_day if @order.will_begin_less_than? 14.days
             end
           else
