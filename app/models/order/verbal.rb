@@ -112,8 +112,14 @@ module Order
     after_save :create_additional_services
     # after_save :notify_about_updated, if: :persisted?
 
-    state_machine initial: :new do
+    scope :confirmed, -> {where state: 'confirmed'}
+    scope :wait_offer, -> {where :state.in => %w(confirmation_delay wait_offer reconfirm_delay translator_not_found)}
+    scope :need_reconfirm, -> {where state: 'need_reconfirm'}
+    scope :main_reconfirm_delay, -> {where state: 'main_reconfirm_delay'}
+    scope :ready_for_backup_confirmation, -> {where :state.in => %w(main_reconfirm_delay reconfirm_delay)}
+    scope :reconfirm_delay, -> {where state: 'reconfirm_delay'}
 
+    state_machine initial: :new do
       state :confirmed
       state :confirmation_delay
       state :translator_not_found
