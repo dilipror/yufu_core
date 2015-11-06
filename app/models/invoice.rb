@@ -160,7 +160,7 @@ class Invoice
         return: "#{Rails.application.secrets.success_root_url}/payment-gateway/#{paypal_gw_id}/success",
         cancel_return: '/',
         item_number: id,
-        item_name: I18n.t('mongoid.paypal.interpretation_service'),
+        item_name: service_name,
         currency_code: 'GBP',
         cert_id: Rails.application.secrets.cert_id,
         custom: Rails.application.secrets.ipn_return_secret,
@@ -296,6 +296,17 @@ class Invoice
       eval("def #{attr}();return read_attribute(:#{attr}).present? ? read_attribute(:#{attr}) : subject.try(:owner).try(:#{attr});end;")
     end
     eval("def country_id;read_attribute(:country).present? ? read_attribute(:country) : subject.try(:owner).try(:country).try(:id);end;")
+  end
+
+  def service_name
+    case subject.class
+      when Order::Verbal
+        I18n.t('mongoid.invoice_service.interpretation_service')
+      when Order::Written
+        I18n.t('mongoid.invoice_service.translation_service')
+      when Order::LocalExpert
+        I18n.t('mongoid.invoice_service.expert')
+    end
   end
 
 

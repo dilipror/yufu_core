@@ -1,7 +1,10 @@
 en:
   mongoid:
-    paypal:
+    invoice_service:
       interpretation_service: Interpretation service
+      translation_service: Translation service
+      expert: Local expert
+
     surcharge: Surcharge
 
     main_menu:
