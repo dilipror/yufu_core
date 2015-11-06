@@ -104,7 +104,7 @@ class Translation
   def self.active
     tr_ids = []
     Localization.each do |l|
-      tr_ids += active_ids_in l
+      tr_ids += Translation.active_ids_in l
     end
     Translation.where(:id.in => tr_ids).not_model_localizers
   end

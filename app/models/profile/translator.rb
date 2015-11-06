@@ -9,7 +9,7 @@ module Profile
     field :passport_number
     field :passport_num
     field :passport_country
-    field :is_banned, default: false
+    field :is_banned, type: Mongoid::Boolean, default: false
     field :custom_city
 
     # field :state
