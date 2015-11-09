@@ -61,20 +61,21 @@ module Order
                            message: 'notifications.cancel_not_paid_3',
                            observers: -> (order){ order.owner.user },
                            mailer: -> (user, order) do
-                             NotificationMailer.cancel_not_paid_3(user.id.to_s)
+                             NotificationMailer.cancel_not_paid_3(user)
                            end
     has_notification_about :cancel_by_owner,
                            message: 'notifications.cancel_by_owner',
                            observers: :owner,
                            mailer: -> (user, order) do
-                             NotificationMailer.cancel_by_user_13(user.id.to_s)
+                             NotificationMailer.cancel_by_user_13 user
                            end
 
     has_notification_about :remind_billing_info_2,
                            message: 'notifications.remind_billing_info_2',
                            observers: :owner,
-                           mailer: -> (user, order) do
-                             PaymentsMailer.remind_billing_info_2(user.id.to_s, order.invoices.first.id.to_s)
+                           mailer: -> (user, order_id) do
+                             order = Order::Base.find order_id
+                             PaymentsMailer.remind_billing_info_2(user, order.invoices.first.id.to_s)
                            end
 
     # All user promoted order

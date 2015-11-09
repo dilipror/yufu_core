@@ -25,7 +25,7 @@ module Order
                            message: 'notifications.become_main_int_17',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.become_main_int_17 user.id.to_s
+                             NotificationMailer.become_main_int_17 user
                            end),
                            sms: -> (user, offer) do
                              Yufu::SmsNotification.instance.become_main_int_17 user
@@ -35,7 +35,7 @@ module Order
                            message: 'notifications.become_back_up_int_18',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.become_back_up_int_18 user.id.to_s
+                             NotificationMailer.become_back_up_int_18 user
                            end),
                            sms: -> (user, offer) do
                              Yufu::SmsNotification.instance.become_back_up_int_18 user
@@ -45,7 +45,7 @@ module Order
                            message: 'notifications.order_details_4',
                            observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
-                             NotificationMailer.order_details_4 user.id.to_s, offer.id.to_s
+                             NotificationMailer.order_details_4 user, offer
                            end
 
 
@@ -53,7 +53,7 @@ module Order
                            message: 'notifications.re_confirm_main_19',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.re_confirm_main_19 user.id.to_s
+                             NotificationMailer.re_confirm_main_19 user
                            end),
                            sms: -> (user, offer) do
                              Yufu::SmsNotification.instance.re_confirm_main_19 user
@@ -64,7 +64,7 @@ module Order
                            message: 'notifications.re_confirm_back_up_20',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.re_confirm_back_up_20 user.id.to_s
+                             NotificationMailer.re_confirm_back_up_20 user
                            end),
                            sms: -> (user, offer) do
                              Yufu::SmsNotification.instance.re_confirm_back_up_20 user
@@ -74,7 +74,7 @@ module Order
                            message: 'notifications.re_confirmed_translator_21',
                            observers: :translator,
                            mailer: (-> (user, offer) do
-                             NotificationMailer.re_confirmed_translator_21 user.id.to_s
+                             NotificationMailer.re_confirmed_translator_21 user
                            end),
                            sms: -> (user, offer) do
                              Yufu::SmsNotification.instance.re_confirmed_translator_21 user
@@ -84,7 +84,7 @@ module Order
                            message: 'notifications.re_confirmed_client_6',
                            observers: -> (offer){ offer.order.owner.user },
                            mailer: -> (user, offer) do
-                             NotificationMailer.re_confirmed_client_6 user.id.to_s, offer.id.to_s
+                             NotificationMailer.re_confirmed_client_6 user, offer
                            end
 
     scope :state_new, -> {where state: :new}

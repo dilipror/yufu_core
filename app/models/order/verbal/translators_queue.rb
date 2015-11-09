@@ -11,7 +11,7 @@ class Order::Verbal::TranslatorsQueue
   scope :active, -> {where :lock_to.lte => DateTime.now}
 
   has_notification_about :create, observers: :translators, message: 'notifications.new_order',
-                         mailer: -> (user, queue) { NotificationMailer.new_order_for_translator_16 user.id.to_s }
+                         mailer: -> (user, queue) { NotificationMailer.new_order_for_translator_16 user }
 
   # HARD CODE!!!!!!!!!! HABTM doesn't work
   after_create do

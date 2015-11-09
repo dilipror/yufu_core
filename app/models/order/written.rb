@@ -34,7 +34,7 @@ module Order
                            observers: :owner,
                            message: 'notifications.done_order',
                            mailer: ->(user, order) do
-                             NotificationMailer.order_completed_8 user.id.to_s
+                             NotificationMailer.order_completed_8 user
                            end
 
     belongs_to :original_language,                   class_name: 'Language'

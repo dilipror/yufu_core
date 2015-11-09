@@ -51,14 +51,14 @@ module Order
                            message: 'notifications.looking_for_int',
                            observers: -> (order){ order.owner.user },
                            mailer: -> (user, order) do
-                             NotificationMailer.we_are_looking_10 user.id.to_s
+                             NotificationMailer.we_are_looking_10 user
                            end
 
     has_notification_about :we_are_looking_before_24_11,
                            message: 'notifications.looking_for_int_before_24_11',
                            observers: -> (order){ order.owner.user },
                            mailer: -> (user, order) do
-                             NotificationMailer.we_are_looking_before_24_11 user.id.to_s
+                             NotificationMailer.we_are_looking_before_24_11 user
                            end
 
 
@@ -66,20 +66,20 @@ module Order
                            message: 'notifications.check_dates_5',
                            observers: -> (order){ order.owner.user },
                            mailer: -> (user, order) do
-                             NotificationMailer.check_dates_5 user.id.to_s, order.id.to_s
+                             NotificationMailer.check_dates_5 user, order
                            end
 
     has_notification_about :cancel_12,
                            message: 'notifications.cancel_12',
                            observers: -> (order){ order.owner.user },
                            mailer: -> (user, order) do
-                             NotificationMailer.cancel_12 user.id.to_s
+                             NotificationMailer.cancel_12 user
                            end
     has_notification_about :cancel_by_owner_delayed_order,
                            message: 'notifications.cancel_delayed_order',
                            observers: :owner,
                            mailer: -> (user, order) do
-                             NotificationMailer.cancel_by_user_due_conf_delay_14 user.id.to_s
+                             NotificationMailer.cancel_by_user_due_conf_delay_14 user
                            end
 
     validates_length_of :reservation_dates, minimum: 1, if: :persisted?

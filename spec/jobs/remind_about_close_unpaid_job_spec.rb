@@ -7,6 +7,8 @@ RSpec.describe RemindAboutCloseUnpaidJob, :type => :worker do
 
     before(:each) do
       allow_any_instance_of(PaymentsMailer).to receive(:pdf_invoice).and_return(WickedPdf.new.pdf_from_string(''))
+      order.invoices << Invoice.create(subject: order)
+      order.save!(validate: false)
     end
 
     context 'state is new' do

@@ -11,8 +11,9 @@ class UsersMailer < ActionMailer::Base
     mail to: user.email, subject: t('devise.registrations.mailer.subject')
   end
 
-  def new_notification(notification)
-    @notification = notification
+  def new_notification(user_id, notification_id)
+    user = User.find user_id
+    @notification = user.notifications.find notification_id
     @user = @notification.user
     if @user.present?
       mail to: @user.email, subject: t('new_notification')

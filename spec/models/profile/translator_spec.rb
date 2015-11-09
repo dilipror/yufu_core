@@ -406,21 +406,6 @@ RSpec.describe Profile::Translator, :type => :model do
     it{is_expected.not_to include busy_translator}
   end
 
-  describe 'notification about approving' do
-    let(:translator) {create :profile_translator, state: :approving}
-
-    before(:each) do
-      ActionMailer::Base.deliveries = []
-    end
-
-    subject{translator.approve}
-
-    it 'email should be sent' do
-      subject
-      expect(ActionMailer::Base.deliveries.count).to eq(1)
-    end
-
-  end
 
   describe '.support_written_order' do
     let(:ch_lang) {create :language, is_chinese: true}
