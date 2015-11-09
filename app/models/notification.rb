@@ -21,8 +21,8 @@ class Notification
   private
   def send_mail
     if user.send_notification_on_email? || user.duplicate_notifications_on_additional_email?
-      mail = self.mailer.is_a?(Proc) ? mailer.call(self.user, self.object) : (self.mailer || UsersMailer.new_notification(self))
-      mail.deliver if mail.present?
+      mail = self.mailer.is_a?(Proc) ? mailer.call(self.user.id.to_s, self.object.id.to_s) : (self.mailer || UsersMailer.new_notification(user.id.to_s, self.id.to_s))
+      mail.deliver_later if mail.present?
     end
   end
 

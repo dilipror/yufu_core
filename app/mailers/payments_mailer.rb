@@ -5,7 +5,8 @@ class PaymentsMailer < ActionMailer::Base
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
-  def bank_payment(profile)
+  def bank_payment(profile_id)
+    profile = User.where(id: profile_id).first || Profile::Base.where(id: profile_id).first
     if profile.is_a? User
       mail to: profile.email, subject: I18n.t(:bill_for_bank_payment)
     else
@@ -13,7 +14,9 @@ class PaymentsMailer < ActionMailer::Base
     end
   end
 
-  def remind_billing_info_2(user, invoice)
+  def remind_billing_info_2(user_id, invoice_id)
+    user = User.find user_id
+    invoice = Invoice.find invoice_id
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
     mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
   end

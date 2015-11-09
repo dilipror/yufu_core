@@ -17,7 +17,7 @@ class Order::Written::CorrectorsQueue
   end
 
   has_notification_about :create, observers: :translators, message: 'notifications.new_order',
-                         mailer: -> (user, queue) { NotificationMailer.new_order_for_translator_16(user).deliver }
+                         mailer: -> (user, queue) { NotificationMailer.new_order_for_translator_16 user }
 
   def self.notify_queue(queue_id)
     queue = Order::Written::CorrectorsQueue.find queue_id

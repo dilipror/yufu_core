@@ -26,7 +26,7 @@ module Order
                            observers: :owner,
                            message: 'notifications.processing_order',
                            mailer: ->(user, order) do
-                             NotificationMailer.order_confirmation_7(user).deliver
+                             NotificationMailer.order_confirmation_7(user)
                            end
     has_notification_about :correct, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.correcting_order'
     has_notification_about :control, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.control_order'
@@ -34,7 +34,7 @@ module Order
                            observers: :owner,
                            message: 'notifications.done_order',
                            mailer: ->(user, order) do
-                             NotificationMailer.order_completed_8(user).deliver
+                             NotificationMailer.order_completed_8 user
                            end
 
     belongs_to :original_language,                   class_name: 'Language'

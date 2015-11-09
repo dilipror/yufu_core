@@ -330,3 +330,6 @@ en:
         correcting: correcting
         quality_control: quality control
         sent_to_client: sent to client
+    order/verbal:
+      state:
+        need_reconfirm: FFFFFFFF
