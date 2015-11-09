@@ -22,7 +22,7 @@ class Notification
   def send_mail
     if user.send_notification_on_email? || user.duplicate_notifications_on_additional_email?
       mail = self.mailer.is_a?(Proc) ? mailer.call(self.user, self.object) : (self.mailer || UsersMailer.new_notification(self))
-      mail.deliver if mail.present?
+      mail.deliver_later if mail.present?
     end
   end
 

@@ -19,7 +19,7 @@ module Order
                            observers: :owner,
                            message: 'notifications.done_order',
                            mailer: ->(user, order) do
-                             NotificationMailer.order_completed_8(user).deliver
+                             NotificationMailer.order_completed_8 user.id.to_s
                            end
 
     state_machine initial: :new do
