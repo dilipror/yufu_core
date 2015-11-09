@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :profile_translator, class: Profile::Translator do
-    association :user
+    association :user, factory: :translator
     first_name 'name'
     last_name 'name 2'
     total_approve true
@@ -11,7 +11,7 @@ FactoryGirl.define do
   end
 
   factory :full_approved_profile_translator, class: Profile::Translator do
-    association :user
+    association :user, factory: :translator
     first_name 'name'
     last_name 'name 2'
     total_approve true

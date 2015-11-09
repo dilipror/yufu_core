@@ -63,6 +63,7 @@ module Profile
     end
     scope :approved, -> {where state: 'approved'}
 
+    # Deprecated
     def self.role_translator
       user_ids = User.where(role: :translator).distinct :id
       where(:user_id.in => user_ids).desc(:created_at)
