@@ -4,6 +4,14 @@ class NotificationMailer < ActionMailer::Base
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
+  before_action do
+    @stored_locale = I18n.locale
+  end
+  after_action do
+    I18n.locale = @stored_locale
+  end
+
+
   def signup_reminder(user)
     mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
                                       confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
