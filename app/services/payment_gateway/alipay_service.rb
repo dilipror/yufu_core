@@ -3,7 +3,7 @@ require 'base64'
 
 module PaymentGateway
   module AlipayService
-  ALIPAY_GATEWAY_URL = 'https://mapi.alipay.net/gateway.do'
+  ALIPAY_GATEWAY_URL = 'https://mapi.alipay.com/gateway.do'
   RSA_KEY = <<-EOF
     -----BEGIN RSA PRIVATE KEY-----
     MIICXgIBAAKBgQDTB0Ql+bx+DlKLS6iyXyKnGSghCaoX+UXEx+2B059rYbirXm7X
@@ -35,8 +35,9 @@ module PaymentGateway
         # check_required_params(params, CREATE_PARTNER_TRADE_BY_BUYER_REQUIRED_PARAMS)
 
         params = {
-            'service'        => 'create_forex_trade',
-            'partner'        => '2088101011913539', # secrets
+            'service'        => 'create_direct_pay_by_user',
+            # 'partner'        => '2088101122136241', # secrets
+            'partner'        => '2088911701076983', # secrets
             '_input_charset' => 'utf-8',
             'payment_type'   => '1',
             'notify_url'     => 'http://6c01d3dc.ngrok.com/alipay_respond',
@@ -88,7 +89,7 @@ module PaymentGateway
       def self.alipay_sign_generate(params)
         params = stringify_keys(params)
         sign_type = 'MD5'
-        key = '760bdzec6y9goq7ctyx96ezkz78287de'
+        key = Rails.application.secrets.alipay_key
         string = params_to_string params
         md5_sign key, string
 
