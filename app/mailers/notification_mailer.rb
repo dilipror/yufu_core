@@ -23,6 +23,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   #old: for_client
+  #replace client_id => order_id
   def order_details_4(user_id, offer_id)
     user = User.find user_id
     offer = Order::Offer.find offer_id
@@ -147,10 +148,6 @@ class NotificationMailer < ActionMailer::Base
   end
 
   private
-
-  def order_details(order)
-    "#{I18n.t('notifications.order_details.location')} - #{order.location.name}, #{I18n.t('notifications.order_details.language')} -  #{order.language.name}, #{I18n.t('notifications.order_details.greeted_at')} - #{order.meeting_in}, #{formatted_time order.greeted_at_hour, order.greeted_at_minute}"
-  end
 
   def interpreter(order)
     "#{order.assignee.try(:first_name)} #{order.assignee.try(:last_name)}"
