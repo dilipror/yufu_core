@@ -293,12 +293,12 @@ RSpec.describe Profile::Translator, :type => :model do
 
       context 'when translator is new' do
         let(:translator) {create :profile_translator}
-        it{expect{subject}.to change{translator.state}.from('new').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('new').to('ready_for_approvement')}
       end
 
       context 'when translator is approved' do
         let(:translator) {create :profile_translator, state: :approved}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
     end
 
@@ -306,13 +306,13 @@ RSpec.describe Profile::Translator, :type => :model do
       subject{translator.approve}
 
       context 'when translator is new' do
-        let(:translator) {create :profile_translator, state: 'approving'}
+        let(:translator) {create :profile_translator, state: 'ready_for_approvement'}
         it{expect{subject}.to change{translator.state}}
       end
 
       context 'when translator is approving' do
-        let(:translator) {create :profile_translator, state: :approving}
-        it{expect{subject}.to change{translator.state}.from('approving').to('approved')}
+        let(:translator) {create :profile_translator, state: 'ready_for_approvement'}
+        it{expect{subject}.to change{translator.state}.from('ready_for_approvement').to('approved')}
       end
     end
 
@@ -322,22 +322,22 @@ RSpec.describe Profile::Translator, :type => :model do
 
       context 'when changes writt translation type' do
         subject{service.update_attributes written_translate_type: 'new'}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
 
       context 'when lvl changes' do
         subject{service.update_attributes level: 'business'}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
 
       context 'when add new service' do
         subject{create :service, translator: translator}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
 
       context 'when remove service' do
         subject{translator.services.last.destroy}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
     end
 
@@ -351,12 +351,12 @@ RSpec.describe Profile::Translator, :type => :model do
 
       context 'when add city' do
         subject{translator.profile_steps_service.update_attributes city_ids: [city.id, new_city.id]}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
 
       context 'when remove' do
         subject{translator.profile_steps_service.update_attributes city_ids: [new_city.id]}
-        it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+        it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       end
 
     end
@@ -367,7 +367,7 @@ RSpec.describe Profile::Translator, :type => :model do
       let(:lvl_up) {create :level_up_request, from: 1, to: 2}
 
       subject{service.update_attributes level_up_request: lvl_up}
-      it{expect{subject}.to change{translator.state}.from('approved').to('approving')}
+      it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
       it{expect{subject}.to change{translator.total_approve}.from(true).to(false)}
     end
 
@@ -419,16 +419,16 @@ RSpec.describe Profile::Translator, :type => :model do
     let!(:not_approved_translator) {create :profile_translator,
                                           services: [build(:service, written_approves: true, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_order_lang) {create :profile_translator, state: 'approving',
+    let!(:not_support_order_lang) {create :profile_translator, state: 'ready_for_approvement',
                                      services: [build(:service, written_approves: true, language: other_lang,
                                                       written_translate_type: 'From-To Chinese')]}
-    let!(:written_not_approved) {create :profile_translator, state: 'approving',
+    let!(:written_not_approved) {create :profile_translator, state: 'ready_for_approvement',
                                           services: [build(:service, written_approves: false, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_coop) {create :profile_translator, state: 'approving',
+    let!(:not_support_coop) {create :profile_translator, state: 'ready_for_approvement',
                                         services: [build(:service, written_approves: true, language: lang,
                                                          written_translate_type: 'From Chinese')]}
-    let!(:support_order) {create :profile_translator, state: 'approving',
+    let!(:support_order) {create :profile_translator, state: 'ready_for_approvement',
                                     services: [build(:service, written_approves: true, language: lang,
                                                      written_translate_type: 'To Chinese')]}
     #

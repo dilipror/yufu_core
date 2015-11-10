@@ -82,7 +82,7 @@ RSpec.describe Order::Written::TranslatorsQueue, :type => :model do
       let(:china) {create :country, is_china: true}
 
       let!(:user) do
-        create :user, profile_translator: create(:profile_translator, state: 'approving',
+        create :user, profile_translator: create(:profile_translator, state: 'ready_for_approvement',
                                                  services: [build(:service, written_approves: true, language: org_lang,
                                                                   written_translate_type: 'To Chinese')])
       end
@@ -109,7 +109,7 @@ RSpec.describe Order::Written::TranslatorsQueue, :type => :model do
 
     context 'language has not senior' do
       let!(:user) do
-        create :user, profile_translator: create(:profile_translator, state: 'approving',
+        create :user, profile_translator: create(:profile_translator, state: 'ready_for_approvement',
                                                  services: [build(:service, written_approves: true, language: org_lang,
                                                                   written_translate_type: 'To Chinese')])
       end
@@ -122,7 +122,7 @@ RSpec.describe Order::Written::TranslatorsQueue, :type => :model do
 
     context 'there are senior' do
       let!(:user) do
-        create :user, profile_translator: create(:profile_translator, state: 'approving',
+        create :user, profile_translator: create(:profile_translator, state: 'ready_for_approvement',
                                                  services: [build(:service, written_approves: true, language: org_lang,
                                                                   written_translate_type: 'To Chinese')])
       end
@@ -147,7 +147,7 @@ RSpec.describe Order::Written::TranslatorsQueue, :type => :model do
 
     context 'there are other translators' do
       let!(:user) do
-        create :user, profile_translator: create(:profile_translator, state: 'approving',
+        create :user, profile_translator: create(:profile_translator, state: 'ready_for_approvement',
                                                  services: [build(:service, written_approves: true, language: org_lang,
                                                                   written_translate_type: 'To Chinese')])
       end

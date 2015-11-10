@@ -17,14 +17,14 @@ RSpec.describe OrderWrittenQueueFactoryWorker, :type => :worker do
   end
   let!(:partner) {user.profile_translator}
 
-  let!(:senior) {create(:profile_translator, state: 'approving',
+  let!(:senior) {create(:profile_translator, state: 'ready_for_approvement',
                         services: [build(:service, written_approves: true, language: org_lang,
                                          written_translate_type: 'From-To Chinese')])}
 
-  let!(:chinese_transl) {create(:profile_translator, state: 'approving',
+  let!(:chinese_transl) {create(:profile_translator, state: 'ready_for_approvement',
                         services: [build(:service, written_approves: true, language: org_lang,
                                          written_translate_type: 'From-To Chinese')])}
-  let!(:trans) {create(:profile_translator, passport_number: 2, state: 'approving',
+  let!(:trans) {create(:profile_translator, passport_number: 2, state: 'ready_for_approvement',
                        services: [build(:service, written_approves: true, language: org_lang,
                                         written_translate_type: 'From-To Chinese')])}
 
