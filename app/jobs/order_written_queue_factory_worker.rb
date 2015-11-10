@@ -9,7 +9,7 @@ class OrderWrittenQueueFactoryWorker < ActiveJob::Base
       build_method = "create_#{queue_name}_queue"
       queue = Order::Written::TranslatorsQueue.send build_method, order, date_iterator
       if queue.present?
-        queue.lock_to <=DateTime.now ? queue.notify_about_create :
+        queue.lock_to <= DateTime.now ? queue.notify_about_create :
             ActivateWrittenTranslationQueueJob.set(wait: 30.minutes).perform_later(queue.id.to_s)
         date_iterator += 30.minutes
         true

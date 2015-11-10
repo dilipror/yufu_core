@@ -306,13 +306,13 @@ RSpec.describe Profile::Translator, :type => :model do
       subject{translator.approve}
 
       context 'when translator is new' do
-        let(:translator) {create :profile_translator, state: 'ready_for_approvement'}
+        let(:translator) {create :profile_translator, :approving_in_progress}
         it{expect{subject}.to change{translator.state}}
       end
 
       context 'when translator is approving' do
-        let(:translator) {create :profile_translator, state: 'ready_for_approvement'}
-        it{expect{subject}.to change{translator.state}.from('ready_for_approvement').to('approved')}
+        let(:translator) {create :profile_translator, :approving_in_progress}
+        it{expect{subject}.to change{translator.state}.from('approving_in_progress').to('approved')}
       end
     end
 
@@ -362,13 +362,12 @@ RSpec.describe Profile::Translator, :type => :model do
     end
 
     context 'when created level up request' do
-      let(:translator) {create :profile_translator, state: :approved}
+      let(:translator) {create :profile_translator, :approved}
       let(:service) {create :service, level: 1, translator: translator}
       let(:lvl_up) {create :level_up_request, from: 1, to: 2}
 
       subject{service.update_attributes level_up_request: lvl_up}
-      it{expect{subject}.to change{translator.state}.from('approved').to('ready_for_approvement')}
-      it{expect{subject}.to change{translator.total_approve}.from(true).to(false)}
+      it{expect{subject}.to change{translator.reload.state}.from('approved').to('ready_for_approvement')}
     end
 
   end
@@ -419,16 +418,16 @@ RSpec.describe Profile::Translator, :type => :model do
     let!(:not_approved_translator) {create :profile_translator,
                                           services: [build(:service, written_approves: true, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_order_lang) {create :profile_translator, state: 'ready_for_approvement',
+    let!(:not_support_order_lang) {create :profile_translator, :approving_in_progress,
                                      services: [build(:service, written_approves: true, language: other_lang,
                                                       written_translate_type: 'From-To Chinese')]}
-    let!(:written_not_approved) {create :profile_translator, state: 'ready_for_approvement',
+    let!(:written_not_approved) {create :profile_translator, :approving_in_progress,
                                           services: [build(:service, written_approves: false, language: lang,
                                                            written_translate_type: 'From-To Chinese')]}
-    let!(:not_support_coop) {create :profile_translator, state: 'ready_for_approvement',
+    let!(:not_support_coop) {create :profile_translator, :approving_in_progress,
                                         services: [build(:service, written_approves: true, language: lang,
                                                          written_translate_type: 'From Chinese')]}
-    let!(:support_order) {create :profile_translator, state: 'ready_for_approvement',
+    let!(:support_order) {create :profile_translator, :approving_in_progress,
                                     services: [build(:service, written_approves: true, language: lang,
                                                      written_translate_type: 'To Chinese')]}
     #

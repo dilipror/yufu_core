@@ -82,6 +82,7 @@ module Profile
     state_machine initial: :new do
 
       state :ready_for_approvement
+      state :approving_in_progress
       state :approved
 
       before_transition :on => :approve do |translator|
@@ -89,21 +90,22 @@ module Profile
       end
 
       event :approve do
-        transition [:ready_for_approvement] => :approved
+        transition [:ready_for_approvement, :approving_in_progress] => :approved
+      end
+
+      event :process do
+        transition :ready_for_approvement => :approving_in_progress
       end
 
       event :approving do
-        transition [:new, :approved] => :ready_for_approvement#, if: :one_day_passed?
+        transition [:new, :approved, :approving_in_progress] => :ready_for_approvement#, if: :one_day_passed?
       end
-
     end
 
     # filtering DEPRECATED
     def self.filter_email(email)
       user_ids = User.where(email: /.*#{email}.*/).distinct :id
-      # translator_ids = Profile::Translator.where(:user_id.in => user_ids).distinct :id
       where :user_id.in => user_ids
-      # Profile::Translator.all
     end
 
 

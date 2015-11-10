@@ -25,7 +25,7 @@ module Profile
                                              translator.try(:state) == 'approved'}
 
       def change_translator_state
-        translator.try :approving
+        translator.approving if translator.present? && translator.can_approving?
       end
 
       def hard_resolve_city

@@ -19,7 +19,7 @@ module Profile
 
     def set_profile_state
       if service.translator.present?
-        service.translator.update_attributes state: :approving, total_approve: false
+        service.translator.approving if service.translator.can_approving?
       end
     end
 

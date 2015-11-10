@@ -17,20 +17,24 @@ RSpec.describe OrderWrittenQueueFactoryWorker, :type => :worker do
   end
   let!(:partner) {user.profile_translator}
 
-  let!(:senior) {create(:profile_translator, state: 'ready_for_approvement',
+  let!(:senior) {create(:profile_translator, :approving_in_progress,
                         services: [build(:service, written_approves: true, language: org_lang,
                                          written_translate_type: 'From-To Chinese')])}
 
-  let!(:chinese_transl) {create(:profile_translator, state: 'ready_for_approvement',
+  let!(:chinese_transl) {create(:profile_translator, :approving_in_progress,
                         services: [build(:service, written_approves: true, language: org_lang,
                                          written_translate_type: 'From-To Chinese')])}
-  let!(:trans) {create(:profile_translator, passport_number: 2, state: 'ready_for_approvement',
+  let!(:trans) {create(:profile_translator, :approving_in_progress, passport_number: 2,
                        services: [build(:service, written_approves: true, language: org_lang,
                                         written_translate_type: 'From-To Chinese')])}
 
-  before(:each) {org_lang.update_attributes senior: senior;
-  chinese_transl.profile_steps_language.update_attribute :citizenship, china;chinese_transl.approve;
-  partner.approve;senior.approve;trans.approve}
+  before :each do
+    senior.approve
+    chinese_transl.approve
+    trans.approve
+    org_lang.update_attributes senior: senior
+    chinese_transl.profile_steps_language.update_attribute :citizenship, china
+  end
 
   describe 'perform' do
     subject{OrderWrittenQueueFactoryWorker.new.perform order.id, 'en'}
