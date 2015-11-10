@@ -56,7 +56,7 @@ module PaymentGateway
         # 'subject'=>'goods',
         # 'total_fee'=>'13'}
 
-        request_uri(params).to_s
+        request_uri(params)
       end
 
       def self.stringify_keys(hash)

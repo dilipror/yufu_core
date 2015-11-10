@@ -20,11 +20,11 @@ module PaymentGateway
           notify_url: Rails.application.secrets.notify_url
       }.merge(params)
 
-
-      "#{PAYPAL_GATEWAY_URL}?cmd=_xclick&encrypted=#{encrypt_for_paypal(values)}"
+      encrypt_for_paypal(values)
+      # "#{PAYPAL_GATEWAY_URL}?cmd=_xclick&encrypted=#{encrypt_for_paypal(values)}"
       # uri = URI(PAYPAL_GATEWAY_URL)
       # uri.query = URI.encode_www_form(encrypted: encrypt_for_paypal(values))
-      # uri.to_s
+      # uri
     end
 
     def self.encrypt_for_paypal(values)
