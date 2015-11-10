@@ -3,33 +3,7 @@ module MailerHelper
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
-  def client(user)
-    "#{user.first_name} #{user.last_name}"
-  end
 
-  def dashboard_link
-    dashboard_url
-  end
-
-  def order_details(order)
-    "#{I18n.t('notifications.order_details.location')} - #{order.location.name}, #{I18n.t('notifications.order_details.language')} -  #{order.language.name}, #{I18n.t('notifications.order_details.greeted_at')} - #{order.meeting_in}, #{formatted_time order.greeted_at_hour, order.greeted_at_minute}"
-  end
-
-  def interpreter_name(order)
-    "#{ order.primary_offer.try(:translator).try(:user).try(:last_name)} #{order.primary_offer.try(:translator).try(:user).try(:last_name)}"
-  end
-
-  def phone_number(order)
-    "#{ order.primary_offer.try(:translator).try(:user).try(:phone)}"
-  end
-
-  def confirm(resource, token)
-    confirmation_url(resource, confirmation_token: token, locale: Localization.get_current.name)
-  end
-
-  def password_url(resource, token)
-    edit_password_url(resource, reset_password_token: token)
-  end
 
   class MailPage
     include ActionView::Helpers::TagHelper

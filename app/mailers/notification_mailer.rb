@@ -1,6 +1,5 @@
 class NotificationMailer < ActionMailer::Base
   include Yufu::I18nMailerScope
-  include MailerHelper
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
@@ -13,8 +12,7 @@ class NotificationMailer < ActionMailer::Base
   
   def signup_reminder(user_id)
     user = User.find user_id
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
   def cancel_not_paid_3(user_id)
@@ -78,7 +76,7 @@ class NotificationMailer < ActionMailer::Base
 
   def we_are_looking_before_24_11(user_id)
     user = User.find user_id
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
   def cancel_12(user_id)
@@ -157,10 +155,8 @@ class NotificationMailer < ActionMailer::Base
     "#{order.secondary_offer.try(:translator).try(:first_name)} #{order.secondary_offer.try(:translator).try(:last_name)}"
   end
 
-  def formatted_time(hour, minute)
-    formatted_hour = hour < 10 ? "0#{hour}" : "#{hour}"
-    formatted_minute = minute < 10 ? "0#{minute}" : "#{minute}"
-    "#{formatted_hour}:#{formatted_minute}"
+  def mailer_attrs(params)
+    {scope: scope}.merge Mailer::MailerAttrs.instance.merged_attrs params
   end
 
 end
