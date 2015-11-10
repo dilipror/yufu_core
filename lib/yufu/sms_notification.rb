@@ -14,7 +14,7 @@ module Yufu
 
     def translator_approving_15(user)
       text = "【马富翻译】亲爱的 #{user.full_name}, 恭喜您成功加入语富。请保管好您的语富账号跟密码，所有订 单详情都会在此账户显示，请您留意以免错失订单。感谢您的合作并祝您生活愉快！"
-      sms to: transaltor.phone, text: text
+      sms to: user.phone, text: text
     end
 
     def become_main_int_17(user)
