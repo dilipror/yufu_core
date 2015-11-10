@@ -124,10 +124,7 @@ class User
   before_create :role_changed_first_time
   before_create :add_invite
   before_create :set_overlord,  if: 'invitation.present?'
-  after_create :create_referral_link, :create_banners, :create_billing
-  after_create :create_profile_client,     if: 'profile_client.nil?'
-  after_create :create_profile_translator, if: 'profile_translator.nil?'
-  after_create :create_default_invitation_texts
+  after_create :create_defaults
   after_create ->(user) {ConfirmationReminderJob.set(wait: 3.days).perform_later(user.id.to_s)}
   # before_save :downcase_email
 
@@ -138,6 +135,15 @@ class User
   end
 
   alias :is_authorized_translator :authorized_translator?
+
+  def create_defaults
+    create_referral_link if referral_link.nil?
+    create_banners if banners.empty?
+    create_billing if billing.nil?
+    create_default_invitation_texts if invitation_texts.empty?
+    create_profile_client if profile_client.nil?
+    create_profile_translator if profile_translator.nil?
+  end
 
   def can_manage_localizations?
     localizations.count > 0
