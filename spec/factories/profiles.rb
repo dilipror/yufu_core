@@ -8,6 +8,18 @@ FactoryGirl.define do
     city_approves {[create(:city_approve)]}
     wechat 'qwe'
     sequence(:phone) {|n| "9111#{n}"}
+
+    trait :approved do
+      state 'approved'
+    end
+
+    trait :ready_for_approvement do
+      state 'ready_for_approvement'
+    end
+
+    trait :approving_in_progress do
+      state 'approving_in_progress'
+    end
   end
 
   factory :full_approved_profile_translator, class: Profile::Translator do
@@ -19,9 +31,7 @@ FactoryGirl.define do
     city_approves {[create(:city_approve, is_approved: true)]}
     wechat 'weq'
     sequence(:phone) {|n| "91111#{n}"}
-    # after :create do |pr|
-    #   create(:city_approve, is_approved: true, translator: pr)
-    # end
+    state 'approved'
   end
 
 

@@ -96,7 +96,7 @@ RSpec.describe Order::Written::CorrectorsQueue, :type => :model do
 
     context 'there are other translators' do
       let!(:user) do
-        create :user, profile_translator: create(:profile_translator, state: 'approving',
+        create :user, profile_translator: create(:profile_translator, :approving_in_progress,
                                                  services: [build(:service, written_approves: true, language: org_lang,
                                                                   written_translate_type: 'From Chinese + Corrector')])
       end

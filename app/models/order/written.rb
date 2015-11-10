@@ -138,6 +138,7 @@ module Order
 
     end
 
+    # DEPRECATED
     # filtering-------------------------------------------------------
     def self.filter_state(state)
       where state: state
