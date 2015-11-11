@@ -86,6 +86,7 @@ class User
   has_many :vassals,  class_name: 'User', dependent: :nullify
   has_many :banners,  dependent: :destroy
   has_many :invites, class_name: 'Invite', dependent: :nullify, inverse_of: :overlord
+  has_many :managed_profiles, class_name: 'Profile::Translator', inverse_of: :operator, dependent: :nullify
 
   has_one :profile_client,     class_name: 'Profile::Client',     dependent: :destroy, validate: false
   has_one :profile_translator, class_name: 'Profile::Translator', dependent: :destroy, validate: false

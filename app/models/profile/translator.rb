@@ -29,7 +29,7 @@ module Profile
     belongs_to :city
     belongs_to :province
     belongs_to :country
-    belongs_to :operator, class_name: 'User'
+    belongs_to :operator, class_name: 'User', inverse_of: 'managed_profiles'
 
     has_many :proof_orders,  class_name: 'Order::Written', inverse_of: :proof_reader
     has_many :orders,        class_name: 'Order::Base', inverse_of: :assignee
@@ -82,6 +82,10 @@ module Profile
 
       before_transition :on => :approve do |translator|
         translator.notify_about_approve_translator
+      end
+
+      before_transition :on => :approving do |translator|
+        translator.operator = nil
       end
 
       event :approve do
@@ -170,6 +174,13 @@ module Profile
         res
       end
 
+    end
+
+    def process(operator)
+      if super(operator)
+        self.operator = operator
+        save!
+      end
     end
 
     def support_correcting_written_order?(order)
