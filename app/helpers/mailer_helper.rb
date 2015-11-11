@@ -1,12 +1,9 @@
 module MailerHelper
 
-  def client(user)
-    "#{user.first_name} #{user.last_name}"
-  end
+  include ActionView::Helpers::UrlHelper
+  include Devise::Controllers::UrlHelpers
 
-  def dashboard_link
-    dashboard_url
-  end
+
 
   class MailPage
     include ActionView::Helpers::TagHelper

@@ -40,7 +40,7 @@ class Ability
 
       can :delete, Translation if user.can_approve_localization?
 
-      if user.role.translator?
+      if user.role.translator? && user.profile_translator.present?
         can :create, Order::Offer unless user.profile_translator.is_banned?
       end
     end

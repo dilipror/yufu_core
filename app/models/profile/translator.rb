@@ -29,6 +29,7 @@ module Profile
     belongs_to :city
     belongs_to :province
     belongs_to :country
+    belongs_to :operator, class_name: 'User'
 
     has_many :proof_orders,  class_name: 'Order::Written', inverse_of: :proof_reader
     has_many :orders,        class_name: 'Order::Base', inverse_of: :assignee
@@ -63,12 +64,6 @@ module Profile
     end
     scope :approved, -> {where state: 'approved'}
 
-    # Deprecated
-    def self.role_translator
-      user_ids = User.where(role: :translator).distinct :id
-      where(:user_id.in => user_ids).desc(:created_at)
-    end
-
     has_notification_about :approve_translator,
                            observers: :user,
                            message: "profile_approved",
@@ -81,7 +76,8 @@ module Profile
 
     state_machine initial: :new do
 
-      state :approving
+      state :ready_for_approvement
+      state :approving_in_progress
       state :approved
 
       before_transition :on => :approve do |translator|
@@ -89,61 +85,91 @@ module Profile
       end
 
       event :approve do
-        transition [:approving] => :approved
+        transition [:ready_for_approvement, :approving_in_progress] => :approved
+      end
+
+      event :process do
+        transition :ready_for_approvement => :approving_in_progress
       end
 
       event :approving do
-        transition [:new, :approved] => :approving#, if: :one_day_passed?
+        transition [:new, :approved, :approving_in_progress] => :ready_for_approvement#, if: :one_day_passed?
+      end
+    end
+
+    class << self
+      # filtering DEPRECATED
+      def filter_email(email)
+        user_ids = User.where(email: /.*#{email}.*/).distinct :id
+        where :user_id.in => user_ids
       end
 
-    end
-
-    # filtering
-    def self.filter_email(email)
-      user_ids = User.where(email: /.*#{email}.*/).distinct :id
-      # translator_ids = Profile::Translator.where(:user_id.in => user_ids).distinct :id
-      where :user_id.in => user_ids
-      # Profile::Translator.all
-    end
-
-
-    def self.without_surcharge(city)
-      res = []
-      city_approve_ids = CityApprove.where(city: city, with_surcharge: false).distinct :id
-      Profile::Translator.all.each do |tr|
-        res << tr if (tr.city_approves.distinct(:id) & city_approve_ids) != []
+      # Deprecated
+      def role_translator
+        user_ids = User.where(role: :translator).distinct :id
+        where(:user_id.in => user_ids).desc(:created_at)
       end
-      res
-    end
 
-    # def self.with_surcharge(city)
-    #   city_approves.where city: city, with_surcharge: true
-    # end
+      def chinese
+        china_ids = Country.china.distinct :id
+        Profile::Translator.where :'profile_steps_language.citizenship_id'.in => china_ids
+      end
 
-    def self.chinese
-      china_ids = Country.china.distinct :id
-      Profile::Translator.where :'profile_steps_language.citizenship_id'.in => china_ids
-    end
-
-    #return all translators who work in CITY
-    def self.support_languages_in_city (city, include_closest_cities = false)
-      city_id = city.is_a?(City) ? city.id : (City.find(city)).id# исправить
-      lngs = []
-      Translator.each do |tr|
-        if tr.profile_steps_service.cities.map(&:id).include?(city_id)
-          tr.services.each do |sr|
-            lngs << sr.language
-          end
-        end
-        if include_closest_cities
-          if tr.profile_steps_service.cities_with_surcharge.map(&:id).include?(city_id)
+      #return all translators who work in CITY
+      def support_languages_in_city (city, include_closest_cities = false)
+        city_id = city.is_a?(City) ? city.id : (City.find(city)).id# исправить
+        lngs = []
+        Translator.each do |tr|
+          if tr.profile_steps_service.cities.map(&:id).include?(city_id)
             tr.services.each do |sr|
               lngs << sr.language
             end
           end
+          if include_closest_cities
+            if tr.profile_steps_service.cities_with_surcharge.map(&:id).include?(city_id)
+              tr.services.each do |sr|
+                lngs << sr.language
+              end
+            end
+          end
         end
+        return lngs.uniq
       end
-      return lngs.uniq
+
+      def support_correcting_written_order(order)
+        correctors_ids = Profile::Service.where(written_translate_type: /.*Corrector.*/).distinct :translator_id
+        support_written_order(order).where(:id.in => correctors_ids)
+      end
+
+      def support_written_order(order)
+        language = order.original_language.is_chinese? ? order.translation_language : order.original_language
+        coop = order.original_language.is_chinese? ? 'From' : 'To'
+        ids_from_service = Profile::Service.written_approved.support_cooperation(coop).where(language: language).distinct(:translator_id)
+        where :id.in => ids_from_service, state: 'approved'
+      end
+
+      def support_order(order)
+        support_services order.language, order.location, order.level
+      end
+
+      def support_services(language, city, level)
+        int_level = level.is_a?(Integer) ? level : Order::Verbal::TRANSLATION_LEVELS[level.to_sym]
+        ids_from_service  = Profile::Service.not_only_written
+                                .approved.where(language: language,
+                                                :level.gte => int_level).distinct(:translator_id)
+        ids_from_location = CityApprove.approved.where(city: city).distinct(:translator_id)
+        where :id.in => (ids_from_service & ids_from_location)
+      end
+
+      def without_surcharge(city)
+        res = []
+        city_approve_ids = CityApprove.where(city: city, with_surcharge: false).distinct :id
+        Profile::Translator.all.each do |tr|
+          res << tr if (tr.city_approves.distinct(:id) & city_approve_ids) != []
+        end
+        res
+      end
+
     end
 
     def support_correcting_written_order?(order)
@@ -165,33 +191,6 @@ module Profile
         end
       end
       false
-    end
-
-
-
-    def self.support_correcting_written_order(order)
-      correctors_ids = Profile::Service.where(written_translate_type: /.*Corrector.*/).distinct :translator_id
-      support_written_order(order).where(:id.in => correctors_ids)
-    end
-
-    def self.support_written_order(order)
-      language = order.original_language.is_chinese? ? order.translation_language : order.original_language
-      coop = order.original_language.is_chinese? ? 'From' : 'To'
-      ids_from_service = Profile::Service.written_approved.support_cooperation(coop).where(language: language).distinct(:translator_id)
-      where :id.in => ids_from_service, state: 'approved'
-    end
-
-    def self.support_order(order)
-      support_services order.language, order.location, order.level
-    end
-
-    def self.support_services(language, city, level)
-      int_level = level.is_a?(Integer) ? level : Order::Verbal::TRANSLATION_LEVELS[level.to_sym]
-      ids_from_service  = Profile::Service.not_only_written
-                                          .approved.where(language: language,
-                                                          :level.gte => int_level).distinct(:translator_id)
-      ids_from_location = CityApprove.approved.where(city: city).distinct(:translator_id)
-      where :id.in => (ids_from_service & ids_from_location)
     end
 
     def chinese?

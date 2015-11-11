@@ -44,8 +44,7 @@ module Profile
     end
 
     def change_translator_state
-      translator.try :approving
-      translator.update_attributes total_approve: false
+      translator.approving if translator.can_approving?
     end
 
     #filtering
