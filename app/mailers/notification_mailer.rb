@@ -1,6 +1,5 @@
 class NotificationMailer < ActionMailer::Base
   include Yufu::I18nMailerScope
-  include MailerHelper
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
@@ -13,8 +12,7 @@ class NotificationMailer < ActionMailer::Base
   
   def signup_reminder(user_id)
     user = User.find user_id
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user),
-                                      confirmation_url:  confirmation_url(user, confirmation_token: user.confirmation_token) )
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
   def cancel_not_paid_3(user_id)
@@ -23,6 +21,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   #old: for_client
+  #replace client_id => order_id
   def order_details_4(user_id, offer_id)
     user = User.find user_id
     offer = Order::Offer.find offer_id
@@ -77,7 +76,7 @@ class NotificationMailer < ActionMailer::Base
 
   def we_are_looking_before_24_11(user_id)
     user = User.find user_id
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: client(user))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
   def cancel_12(user_id)
@@ -148,10 +147,6 @@ class NotificationMailer < ActionMailer::Base
 
   private
 
-  def order_details(order)
-    "#{I18n.t('notifications.order_details.location')} - #{order.location.name}, #{I18n.t('notifications.order_details.language')} -  #{order.language.name}, #{I18n.t('notifications.order_details.greeted_at')} - #{order.meeting_in}, #{formatted_time order.greeted_at_hour, order.greeted_at_minute}"
-  end
-
   def interpreter(order)
     "#{order.assignee.try(:first_name)} #{order.assignee.try(:last_name)}"
   end
@@ -160,10 +155,8 @@ class NotificationMailer < ActionMailer::Base
     "#{order.secondary_offer.try(:translator).try(:first_name)} #{order.secondary_offer.try(:translator).try(:last_name)}"
   end
 
-  def formatted_time(hour, minute)
-    formatted_hour = hour < 10 ? "0#{hour}" : "#{hour}"
-    formatted_minute = minute < 10 ? "0#{minute}" : "#{minute}"
-    "#{formatted_hour}:#{formatted_minute}"
+  def mailer_attrs(params)
+    {scope: scope}.merge Mailer::MailerAttrs.instance.merged_attrs params
   end
 
 end

@@ -24,7 +24,7 @@ class UsersMailer < ActionMailer::Base
   def invitation(invitation)
     @invitation = invitation
 
-    mail(to: invitation.email, subject: 'Welcome to My Awesome Site')
+    mail(to: invitation.email)
   end
 
   def confirmation_reminder_23(user)
