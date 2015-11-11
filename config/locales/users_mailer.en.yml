@@ -10,7 +10,7 @@ en:
 
              To complete your registration in YUFU.NET, please follow the link below:\n
 
-             %{confirm}\n
+             %{confirmation_url}\n
 
              Thank you for choosing Yufu.net!\n
 

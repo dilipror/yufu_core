@@ -8,7 +8,7 @@ en:
 
            If you didn’t get through the payment on time, but still would like to order this service, please follow the link below for a new order placement:\n
 
-           %{root}\n
+           %{root_url}\n
 
            In case you made a payment, but YUFU.NET haven`t received the payment on time, the money will be stored at your personal balance. You can place a new order and pay the order using remaining balance.\n
 
@@ -173,7 +173,7 @@ en:
       subject: "Interpreter`s changes"
       body: "Dear %{client},\n
 
-            ID number %{client_id},\n
+            ID number %{order_id},\n
 
              Order details: %{order_details}\n
 
@@ -236,7 +236,7 @@ en:
       subjet: Order confirmation/voucher
       body: "Dear %{client},\n
 
-            ID number %{client_id},\n
+            ID number %{order_id},\n
 
             Order details: %{order_details}\n
 
@@ -275,7 +275,7 @@ en:
       subject: Order reminder
       body: "Dear %{client},\n
 
-            ID number %{client_id},\n
+            ID number %{order_id},\n
 
             Order details: %{order_details}\n
 

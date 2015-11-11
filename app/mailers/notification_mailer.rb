@@ -25,7 +25,7 @@ class NotificationMailer < ActionMailer::Base
   def order_details_4(user_id, offer_id)
     user = User.find user_id
     offer = Order::Offer.find offer_id
-    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user, order: offer.order))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user, order: offer.order, asset_host: asset_host))
   end
 
   #old: check_dates
@@ -38,7 +38,7 @@ class NotificationMailer < ActionMailer::Base
   def re_confirmed_client_6(user_id, offer_id)
     user = User.find user_id
     offer = Order::Offer.find offer_id
-    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user, order: offer.order))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user, order: offer.order, asset_host: asset_host))
 
   end
 

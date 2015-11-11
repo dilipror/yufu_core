@@ -59,6 +59,39 @@ RSpec.describe Translation, :type => :model do
   end
 
 
+  describe '#only_authorised_attributes' do
+
+    let(:translation){build :translation, attrs}
+
+    subject{translation.valid?}
+
+    context 'notificatoion key' do
+      context 'all attribute in the list' do
+
+        let(:attrs){{key: 'not_notification_mailer.some_meth.body', value: "%{client} %{root_url}"}}
+        it{is_expected.to be_truthy}
+
+      end
+      context 'some attributes is not included' do
+
+        let(:attrs){{key: 'not_notification_mailer.some_meth.body', value: "%{client} %{root}"}}
+        it{is_expected.to be_truthy}
+
+      end
+    end
+
+    context 'not notification key' do
+      context 'all attribute in the list' do
+        let(:attrs){{key: 'notification_mailer.some_meth.body', value: "%{client} %{root_url}"}}
+        it{is_expected.to be_truthy}
+      end
+      context 'some attributes is not included' do
+        let(:attrs){{key: 'notification_mailer.some_meth.body', value: "%{client} %{root}"}}
+        it{is_expected.to be_falsey}
+      end
+    end
+  end
+
   # describe  '#localize_model' do
   #   let(:language){create :language}
   #   let(:translation){create :translation, key: "Language.name.#{language.id}", is_model_localization: true}

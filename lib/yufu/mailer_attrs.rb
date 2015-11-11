@@ -26,12 +26,16 @@ module Mailer
       end
     end
 
-    def confirm_attrs(confirmation_url, password_url)
-      if confirmation_url.present? && password_url.present?
-        {confirmation_url: confirmation_url, password_url: password_url }
+    def offer_attrs(offer, asset_host)
+      if offer.present?
+        {interpreter_link: interpreter_link(offer, asset_host)}
       else
-        {confirmation_url: nil, password_url: nil }
+        {interpreter_link: nil}
       end
+    end
+
+    def confirm_attrs(confirmation_url, password_url)
+      {confirmation_url: confirmation_url, password_url: password_url }
     end
 
     def other_attrs
@@ -39,8 +43,20 @@ module Mailer
     end
 
     def merged_attrs(params = {})
-      user_attrs(params[:user]).merge(order_attrs(params[:order])).merge(
-          confirm_attrs(params[:confirmation_url], params[:password_url])).merge other_attrs
+
+      [user_attrs(params[:user]), order_attrs(params[:order]),
+          confirm_attrs(params[:confirmation_url], params[:password_url]),
+       offer_attrs(params[:offer], params[:asset_host]),  other_attrs].inject({}) do |hash, res|
+        res.merge hash
+      end
+    end
+
+    def keys
+      res = []
+      merged_attrs.each do |x, y|
+        res << x
+      end
+      res
     end
 
     private
@@ -57,7 +73,11 @@ module Mailer
     end
 
     def interpreter_name(order)
-      "#{ order.primary_offer.try(:translator).try(:user).try(:last_name)} #{order.primary_offer.try(:translator).try(:user).try(:last_name)}"
+     "#{ order.primary_offer.try(:translator).try(:user).try(:last_name)} #{order.primary_offer.try(:translator).try(:user).try(:last_name)}"
+    end
+
+    def interpreter_link(offer, asset_host)
+      asset_host.present? ? "#{Rails.application.config.host}/#{asset_host}/get_pdf_translator/#{offer.translator.id.to_s}.pdf" : nil
     end
 
     def phone_number(order)

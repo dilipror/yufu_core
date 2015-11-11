@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'mongoid/criteria'
 require 'yufu/mailer_attrs'
 
-RSpec.describe MailerAttrs do
+RSpec.describe Mailer::MailerAttrs do
 
   describe '#user_attrs' do
 
@@ -10,13 +10,13 @@ RSpec.describe MailerAttrs do
 
       let(:user){create :user}
 
-      subject{MailerAttrs.instance.user_attrs(user)}
+      subject{Mailer::MailerAttrs.instance.user_attrs(user)}
 
       it{expect(subject[:client]).not_to be_nil}
     end
 
     context 'user is nil' do
-      subject{MailerAttrs.instance.user_attrs(nil)}
+      subject{Mailer::MailerAttrs.instance.user_attrs(nil)}
 
       it{expect(subject[:client]).to be_nil}
     end
@@ -28,7 +28,7 @@ RSpec.describe MailerAttrs do
     context 'order is not nil' do
       let(:order){create :order_verbal}
 
-      subject{MailerAttrs.instance.order_attrs(order)}
+      subject{Mailer::MailerAttrs.instance.order_attrs(order)}
 
       it{expect(subject[:order_details]).not_to be_nil}
       it{expect(subject[:order_id]).not_to be_nil}
@@ -39,7 +39,7 @@ RSpec.describe MailerAttrs do
 
     context 'order is nil' do
 
-      subject{MailerAttrs.instance.order_attrs(nil)}
+      subject{Mailer::MailerAttrs.instance.order_attrs(nil)}
 
       it{expect(subject[:order_details]).to be_nil}
       it{expect(subject[:order_id]).to be_nil}
@@ -56,14 +56,14 @@ RSpec.describe MailerAttrs do
 
       let(:user){create :user}
 
-      subject{MailerAttrs.instance.confirm_attrs('/confirmation/url', '/password/url')}
+      subject{Mailer::MailerAttrs.instance.confirm_attrs('/confirmation/url', '/password/url')}
 
       it{expect(subject[:confirmation_url]).not_to be_nil}
       it{expect(subject[:password_url]).not_to be_nil}
     end
 
     context 'everything is nil' do
-      subject{MailerAttrs.instance.confirm_attrs(nil, nil)}
+      subject{Mailer::MailerAttrs.instance.confirm_attrs(nil, nil)}
 
       it{expect(subject[:confirmation_url]).to be_nil}
       it{expect(subject[:password_url]).to be_nil}
@@ -73,7 +73,7 @@ RSpec.describe MailerAttrs do
 
   describe '#other_attrs' do
 
-    subject{MailerAttrs.instance.other_attrs}
+    subject{Mailer::MailerAttrs.instance.other_attrs}
 
     it{expect(subject[:root_url]).not_to be_nil}
     it{expect(subject[:dashboard_link]).not_to be_nil}
@@ -82,7 +82,7 @@ RSpec.describe MailerAttrs do
 
   describe '#merged_attrs' do
 
-    subject{MailerAttrs.instance.merged_attrs params}
+    subject{Mailer::MailerAttrs.instance.merged_attrs params}
 
     context 'no params' do
       let(:params){{}}

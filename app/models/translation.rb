@@ -38,8 +38,7 @@ class Translation
   #scope :seo, -> {where(key: /Order_ServicesPack.meta/).merge where(key: /^frontend\.meta_tags\./)}
 
   scope :notifications, -> do
-    regexp = /^notification_mailer\.|^payments_mailer\.|^devise\.mailer\.confirmations_22\.|^devise\.mailer\.confirmation_instructions\.|^devise\.mailer\.reset_password_24\.|^devise\.mailer\.reset_password_instructions\.|^users_mailer\./
-    where( key: regexp)
+    where( key: notifications_regexp)
   end
   scope :var_free, -> {Translation.not :value => /\%\{.*\}/}
   scope :tag_free, -> {Translation.not :value => /<|>/}
@@ -49,10 +48,18 @@ class Translation
   scope :terms_and_agree, ->{where key: Translation.terms_and_agree_regexp}
 
   validates_presence_of :version
+  validate :only_authorised_attributes
   before_save :scrub_value
   before_create :resolve_value_type
 
   class << self
+
+    def notifications_regexp
+        /^notification_mailer\.|^payments_mailer\.|^devise\.mailer\.confirmations_22\.
+      |^devise\.mailer\.confirmation_instructions\.|^devise\.mailer\.reset_password_24\.
+      |^devise\.mailer\.reset_password_instructions\.|^users_mailer\./
+    end
+
     def terms_and_agree_regexp
       /(^frontend\.conditions)|(frontend\.cooperation_greement_text)/
     end
@@ -181,6 +188,7 @@ class Translation
 
 
   private
+
   def resolve_value_type
     self.value_is_array = true if value.is_a? Array
     true
@@ -189,5 +197,15 @@ class Translation
   def wear_out
     version_ids = version.localization.localization_versions.where(:_id.lt => id).distinct(:id)
     Translation.actual.where(:id.ne => id, :key => key, :version_id.in => version_ids).update_all next_id: id
+  end
+
+  def only_authorised_attributes
+    if key.scan(Translation.notifications_regexp).count > 0
+      value.scan(/\%\{(\w+)\}/).each do |m|
+        unless Mailer::MailerAttrs.instance.keys.include? m.first.to_sym
+          errors.add :value, 'is not included in the list'
+        end
+      end
+    end
   end
 end
