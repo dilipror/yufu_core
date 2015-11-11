@@ -28,6 +28,10 @@ class UsersMailer < ActionMailer::Base
   end
 
   def confirmation_reminder_23(user)
-    mail to: user.email, body: I18n.t('.body', scope: scope, client: user.email,  confirm: (confirmation_url(user, confirmation_token: user.confirmation_token)))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(client: user.email,  confirmation_url: (confirmation_url(user, confirmation_token: user.confirmation_token))))
+  end
+
+  def mailer_attrs(params)
+    {scope: scope}.merge Mailer::MailerAttrs.instance.merged_attrs params
   end
 end

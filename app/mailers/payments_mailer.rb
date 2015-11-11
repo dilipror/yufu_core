@@ -18,7 +18,7 @@ class PaymentsMailer < ActionMailer::Base
     user = User.find user_id
     invoice = Invoice.find invoice_id
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
-    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
   def send_billing_info_1(user_id, invoice_id)
@@ -28,7 +28,7 @@ class PaymentsMailer < ActionMailer::Base
       include Humanize
     end
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
-    mail to: user.email, body: I18n.t('.body', scope: scope, dashboard_link: dashboard_link, client: client(user))
+    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
   private
@@ -52,4 +52,7 @@ class PaymentsMailer < ActionMailer::Base
     )
   end
 
+  def mailer_attrs(params)
+    {scope: scope}.merge Mailer::MailerAttrs.instance.merged_attrs params
+  end
 end
