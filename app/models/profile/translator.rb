@@ -183,6 +183,10 @@ module Profile
       end
     end
 
+    def can_be_processed_by?(user)
+      user == operator
+    end
+
     def support_correcting_written_order?(order)
       services.where(written_approves: true).each do |s|
         if /Corrector/.match(s.written_translate_type)
