@@ -156,6 +156,10 @@ module Order
       charge_commission_to assignee.try(:user).try(:overlord), :to_translators_agent
     end
 
+    def custom_human_state_name
+      I18n.t "mongoid.state_machines.order/base.states.#{state}"
+    end
+
     private
     # commission in %
     def charge_commission_to(account, key)

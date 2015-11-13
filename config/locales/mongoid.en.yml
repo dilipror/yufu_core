@@ -314,22 +314,45 @@ en:
 
 
 
-  state_machines:
-    support/ticket:
-      state:
-        open: open
-        in_progress: in progress
-        closed: closed
-        reopen: reopen
-        paing: paing
-        wait_offer: wait offer
-        additional_paying: additional paying
-        in_progress: in progress
-        close: close
-        rated: rated
-        correcting: correcting
-        quality_control: quality control
-        sent_to_client: sent to client
-    order/verbal:
-      state:
-        need_reconfirm: FFFFFFFF
+    state_machines:
+      support/ticket:
+        state:
+          open: open
+          in_progress: in progress
+          closed: closed
+          reopen: reopen
+          paing: paing
+          wait_offer: wait offer
+          additional_paying: additional paying
+          in_progress: in progress
+          close: close
+          rated: rated
+          correcting: correcting
+          quality_control: quality control
+          sent_to_client: sent to client
+      order/base:
+        states:
+          new: new
+          need_reconfirm: need reconfirm
+          paying: paying
+          wait_offer: wait offer
+          additional_paying: additional paying
+          in_progress: in progress
+          close: close
+          rated: rated
+          rejected: rejected
+          confirmed: confirmed
+          confirmation_delay: confirmation delay
+          translator_not_found: translator not found
+          need_reconfirm: need reconfirm
+          main_reconfirm_delay: main reconfirm delay
+          reconfirm_delay: reconfirm delay
+          in_progress: in progress
+          done: done
+          canceled_not_paid: canceled not paid
+          canceled_by_client: canceled by client
+          canceled_by_yufu: canceled by yufu
+          correcting: correcting
+          quality_control: quality control
+          sent_to_client: sent to client
+          wait_corrector: wait corrector

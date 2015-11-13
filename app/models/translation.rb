@@ -200,7 +200,7 @@ class Translation
   end
 
   def only_authorised_attributes
-    if key.scan(Translation.notifications_regexp).count > 0
+    if key.to_s.scan(Translation.notifications_regexp).count > 0
       value.scan(/\%\{(\w+)\}/).each do |m|
         unless Mailer::MailerAttrs.instance.keys.include? m.first.to_sym
           errors.add :value, 'is not included in the list'
