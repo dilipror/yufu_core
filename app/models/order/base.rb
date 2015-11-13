@@ -116,7 +116,7 @@ module Order
     end
 
     def paid?
-      %w(close rated wait_offer).include? state
+      !%w(new paying).include? state
     end
 
     def create_and_execute_transaction(debit, credit, amount, commission = nil)
