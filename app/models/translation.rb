@@ -56,7 +56,7 @@ class Translation
 
     def notifications_regexp
         /^notification_mailer\.|^payments_mailer\.|^devise\.mailer\.confirmations_22\.
-      |^devise\.mailer\.confirmation_instructions\.|^devise\.mailer\.reset_password_24\.
+      |^devise\.mailer\.confirmations_22\.|^devise\.mailer\.reset_password_24\.
       |^devise\.mailer\.reset_password_instructions\.|^users_mailer\./
     end
 
