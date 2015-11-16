@@ -26,7 +26,7 @@ module Order
     end
 
     def cost
-      @order.invoices.first.cost
+      @order.invoices.first.try(:cost) || 0
     end
 
     def full_with_cover
