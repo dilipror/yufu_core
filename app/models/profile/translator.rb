@@ -88,12 +88,20 @@ module Profile
         translator.operator = nil
       end
 
+      before_transition :on => :translator_refuse do |translator|
+        translator.operator = nil
+      end
+
       event :approve do
         transition [:ready_for_approvement, :approving_in_progress] => :approved
       end
 
       event :process do
         transition :ready_for_approvement => :approving_in_progress
+      end
+
+      event :translator_refuse do
+        transition :approving_in_progress => :ready_for_approvement
       end
 
       event :approving do
