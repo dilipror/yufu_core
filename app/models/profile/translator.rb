@@ -97,7 +97,7 @@ module Profile
       end
 
       event :process do
-        transition :ready_for_approvement => :approving_in_progress
+        transition [:new, :ready_for_approvement] => :approving_in_progress
       end
 
       event :translator_refuse do
