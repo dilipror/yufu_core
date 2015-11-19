@@ -192,12 +192,38 @@ RSpec.describe User, :type => :model do
 
     context 'create with invitation' do
       let(:invite) {create :invite}
-      let(:user) {create :user, invitation: invite}
 
-      it{expect(user.overlord).to eq(invite.overlord)}
+      context "user has not agent's banner or reflink" do
+        let(:user) {create :user, invitation: invite}
+
+        it{expect(user.overlord).to eq(invite.overlord)}
+      end
+
+      context "user has agent's banner or reflink" do
+        let(:banner) {create :banner}
+        let(:user) {create :user, invitation: invite, agent_banner: banner}
+
+        it{expect(user.overlord).to eq(banner.user)}
+      end
     end
 
-    context 'create without invitation' do
+    context 'create with referral link' do
+      let(:referral_link) {create :invite}
+      let(:agent) {create :user}
+      let(:user) {create :user, agent_referral_link: agent.referral_link}
+
+      it{expect(user.overlord).to eq(agent)}
+    end
+
+    context 'create with banner' do
+      let(:invite) {create :invite}
+      let(:user) {create :user, agent_banner: banner}
+      let(:banner) {create :banner}
+
+      it{expect(user.overlord).to eq(banner.user)}
+    end
+
+    context 'create without any promo objects' do
       let(:user) {create :user}
 
       it{expect(user.overlord).to be_nil}
