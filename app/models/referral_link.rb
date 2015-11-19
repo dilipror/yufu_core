@@ -9,6 +9,6 @@ class ReferralLink
   has_many :invited_users, class_name: 'User', inverse_of: :agent_referral_link, dependent: :nullify
 
   def href
-    "#{Rails.application.config.try(:host)}/referral_links/#{id}"
+    "#{Rails.application.config.try(:protocol)}#{Rails.application.config.try(:host)}/referral_links/#{id}"
   end
 end
