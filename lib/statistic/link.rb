@@ -11,4 +11,13 @@ class Statistic::Link < Statistic::Base
   def clicked_count
     @user.referral_link.visits.count
   end
+
+  def pass_registration_count
+    @user.referral_link.invited_users.count
+  end
+
+  def pass_registration_percent
+    return 0 if clicked_count == 0
+    pass_registration_count * 100  / clicked_count
+  end
 end
