@@ -12,4 +12,13 @@ class Statistic::Banners < Statistic::Base
   def clicked_count
     @user.banners.inject(0) {|sum, b| sum + b.visits.count}
   end
+
+  def pass_registration_count
+    User.where(:agent_banner_id.in => @user.banners.distinct(:id)).count
+  end
+
+  def pass_registration_percent
+    return 0 if clicked_count == 0
+    pass_registration_count * 100  / clicked_count
+  end
 end
