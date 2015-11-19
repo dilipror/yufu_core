@@ -264,6 +264,11 @@ module Profile
     end
 
 
+    def amount_of_orders
+      1
+    end
+
+
     protected
 
     def build_steps
