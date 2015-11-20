@@ -132,6 +132,8 @@ module Order
       nil
     end
 
+    # TODO: Refactoring. Divided by 2 methods: charge_agent_commission and charge_translator_commission.
+    # charge_translator_commission should be override in Order::Written class
     def after_close_cashflow
       unless is_private
 
