@@ -185,10 +185,12 @@ module Profile
     end
 
     def process(operator)
-      if super(operator)
+      result = super(operator)
+      if result
         self.operator = operator
         save!
       end
+      result
     end
 
     def can_be_processed_by?(user)

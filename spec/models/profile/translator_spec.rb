@@ -50,6 +50,7 @@ RSpec.describe Profile::Translator, :type => :model do
 
       it{expect{subject}.to change{translator.reload.state}.to('approving_in_progress')}
       it{expect{subject}.to change{translator.reload.operator}.to operator}
+      it{is_expected.to be_truthy}
     end
 
     context 'profile in incorrect state' do
@@ -57,6 +58,7 @@ RSpec.describe Profile::Translator, :type => :model do
 
       it{expect{subject}.not_to change{translator.reload.state}}
       it{expect{subject}.not_to change{translator.reload.operator}}
+      it{is_expected.to be_falsey}
     end
   end
 
