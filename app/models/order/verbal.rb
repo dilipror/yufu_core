@@ -98,6 +98,11 @@ module Order
     scope :main_reconfirm_delay, -> {where state: 'main_reconfirm_delay'}
     scope :ready_for_backup_confirmation, -> {where :state.in => %w(main_reconfirm_delay reconfirm_delay)}
     scope :reconfirm_delay, -> {where state: 'reconfirm_delay'}
+    scope :confirmation_delay, -> {where state: 'confirmation_delay'}
+    scope :translator_not_found, -> {where state: 'translator_not_found'}
+    scope :canceled_by_client, -> {where state: 'canceled_by_client'}
+    scope :canceled_not_paid, -> {where state: 'canceled_not_paid'}
+    scope :canceled_by_yufu, -> {where state: 'canceled_by_yufu'}
 
     def can_send_primary_offer?
       can_confirm? && primary_offer.nil?
@@ -219,7 +224,8 @@ module Order
     end
 
     def can_update?
-      state == 'close' ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
+      return true if in_progress?
+      close? ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
     end
     alias :can_update :can_update?
 
