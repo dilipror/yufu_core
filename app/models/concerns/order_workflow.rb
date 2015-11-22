@@ -29,7 +29,7 @@ module OrderWorkflow
       end
 
       event :reject do
-        transition all - [:close, :rejected, :rated] => :rejected
+        transition all - [:close, :rejected, :rated, :in_progress] => :rejected
       end
 
       event :close do

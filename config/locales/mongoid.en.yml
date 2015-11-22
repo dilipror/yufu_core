@@ -175,6 +175,9 @@ en:
         identification_number: Identification number
         surname_in_pinyin: Surname in pinyin
         years_out_of_China: Years out of China
+        years_in_China: Years in China
+
+
         avatar: Avatar
         service:
           services: Services
@@ -349,9 +352,9 @@ en:
           reconfirm_delay: reconfirm delay
           in_progress: in progress
           done: done
-          canceled_not_paid: canceled not paid
-          canceled_by_client: canceled by client
-          canceled_by_yufu: canceled by yufu
+          canceled_not_paid: cancele not paid
+          canceled_by_client: cancele by client
+          canceled_by_yufu: cancele by yufu
           correcting: correcting
           quality_control: quality control
           sent_to_client: sent to client

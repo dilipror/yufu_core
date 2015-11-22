@@ -88,12 +88,20 @@ module Profile
         translator.operator = nil
       end
 
+      before_transition :on => :translator_refuse do |translator|
+        translator.operator = nil
+      end
+
       event :approve do
         transition [:ready_for_approvement, :approving_in_progress] => :approved
       end
 
       event :process do
-        transition :ready_for_approvement => :approving_in_progress
+        transition [:new, :ready_for_approvement] => :approving_in_progress
+      end
+
+      event :translator_refuse do
+        transition :approving_in_progress => :ready_for_approvement
       end
 
       event :approving do
@@ -177,10 +185,12 @@ module Profile
     end
 
     def process(operator)
-      if super(operator)
+      result = super(operator)
+      if result
         self.operator = operator
         save!
       end
+      result
     end
 
     def can_be_processed_by?(user)
@@ -267,6 +277,11 @@ module Profile
       3.3
     end
 
+
+
+    def amount_of_orders
+      1
+    end
 
 
     protected
