@@ -255,6 +255,19 @@ module Profile
           services.approved.where(language_id: order.language.id, :level.gte => order.level_value).any?
     end
 
+    def date_of_approvement
+      Date.today
+    end
+
+    def amount_of_orders
+      2
+    end
+
+    def commission_of_translator
+      3.3
+    end
+
+
 
     protected
 
