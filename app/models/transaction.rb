@@ -14,7 +14,7 @@ class Transaction
   validates_presence_of :debit, :credit
   validates :sum, numericality: { greater_than_or_equal_to: 0 }
 
-  scope :commissions, -> { where is_commission?: true}
+  scope :commissions, -> { where :is_commission_from.ne => nil}
   scope :for_user, -> (user) do
     any_of({ debit: user }, { credit: user })
   end
