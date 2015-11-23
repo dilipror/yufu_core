@@ -10,7 +10,7 @@ module OrderVerbalWorkflow
       state :main_reconfirm_delay
       state :reconfirm_delay
       state :in_progress
-      state :done
+      state :ready_for_close
       state :canceled_not_paid
       state :canceled_by_client
       state :canceled_by_yufu
@@ -56,13 +56,20 @@ module OrderVerbalWorkflow
       end
 
       event :cancel_by_client do
-        transition all - [:done, :canceled_by_yufu, :canceled_not_paid, :canceled_by_client] => :cancel_by_client
+        transition all - [:canceled_by_yufu, :canceled_not_paid, :canceled_by_client] => :cancel_by_client
       end
 
       event :cancel_not_paid do
         transition [:new, :paying] => :canceled_not_paid
       end
 
+      event :finish_order do
+        transition [:in_progress] => :ready_for_close
+      end
+
+      event :close do
+        transition  [:ready_for_close] => :close
+      end
 
       before_transition on: :process do |order|
         order.update assignee: order.try(:primary_offer).try(:translator)
