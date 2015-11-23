@@ -14,6 +14,7 @@ module Profile
 
     # field :state
     field :last_sent_to_approvement, type: DateTime, default: DateTime.yesterday
+    field :date_of_approvement, type: Date
     # field :one_day_passed, type: Boolean, default: nil
 
     # field :test, default: nil
@@ -81,6 +82,7 @@ module Profile
       state :approved
 
       before_transition :on => :approve do |translator|
+        translator.update_attributes date_of_approvement: Date.today
         translator.notify_about_approve_translator
       end
 
@@ -105,7 +107,7 @@ module Profile
       end
 
       event :approving do
-        transition [:new, :approved, :approving_in_progress] => :ready_for_approvement#, if: :one_day_passed?
+        transition [:new, :approved] => :ready_for_approvement#, if: :one_day_passed?
       end
     end
 
@@ -265,10 +267,6 @@ module Profile
           services.approved.where(language_id: order.language.id, :level.gte => order.level_value).any?
     end
 
-    def date_of_approvement
-      Date.today
-    end
-
     def amount_of_orders
       2
     end
@@ -276,13 +274,6 @@ module Profile
     def commission_of_translator
       3.3
     end
-
-
-
-    def amount_of_orders
-      1
-    end
-
 
     protected
 
