@@ -267,13 +267,62 @@ module Profile
           services.approved.where(language_id: order.language.id, :level.gte => order.level_value).any?
     end
 
-    def amount_of_orders
-      2
+    # методы для репорта
+    def amount_of_orders(start_date, end_date)
+      orders.where(:created_at.gte => start_date, :created_at.lte => end_date).count
     end
 
-    def commission_of_translator
-      3.3
+    def commission_of_translator(start_date, end_date)
+      amount = 0
+      Transaction.for_user(user).commissions
+          .where(:created_at.gte => start_date, :created_at.lte => end_date).each do |com|
+        amount = amount + com.sum
+      end
+      amount
     end
+
+    def first_language_in_profile
+      services.first.language
+    end
+
+    def level
+      services.first.level
+    end
+
+    def is_senior
+      service.first.language.senior == self
+    end
+
+    def walet_amount_on_the_last_date_of_query(start_date, end_date)
+      all = Transaction.where(:created_at.gte => start_date, :created_at.lte => end_date).for_user user
+      credit = 0
+      all.where(credit: user).each do |tr|
+        credit =+ tr.sum
+      end
+      debit = 0
+      all.where(debit: user).each do |tr|
+        debit =+ tr.sum
+      end
+      credit + debit * -1
+    end
+
+    def num_of_client_alias(start_date, end_date) #кол-во заказов через реферал, типо количество подогнанных клиентов
+      user_banner_ids = user.banners.distinct :id
+      Order::Base
+          .where(:created_at.gte => start_date, :created_at.lte => end_date)
+          .any_of({:referral_link_id => user.referral_link.id},
+                  {:banner_id.in => user_banner_ids})
+          .count
+    end
+
+    def num_of_translator_alias(start_date, end_date) #кол-во переводов через реферал, типо количество подогнанных переводчиков
+      user_ids = Profile::Translator
+                     .distinct :user_id
+      User.where(:created_at.gte => start_date, :created_at.lte => end_date,
+                 :id.in => user_ids, overlord: user).count
+    end
+
+    # методы для репорта
 
     protected
 
