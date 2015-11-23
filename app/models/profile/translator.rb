@@ -107,7 +107,7 @@ module Profile
       end
 
       event :approving do
-        transition [:new, :approved, :approving_in_progress] => :ready_for_approvement#, if: :one_day_passed?
+        transition [:new, :approved] => :ready_for_approvement#, if: :one_day_passed?
       end
     end
 
