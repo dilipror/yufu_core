@@ -11,7 +11,7 @@ RSpec.describe Order::LocalExpert, :type => :model do
   end
 
   describe '#reject' do
-    let(:order) {create :order_local_expert, state: 'in_progress'}
+    let(:order) {create :order_local_expert, state: 'wait_offer'}
     subject{order.reject}
 
     it{expect{subject}.to change{order.state}.to 'rejected'}
