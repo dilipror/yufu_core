@@ -26,4 +26,49 @@ RSpec.describe Order::Commission, :type => :model do
 
   end
 
+  describe 'validates in keys' do
+    subject{Order::Commission.new(key: key, percent: 0.12).valid?}
+
+    context 'valid' do
+      let(:key){:to_translator}
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'invalid' do
+      let(:key){:to_vasya_pupking}
+
+      it{is_expected.to be_falsey}
+    end
+
+  end
+
+  describe '.create and execute transaction' do
+
+    let(:debit){create :user, balance: 10000}
+    let(:credit){create :user}
+    let(:order){create :order_base}
+
+    context 'no commission' do
+      subject{Order::Commission.create_and_execute_transaction(debit, credit, 100, order)}
+
+      it {expect{subject}.to change{Transaction.count}.by(1)}
+
+      it {expect{subject}.not_to change{Transaction.last.try(:is_commission_from)}}
+
+    end
+
+    context 'with commission' do
+
+      let(:commission){create :order_commission}
+
+      subject{Order::Commission.create_and_execute_transaction(debit, credit, 100, order, commission)}
+
+      it {expect{subject}.to change{Transaction.count}.by(1)}
+
+      it {expect{subject}.to change{Transaction.last.try(:is_commission_from)}.to(commission)}
+
+    end
+  end
+
 end

@@ -119,43 +119,25 @@ module Order
       !%w(new paying).include? state
     end
 
-    def create_and_execute_transaction(debit, credit, amount, commission = nil)
-      if debit.nil? || credit.nil?
-        return false
-      end
-      transaction = Transaction.new(sum: amount, debit: debit, credit: credit, invoice: invoices.first, is_commission_from: commission)
-      transaction.execute
-      transaction.save
-    end
-
     def senior
       nil
     end
-
-    # TODO: Refactoring. Divided by 2 methods: charge_agent_commission and charge_translator_commission.
-    # charge_translator_commission should be override in Order::Written class
     def after_close_cashflow
-      unless is_private
+      charge_agent_commission
+      charge_translator_commission
+    end
 
-        if self.is_a? Order::Written
-          if translation_language.is_chinese
-            if assignee.chinese?
-              charge_commission_to assignee.try(:user), :to_translator
-            else
-              charge_commission_to assignee.try(:user), 0.6
-            end
-          end
-        else
-          charge_commission_to assignee.try(:user), :to_translator
-        end
-
-        charge_commission_to senior.try(:user), :to_senior
-      end
+    def charge_agent_commission
+      charge_commission_to(senior.try(:user), :to_senior) unless is_private
       charge_commission_to referral_link.try(:user), :to_partner
       charge_commission_to banner.try(:user), :to_partner
       charge_commission_to referral_link.try(:user).try(:overlord), :to_partners_agent
       charge_commission_to banner.try(:user).try(:overlord), :to_partners_agent
       charge_commission_to assignee.try(:user).try(:overlord), :to_translators_agent
+    end
+
+    def charge_translator_commission
+      charge_commission_to assignee.try(:user), :to_translator
     end
 
     def custom_human_state_name

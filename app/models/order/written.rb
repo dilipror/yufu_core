@@ -295,6 +295,19 @@ module Order
     end
 
     private
+
+    def charge_translator_commission
+      unless is_private
+        if translation_language.is_chinese
+          if assignee.chinese?
+            charge_commission_to assignee.try(:user), :to_translator
+          else
+            charge_commission_to assignee.try(:user), 0.6
+          end
+        end
+      end
+    end
+
     def build_relations
       build_get_original
       build_get_translation
