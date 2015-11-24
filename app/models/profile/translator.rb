@@ -282,15 +282,15 @@ module Profile
     end
 
     def first_language_in_profile
-      services.first.language
+      services.first.try :language
     end
 
     def level
-      services.first.level
+      services.first.try :level
     end
 
-    def is_senior
-      service.first.language.senior == self
+    def is_senior?
+      services.first.try(:language).try(:senior) == self
     end
 
     def walet_amount_on_the_last_date_of_query(start_date, end_date)
