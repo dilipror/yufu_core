@@ -89,7 +89,7 @@ module PaymentGateway
       def self.alipay_sign_generate(params)
         params = stringify_keys(params)
         sign_type = 'MD5'
-        key = Rails.application.secrets.alipay_key
+        key = '2eftjv8a6vhcuootfngb43tbflmbb1fm'
         string = params_to_string params
         md5_sign key, string
 
