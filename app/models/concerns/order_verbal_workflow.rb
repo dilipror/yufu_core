@@ -87,6 +87,8 @@ module OrderVerbalWorkflow
         OrderWorkflowWorker.set(wait: (order.first_date_time - 36.hours - Time.now)).perform_later order.id.to_s, 'before_36'
         OrderWorkflowWorker.set(wait: (order.first_date_time - 24.hours - Time.now)).perform_later order.id.to_s, 'before_24'
         OrderWorkflowWorker.set(wait: (order.first_date_time -  4.hours - Time.now)).perform_later order.id.to_s, 'before_4'
+        CloseVerbalJob.set(wait: (order.last_date_time.to_time - Time.now)).perform_later order.id.to_s, 'finish_order'
+        CloseVerbalJob.set(wait: (order.last_date_time.to_time - Time.now + 3.days)).perform_later order.id.to_s, 'close'
         order.update paid_time: Time.now
       end
     end

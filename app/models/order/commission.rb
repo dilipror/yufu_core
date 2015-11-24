@@ -1,7 +1,7 @@
 class Order::Commission
   include Mongoid::Document
   field :key
-  field :percent
+  field :percent, type: Float
 
   def self.execute_transaction(key, debit, credit, price, order)
     commission = where(key: key).first

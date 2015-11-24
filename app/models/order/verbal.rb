@@ -163,6 +163,14 @@ module Order
       end
     end
 
+    def last_date_time
+      if reservation_dates.last.present?
+        reservation_dates.last.date
+      else
+        Time.now
+      end
+    end
+
     def will_begin_less_than?(time)
       (first_date_time.to_time - Time.now) <= time && (first_date_time.to_time - Time.now) > 0
     end
@@ -224,7 +232,7 @@ module Order
     end
 
     def can_update?
-      return true if in_progress?
+      return true if in_progress? || ready_for_close?
       close? ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
     end
     alias :can_update :can_update?

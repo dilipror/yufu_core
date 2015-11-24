@@ -350,6 +350,7 @@ en:
           need_reconfirm: need reconfirm
           main_reconfirm_delay: main reconfirm delay
           reconfirm_delay: reconfirm delay
+          ready_for_close: Ready for close
           in_progress: in progress
           done: done
           canceled_not_paid: cancele not paid
