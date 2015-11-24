@@ -144,7 +144,13 @@ class Invoice
   def encrypt_for_paypal(values)
     paypal_cert_rem = Rails.application.secrets.paypal_open_key
     app_cert_pem = Rails.application.secrets.app_open_key
-    app_key_pem = Rails.application.secrets.app_private_key
+
+    if Rails.env == 'production' || Rails.env == 'staging'
+      app_key_pem = File.read("#{Rails.root}/config/app_key.pem")
+    else
+      Rails.application.secrets.app_private_key
+    end
+
     signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(app_cert_pem), OpenSSL::PKey::RSA.new(app_key_pem, ''),
                                   values.map { |k, v| "#{k}=#{v}" }.join("\n"), [], OpenSSL::PKCS7::BINARY)
     OpenSSL::PKCS7::encrypt([OpenSSL::X509::Certificate.new(paypal_cert_rem)], signed.to_der, OpenSSL::Cipher::Cipher::new("DES3"),
