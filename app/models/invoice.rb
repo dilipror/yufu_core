@@ -141,40 +141,6 @@ class Invoice
     end
   end
 
-  def encrypt_for_paypal(values)
-    paypal_cert_rem = Rails.application.secrets.paypal_open_key
-    app_cert_pem = Rails.application.secrets.app_open_key
-
-    if Rails.env == 'production' || Rails.env == 'staging'
-      app_key_pem = File.read("#{Rails.root}/config/app_key.pem")
-    else
-      app_key_pem = Rails.application.secrets.app_private_key
-    end
-
-    signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(app_cert_pem), OpenSSL::PKey::RSA.new(app_key_pem, ''),
-                                  values.map { |k, v| "#{k}=#{v}" }.join("\n"), [], OpenSSL::PKCS7::BINARY)
-    OpenSSL::PKCS7::encrypt([OpenSSL::X509::Certificate.new(paypal_cert_rem)], signed.to_der, OpenSSL::Cipher::Cipher::new("DES3"),
-                            OpenSSL::PKCS7::BINARY).to_s.gsub("\n", "")
-  end
-
-  def paypal_encrypted
-    paypal_gw_id = Gateway::PaymentGateway.find_by(gateway_type: :paypal).id
-    values = {
-        cmd: '_xclick',
-        charset: 'utf-8',
-        business: Rails.application.config.merchant_email,
-        return: "#{Rails.application.config.success_root_url}/payment-gateway/#{paypal_gw_id}/success",
-        cancel_return: '/',
-        item_number: id,
-        item_name: I18n.t('mongoid.paypal.interpretation_service'),
-        currency_code: 'GBP',
-        cert_id: Rails.application.secrets.cert_id,
-        custom: Rails.application.secrets.ipn_return_secret,
-        amount: exchanged_cost('GBP').round(2),
-        notify_url: Rails.application.config.notify_url}
-    encrypt_for_paypal(values)
-  end
-
   # TODO: move this logic to gateway
   def check_pay_way
     if pay_way.present?
@@ -302,6 +268,17 @@ class Invoice
       eval("def #{attr}();return read_attribute(:#{attr}).present? ? read_attribute(:#{attr}) : subject.try(:owner).try(:#{attr});end;")
     end
     eval("def country_id;read_attribute(:country).present? ? read_attribute(:country) : subject.try(:owner).try(:country).try(:id);end;")
+  end
+
+  def service_name
+    case subject.class
+      when Order::Verbal
+        I18n.t('invoice_service.interpretation_service')
+      when Order::Written
+        I18n.t('invoice_service.translation_service')
+      when Order::LocalExpert
+        I18n.t('invoice_service.expert')
+    end
   end
 
 
