@@ -148,7 +148,7 @@ class Invoice
     if Rails.env == 'production' || Rails.env == 'staging'
       app_key_pem = File.read("#{Rails.root}/config/app_key.pem")
     else
-      Rails.application.secrets.app_private_key
+      app_key_pem = Rails.application.secrets.app_private_key
     end
 
     signed = OpenSSL::PKCS7::sign(OpenSSL::X509::Certificate.new(app_cert_pem), OpenSSL::PKey::RSA.new(app_key_pem, ''),
