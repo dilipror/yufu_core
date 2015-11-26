@@ -8,6 +8,8 @@ module Profile
 
     has_mongoid_attached_file :doc
     do_not_validate_attachment_file_type :doc
+    field :file_name
+
 
     embedded_in :profile_education
 
