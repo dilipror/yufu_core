@@ -1,4 +1,5 @@
 require "yufu_core/engine"
+require "yufu_core/config"
 require 'statistic'
 require 'statistic/base'
 require 'statistic/banners'
@@ -32,7 +33,14 @@ require 'active_model_serializers'
 require 'enumerize'
 require 'wicked_pdf'
 
-
-
 module YufuCore
+
+  def self.config
+    @config ||= YufuCore::Config.new
+  end
+
+  def self.configure(&block)
+    yield(config) if block_given?
+  end
+
 end

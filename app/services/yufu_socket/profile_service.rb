@@ -2,6 +2,7 @@ module YufuSocket
   class ProfileService
     def initialize(profile)
       @profile = profile if profile.persisted?
+      @yufu_redis_server = Redis.new(:url => "redis://#{YufuCore.config.redis_host}:#{YufuCore.config.redis_port}/#{YufuCore.config.redis_db}")
     end
 
     def profile_created!
@@ -18,11 +19,7 @@ module YufuSocket
 
     private
     def publish!(payload)
-      redis.publish("websockets.profile", payload) 
-    end
-
-    def redis
-      Redis.new
+      @yufu_redis_server.publish("websockets.profile", payload) 
     end
 
   end
