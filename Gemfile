@@ -8,6 +8,9 @@ gem 'mongoid_auto_increment'
 gem 'mongoid_paranoia'
 # gem "mongoid-enum"
 
+# for websocket
+gem 'faye-websocket' , '0.10.1'
+
 gem 'paperclip', '< 4.3'
 gem 'mongoid-paperclip', require: 'mongoid_paperclip'
 gem 'will_paginate_mongoid'

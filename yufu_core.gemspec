@@ -37,4 +37,5 @@ Gem::Specification.new do |s|
   s.add_dependency "wicked_pdf"
   s.add_dependency "wkhtmltopdf-binary"
   s.add_dependency "mongoid_paranoia"
+  s.add_dependency "faye-websocket", '0.10.1'
 end

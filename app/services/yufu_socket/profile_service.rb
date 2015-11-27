@@ -7,13 +7,13 @@ module YufuSocket
 
     def profile_created!
       return unless @profile.present?
-      payload = "{\"event\":\"profile_created\" , \"profile_id\":#{@profile.id} }"
+      payload = "{\"event\":\"profile_created\" , \"profile\":#{@profile.to_json} }"
       publish!(payload)
     end
 
     def profile_updated!
-      return unless @profile.updated_at?
-      payload = "{\"event\":\"profile_updated\" , \"profile_id\":#{@profile.id} }"
+      return unless @profile.valid?
+      payload = "{\"event\":\"profile_updated\" , \"profile\":#{@profile.to_json} }"
       publish!(payload)
     end  
 
