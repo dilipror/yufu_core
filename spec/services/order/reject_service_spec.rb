@@ -29,7 +29,7 @@ RSpec.describe Order::RejectService do
     subject{service.reject_order}
     before(:each){allow(service).to receive(:refund)}
 
-    it{expect{subject}.to change{order.state}.to 'rejected'}
+    it{expect{subject}.to change{order.state}.to 'canceled_by_client'}
 
     it 'receive refund method' do
       subject

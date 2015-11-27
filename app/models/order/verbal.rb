@@ -100,9 +100,6 @@ module Order
     scope :reconfirm_delay, -> {where state: 'reconfirm_delay'}
     scope :confirmation_delay, -> {where state: 'confirmation_delay'}
     scope :translator_not_found, -> {where state: 'translator_not_found'}
-    scope :canceled_by_client, -> {where state: 'canceled_by_client'}
-    scope :canceled_not_paid, -> {where state: 'canceled_not_paid'}
-    scope :canceled_by_yufu, -> {where state: 'canceled_by_yufu'}
     scope :ready_for_close, -> {where state: 'ready_for_close'}
 
     def can_send_primary_offer?

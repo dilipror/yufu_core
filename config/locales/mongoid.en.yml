@@ -353,7 +353,7 @@ en:
           ready_for_close: Ready for close
           in_progress: in progress
           done: done
-          canceled_not_paid: cancele not paid
+          canceled_by_not_paid: cancele not paid
           canceled_by_client: cancele by client
           canceled_by_yufu: cancele by yufu
           correcting: correcting

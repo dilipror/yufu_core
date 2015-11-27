@@ -5,9 +5,9 @@ module Order
     end
 
     def reject_order(inner = :client)
-      if @order.can_reject?
+      if @order.can_reject? inner
         refund inner
-        @order.reject
+        @order.reject inner
       end
     end
 
