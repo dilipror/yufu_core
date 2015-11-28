@@ -1,6 +1,6 @@
 module YufuHelper
   def root_with_locale
-    "#{Rails.application.config.host}/#{I18n.locale}"
+    "#{Rails.application.config.front_app_host}/#{I18n.locale}"
   end
 
   def root_url
