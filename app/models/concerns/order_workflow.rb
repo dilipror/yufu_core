@@ -39,7 +39,7 @@ module OrderWorkflow
       end
 
       event :cancel_by_client do
-        transition all - [:canceled_by_yufu, :canceled_by_not_paid, :canceled_by_client, :in_progress, :sent_to_client, :close] => :canceled_by_client
+        transition all - [:canceled_by_yufu, :canceled_by_not_paid, :canceled_by_client, :in_progress, :sent_to_client, :close, :rated] => :canceled_by_client
       end
 
       event :cancel_by_not_paid do
