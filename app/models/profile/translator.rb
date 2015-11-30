@@ -268,6 +268,16 @@ module Profile
     end
 
     # методы для репорта
+    def get_supported_cities
+      appr_ids = city_approves.approved.without_surcharge.distinct :city_id
+      City.where(:id.in => appr_ids).map &:id
+    end
+
+    def get_supported_langauges
+      lang_ids = services.approved.distinct :language_id
+      Language.where(:id.in => lang_ids).map &:id
+    end
+
     def amount_of_orders(start_date, end_date)
       orders.where(:created_at.gte => start_date, :created_at.lte => end_date).count
     end
