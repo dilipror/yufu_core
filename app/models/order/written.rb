@@ -294,6 +294,7 @@ module Order
         res
     end
 
+
     private
 
     def charge_translator_commission

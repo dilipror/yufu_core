@@ -173,4 +173,39 @@ RSpec.describe Order::Base, :type => :model do
     end
   end
 
+  describe 'can_reject?' do
+
+    let(:order){create :order_base, state: state}
+    subject{order.can_reject? inner}
+
+    context 'can by client' do
+
+      let(:inner){'client'}
+      let(:state){'new'}
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'can by yufu' do
+      let(:inner){'yufu'}
+      let(:state){'new'}
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'can not_paid' do
+      let(:inner){'not_paid'}
+      let(:state){'new'}
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'can not by client' do
+      let(:inner){'client'}
+      let(:state){'in_progress'}
+
+      it{is_expected.to be_falsey}
+    end
+  end
+
 end

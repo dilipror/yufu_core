@@ -26,13 +26,12 @@ module Order
 
       state :in_progress
       state :close
-      state :reject
 
       event :paid_expert do
         transition [:new] => :in_progress
       end
 
-      before_transition on: :reject do |order|
+      before_transition on: [:cancel_not_paid, :cancel_by_client, :cancel_by_yufu] do |order|
         order.notify_about_cancel_by_owner
       end
 
