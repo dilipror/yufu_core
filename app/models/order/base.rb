@@ -51,6 +51,9 @@ module Order
     scope :wait_offer,  -> { where :state.in => [:wait_offer, :paid, :confirmation_delay, :translator_not_found] }
     # scope :paid_orders, -> { where state: :in_progress}
     scope :unpaid,      -> { where :state.in => [:new, :paying] }
+    scope :canceled_by_client, -> {where state: 'canceled_by_client'}
+    scope :canceled_by_not_paid, -> {where state: 'canceled_by_not_paid'}
+    scope :canceled_by_yufu, -> {where state: 'canceled_by_yufu'}
 
     default_scope -> {desc :id}
 
