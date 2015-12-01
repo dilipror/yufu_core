@@ -12,7 +12,7 @@ module Order
     belongs_to :invoice
     belongs_to :pay_way, class_name: 'Gateway::PaymentGateway'
 
-    field :сrediting_funds, type: Float, default: 0.0
+    field :crediting_funds, type: Float, default: 0.0
 
     field :gateway_class
 

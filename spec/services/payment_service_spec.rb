@@ -19,7 +19,7 @@ describe PaymentService do
 
         it{expect{subject}.to change{payment.state}.to 'paid'}
         it{is_expected.to be_truthy}
-        it{expect{subject}.to change{payment.сrediting_funds}.by 100}
+        it{expect{subject}.to change{payment.crediting_funds}.by 100}
 
         it "credited to the user's account" do
           expect{subject}.to change{invoice.user.balance}.by(100)
@@ -36,7 +36,7 @@ describe PaymentService do
 
         it{expect{subject}.to change{payment.state}.to 'partial_paid'}
         it{is_expected.to be_truthy}
-        it{expect{subject}.to change{payment.сrediting_funds}.by 100}
+        it{expect{subject}.to change{payment.crediting_funds}.by 100}
 
         it "credited to the user's account" do
           expect{subject}.to change{invoice.user.balance}.by(100)

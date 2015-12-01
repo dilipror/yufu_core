@@ -6,7 +6,7 @@ class PaymentService
 
   def pay!(sum)
     if @payment.can_pay?
-      сrediting_funds! sum
+      crediting_funds! sum
       transfer_payment!
     else
       false
@@ -14,9 +14,9 @@ class PaymentService
   end
 
   private
-  def сrediting_funds!(sum)
+  def crediting_funds!(sum)
     @payment.balance += sum
-    @payment.сrediting_funds += sum
+    @payment.crediting_funds += sum
     @payment.save!
     Transaction.create(sum: sum,
                        debit: @payment,
@@ -25,7 +25,7 @@ class PaymentService
   end
 
   def transfer_payment!
-    if @payment.сrediting_funds >= @payment.invoice.cost
+    if @payment.crediting_funds >= @payment.invoice.cost
       @payment.pay && @payment.invoice.paid
     else
       @payment.partial_pay
