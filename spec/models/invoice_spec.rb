@@ -93,7 +93,6 @@ RSpec.describe Invoice, :type => :model do
       it 'count payments is changed' do
         subject
         expect(invoice.payments.count).to eq 1
-        expect(invoice.payments.last.sum).to eq invoice.cost
       end
     end
   end
