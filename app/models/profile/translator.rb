@@ -278,6 +278,11 @@ module Profile
       Language.where(:id.in => lang_ids).map &:id
     end
 
+    def get_supported_cities_with_surcharge
+      appr_ids = city_approves.approved.with_surcharge.distinct :city_id
+      City.where(:id.in => appr_ids).map &:id
+    end
+
     def amount_of_orders(start_date, end_date)
       orders.where(:created_at.gte => start_date, :created_at.lte => end_date).count
     end
