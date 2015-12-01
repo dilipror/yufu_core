@@ -29,7 +29,7 @@ module Order
       end
 
       event :partial_pay do
-        transition paying: :partial_paid
+        transition [:paying, :partial_paid] => :partial_paid
       end
 
     end
