@@ -50,14 +50,6 @@ module Order
       where :invoice_id.in => invoice_ids
     end
 
-    def difference_to_user
-      diff = partial_sum - sum
-      if diff > 0
-        write_attribute :balance, diff
-        Transaction.create(sum: diff, debit: self, credit: invoice.user).execute
-      end
-    end
-
     private
     def payment_gateway
       if pay_way.present?
