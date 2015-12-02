@@ -231,7 +231,7 @@ module Order
 
     def can_update?
       return true if in_progress? || ready_for_close?
-      close? ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
+      close? || rejected? ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
     end
     alias :can_update :can_update?
 
