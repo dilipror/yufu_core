@@ -267,7 +267,11 @@ module Profile
           services.approved.where(language_id: order.language.id, :level.gte => order.level_value).any?
     end
 
-    # методы для репорта
+    def is_senior?
+      assigned_languages.any?
+    end
+
+    # методы для репорта. TODO: Move to reports
     def get_supported_cities
       appr_ids = city_approves.approved.without_surcharge.distinct :city_id
       City.where(:id.in => appr_ids).map &:id
@@ -302,10 +306,6 @@ module Profile
 
     def level
       services.first.try :level
-    end
-
-    def is_senior?
-      services.first.try(:language).try(:senior) == self
     end
 
     def walet_amount_on_the_last_date_of_query(start_date, end_date)
