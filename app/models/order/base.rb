@@ -15,7 +15,8 @@ module Order
     # field :pay_way
     # Private orders is available only main office. Translators should not see these
     field :is_private, type: Mongoid::Boolean, default: false
-    field :paid_time,         type: Time
+    field :paid_time,  type: Time
+    field :locale,     default: 'en'
 
     auto_increment :number
 
@@ -37,6 +38,7 @@ module Order
     after_save :check_pay_way
     before_save :check_close
     after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
+    before_save ->(order) {order.write_attributes locale: I18n.locale}
 
     scope :writtens,      -> {where _type: 'Order::Written'}
     scope :verbals,       -> {where _type: 'Order::Verbal'}

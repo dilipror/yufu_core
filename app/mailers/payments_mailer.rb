@@ -5,6 +5,13 @@ class PaymentsMailer < ActionMailer::Base
   include ActionView::Helpers::UrlHelper
   include Devise::Controllers::UrlHelpers
 
+  before_action do
+    @stored_locale = I18n.locale
+  end
+  after_action do
+    I18n.locale = @stored_locale
+  end
+
   def bank_payment(profile_id)
     profile = User.where(id: profile_id).first || Profile::Base.where(id: profile_id).first
     if profile.is_a? User
@@ -17,6 +24,8 @@ class PaymentsMailer < ActionMailer::Base
   def remind_billing_info_2(user_id, invoice_id)
     user = User.find user_id
     invoice = Invoice.find invoice_id
+    I18n.locale = invoice.subject.locale
+    invoice.regenerate
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
     mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
@@ -27,6 +36,8 @@ class PaymentsMailer < ActionMailer::Base
     BigDecimal.class_eval do
       include Humanize
     end
+    I18n.locale = invoice.subject.locale
+    invoice.regenerate
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
     mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
