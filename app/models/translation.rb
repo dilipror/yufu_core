@@ -3,7 +3,7 @@ class Translation
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
-  EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
+  EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array ransack.
                     flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
                     admin.misc.filter_date_format ckeditor. admin.).join('|')}/
 

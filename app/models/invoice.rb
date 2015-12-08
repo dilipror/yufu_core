@@ -181,7 +181,10 @@ class Invoice
     cost_without_taxes + amount_tax
   end
 
-  def regenerate
+  def regenerate(locale = nil)
+    if locale.present?
+      I18n.locale = locale
+    end
     items.delete_all
     unless subject.nil?
       subject.paying_items.each do |it|

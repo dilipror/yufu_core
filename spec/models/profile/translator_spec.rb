@@ -450,4 +450,19 @@ RSpec.describe Profile::Translator, :type => :model do
     it{is_expected.to eq 15}
   end
 
+  describe '#is_senior?' do
+    let(:translator){create :profile_translator}
+    subject{translator.is_senior?}
+
+    context 'translator has assigned langs' do
+      let!(:lang){create :language, senior: translator}
+
+      it{is_expected.to be_truthy}
+    end
+
+    context 'translator has not assigned langs' do
+      it{is_expected.to be_falsey}
+    end
+  end
+
 end
