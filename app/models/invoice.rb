@@ -182,6 +182,9 @@ class Invoice
   end
 
   def regenerate(locale = nil)
+    if locale.present?
+      I18n.locale = locale
+    end
     items.delete_all
     unless subject.nil?
       subject.paying_items.each do |it|
