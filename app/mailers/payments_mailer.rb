@@ -37,7 +37,7 @@ class PaymentsMailer < ActionMailer::Base
       include Humanize
     end
     I18n.locale = invoice.subject.locale
-    invoice.regenerate
+    invoice.regenerate(invoice.subject.locale)
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
     mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
