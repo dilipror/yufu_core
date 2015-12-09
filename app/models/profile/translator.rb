@@ -279,8 +279,14 @@ module Profile
 
     def get_supported_langauges
       lang_ids = services.approved.distinct :language_id
-      Language.where(:id.in => lang_ids).map &:id
+      Language.where(:id.in => lang_ids).asc(:id).map &:id
     end
+
+    def get_supported_langauges_levels
+      services.approved.asc(:languge_id).asc(:id).map &:level
+      # Language.where(:id.in => lang_ids).asc(:id).map &:id
+    end
+
 
     def get_supported_cities_with_surcharge
       appr_ids = city_approves.approved.with_surcharge.distinct :city_id
