@@ -49,8 +49,14 @@ class City
   end
   alias :is_supported_with_surcharge :supported_with_surcharge?
 
-  def language_ids
-    translator_ids = city_approves.approved.distinct :translator_id
+  def language_ids(include_near_city)
+    p include_near_city.class
+    if include_near_city
+      translator_ids = city_approves.with_surcharge.approved.distinct :translator_id
+    else
+      translator_ids = city_approves.without_surcharge.approved.distinct :translator_id
+    end
+
     Profile::Service.approved.where(:translator_id.in => translator_ids, only_written: false).distinct :language_id
   end
 end
