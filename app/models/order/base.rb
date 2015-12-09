@@ -161,6 +161,10 @@ module Order
       self.send "cancel_by_#{inner}"
     end
 
+    def paying_items
+      []
+    end
+
     private
     # commission in %
     def charge_commission_to(account, key)

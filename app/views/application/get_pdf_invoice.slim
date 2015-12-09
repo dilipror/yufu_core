@@ -203,7 +203,7 @@ table rules="all"
         | }
         = cny.symbol
       - else
-        = invoice.humanize_float(Currency.exchange(Invoice.last.cost, 'GBP').to_f)
+        = Currency.exchange(Invoice.last.cost, 'GBP').to_f.to_words
         /= (BigDecimal.new(Currency.exchange(Invoice.last.cost, 'GBP').to_f, 2)).humanize.capitalize
         | }
         = gbp.symbol
