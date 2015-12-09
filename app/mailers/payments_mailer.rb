@@ -58,7 +58,8 @@ class PaymentsMailer < ActionMailer::Base
     pdf = WickedPdf.new.pdf_from_string(
         view.render_to_string(
             :template => 'application/get_pdf_invoice.slim',
-            :locals => { invoice: invoice, user: user, logo_url: "#{root_url}assets/logo_small.png", cny: cny, gbp: gbp, sum_gbp_items: sum_gbp_items}
+            :locals => { invoice: invoice, user: user, logo_url: "#{root_url}assets/logo_small.png", cny: cny, gbp: gbp, sum_gbp_items: sum_gbp_items},
+            :encoding => 'utf8'
         )
     )
   end
