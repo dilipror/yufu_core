@@ -107,7 +107,7 @@ RSpec.describe City, type: :model do
     let(:service_1){create :service, only_written: true, translator: translator, is_approved: true}
     let(:service_2){create :service, only_written: false, translator: translator, is_approved: true}
 
-    subject{city.language_ids}
+    subject{city.language_ids false}
 
     before(:each) do
       service_1
