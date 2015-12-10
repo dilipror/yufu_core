@@ -118,6 +118,7 @@ class User
 
   before_save :set_avatar_extension, :after_role_changed, :ensure_authentication_token
   before_create :role_changed_first_time
+  before_create :set_localization, if: -> {localization.blank?}
   after_create :create_default_profiles
   after_create ->(user) {ConfirmationReminderJob.set(wait: 3.days).perform_later(user.id.to_s)}
   # before_save :downcase_email
@@ -166,6 +167,10 @@ class User
   end
 
   private
+  def set_localization
+    self.localization = Localization.where(name: I18n.locale).first || Localization.default
+  end
+
   def generate_authentication_token
     loop do
       token = Devise.friendly_token
