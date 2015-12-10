@@ -95,6 +95,9 @@ class User
   has_many :expert_tickets,   class_name: 'Support::Ticket', inverse_of: :expert
   has_and_belongs_to_many :watched_tickets, class_name: 'Support::Ticket', inverse_of: :watchers
 
+  # From registration
+  belongs_to :localization
+  # Managed localizations
   has_and_belongs_to_many :localizations
   has_and_belongs_to_many :groups
 
