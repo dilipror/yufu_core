@@ -46,6 +46,7 @@ class Translation
   scope :simple_texts, -> {Translation.not :value => /\[|\]|\%\{.*\}|<|>|\[|\]/}
   scope :not_array_value, -> {where :value_is_array.ne => true}
   scope :terms_and_agree, ->{where key: Translation.terms_and_agree_regexp}
+  default_scope -> {asc :key}
 
   validates_presence_of :version
   validate :only_authorised_attributes
