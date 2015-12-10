@@ -96,9 +96,9 @@ class User
   has_and_belongs_to_many :watched_tickets, class_name: 'Support::Ticket', inverse_of: :watchers
 
   # From registration
-  belongs_to :localization
+  belongs_to :localization, inverse_of: :registred_user
   # Managed localizations
-  has_and_belongs_to_many :localizations
+  has_and_belongs_to_many :localizations, inverse_of: :users
   has_and_belongs_to_many :groups
 
   embeds_many :permissions
