@@ -1,4 +1,4 @@
-module Helpdesk
+module HelpDesk
   class Message
     include Mongoid::Document
     extend Enumerize
