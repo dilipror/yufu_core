@@ -1,4 +1,4 @@
-module HelpDesk
+module OnlineHelp
   class Chat
     include Mongoid::Document
     include Mongoid::Timestamps
@@ -9,7 +9,7 @@ module HelpDesk
     belongs_to :localization
     belongs_to :operator, class_name: 'User'
 
-    embeds_many :messages, class_name: 'HelpDesk::Message'
+    embeds_many :messages, class_name: 'OnlineHelp::Message'
 
     scope :active,    -> {where is_active: true}
     scope :in_active, -> {where :is_active.ne => true}
