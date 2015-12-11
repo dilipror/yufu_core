@@ -13,7 +13,7 @@ class User
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
-  has_mongoid_attached_file :avatar, default_url: "/no-avatar.png", styles: {thumb: '50x50#'}
+  has_mongoid_attached_file :avatar, default_url: "/no-avatar.png", styles: {thumb: '250x250#'}
   validates_attachment_content_type :avatar, content_type: %w(image/jpg image/jpeg image/png)
 
   ## Database authenticatable
