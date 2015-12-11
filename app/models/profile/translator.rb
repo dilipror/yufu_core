@@ -90,7 +90,7 @@ module Profile
         translator.operator = nil
       end
 
-      before_transition :on => :translator_refuse do |translator|
+      before_transition :on => :refuse do |translator|
         translator.operator = nil
       end
 
@@ -102,7 +102,7 @@ module Profile
         transition [:new, :ready_for_approvement] => :approving_in_progress
       end
 
-      event :translator_refuse do
+      event :refuse do
         transition :approving_in_progress => :ready_for_approvement
       end
 

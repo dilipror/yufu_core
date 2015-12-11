@@ -91,11 +91,11 @@ module Support
     end
 
     def has_new_comments_for?(user)
-      receipts_for(user).unviewed.exists?
+      receipts_for(user).where(viewed: false).exists?
     end
 
     def viewed_by!(user)
-      receipts_for(user).unviewed.update_all viewed: true
+      receipts_for(user).where(viewed: false).update_all viewed: true
     end
 
     def receipts_for(user)
