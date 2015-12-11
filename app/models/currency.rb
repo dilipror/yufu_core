@@ -28,6 +28,9 @@ class Currency
     Thread.current[:current_currency] = value
   end
 
+
+
+
   def self.name_from_iso_code(iso_code)
     find_by iso_code: iso_code
   end
@@ -35,11 +38,12 @@ class Currency
   def self.exchange(value, currency = nil)
     value ||= 0
     return BigDecimal::INFINITY if  value == BigDecimal::INFINITY
-    eu_central_bank = ExchangeBank.instance
     currency = currency || Currency.current_currency
-    eu_central_bank.exchange(value * 100, 'CNY', currency)
+    EuBank.exchange(value * 100, 'CNY', currency)
   rescue
-    999999
+    EuBank.update_rates Rails.application.config.eu_bank_exchange_rates
+    currency = currency || Currency.current_currency
+    EuBank.exchange(value * 100, 'CNY', currency)
   end
 
   def self.exchange_to_f(value, currency = nil)
