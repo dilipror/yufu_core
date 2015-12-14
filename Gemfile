@@ -12,7 +12,6 @@ gem 'paperclip', '< 4.3'
 gem 'mongoid-paperclip', require: 'mongoid_paperclip'
 gem 'will_paginate_mongoid'
 gem 'enumerize'
-gem 'mongoid_token'
 
 gem 'devise'
 gem 'cancancan'

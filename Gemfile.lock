@@ -13,9 +13,7 @@ PATH
       mongoid (> 4.0.0)
       mongoid-autoinc
       mongoid-paperclip
-      mongoid_auto_increment
       mongoid_paranoia
-      mongoid_token
       oj
       paperclip (< 4.3)
       rails (> 4.2.0)
@@ -165,8 +163,6 @@ GEM
     mongoid_paranoia (0.2.1)
       mongoid (>= 4)
       mongoid-compatibility
-    mongoid_token (3.0.0)
-      mongoid (~> 4.0.0)
     moped (2.0.7)
       bson (~> 3.0)
       connection_pool (~> 2.0)
@@ -328,7 +324,6 @@ DEPENDENCIES
   mongoid-paperclip
   mongoid_auto_increment
   mongoid_paranoia
-  mongoid_token
   oj
   paperclip (< 4.3)
   rack
@@ -342,3 +337,6 @@ DEPENDENCIES
   test-unit
   will_paginate_mongoid
   yufu_core!
+
+BUNDLED WITH
+   1.10.6

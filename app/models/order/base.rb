@@ -17,8 +17,9 @@ module Order
     field :is_private, type: Mongoid::Boolean, default: false
     field :paid_time,  type: Time
     field :locale,     default: 'en'
+    field :number, type: Integer
 
-    auto_increment :number
+    increments :number
 
     belongs_to :owner,           class_name: 'Profile::Base'
     belongs_to :assignee,        class_name: 'Profile::Translator'
