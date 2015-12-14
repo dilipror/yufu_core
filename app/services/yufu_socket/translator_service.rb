@@ -1,18 +1,12 @@
 module YufuSocket
-  class ProfileService < BaseRedisService
+  class TranslatorService < BaseRedisService
+    
+    CHANNEL = "websockets.translator"
+    attr_reader :profile,:channel
 
-    CHANNEL = "websockets.profile"
-    attr_reader :profile, :channel
-
-    def initialize(profile , channel = CHANNEL)
+    def initialize(profile, channel = CHANNEL)
       @profile = profile if profile.persisted?
       @channel = channel
-    end
-
-    def profile_created!
-      return unless profile.persisted?
-      payload = "{\"event\":\"profile_created\" , \"profile\":#{profile.to_json} }"
-      publish!(payload)
     end
 
     def profile_updated!
@@ -21,6 +15,7 @@ module YufuSocket
       publish!(payload)
     end  
 
+    private
     def publish!(payload)
       connection.publish(channel, payload) 
     end

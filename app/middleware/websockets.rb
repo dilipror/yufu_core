@@ -1,4 +1,5 @@
 require 'faye/websocket'
+require 'yufu_socket/redis_subscriber_service'
     
 class Websockets
 
@@ -14,20 +15,8 @@ class Websockets
 
     # Must do this in a new thread because the following operations are 
     # blocking.
-    Thread.new do
-      # New connection to Redis
-      redis_sub = Redis.new
-
-      # Create a new pattern-based subscription that will listen for new messages on any channel
-      # that matches the pattern "websockets.*".
-      redis_sub.psubscribe("#{base_channel}.*") do |on|
-
-        # When a message is received, execute the send_message method
-        on.pmessage do |pattern, channel, msg|
-          send_message(channel, msg)
-        end
-
-      end
+    Thread.new do      
+      YufuSocket::RedisSubscriberService.new(@clients,@base_channel).process
     end
 
   end
@@ -40,23 +29,6 @@ class Websockets
     else
       # Normal requests will continue through the call chain.
       @app.call(env)
-    end
-  end
-
-  def send_message(channel, msg)
-    # For every client that has connected
-    clients.each do |client|
-
-      channel_name = channel.gsub("#{base_channel}.", "")
-
-      # If the client has requested a subscription to this channel
-      if client[:channels].include?(channel_name)
-
-        # Send the client the message, including the channel on which it
-        # was received.
-        message = "{\"channel\":\"#{channel_name}\",\"message\":#{msg}}"
-        client[:ws].send(message)
-      end
     end
   end
 
@@ -109,6 +81,7 @@ class Websockets
 
       # Add the client to the list of clients
       clients.push(client)
+      YufuSocket::RedisSubscriberService.clients.push(client)
     end
 
   end
@@ -118,6 +91,7 @@ class Websockets
     ws.on :close do |event|
       # Remove them from our list
       clients.delete(client)
+      YufuSocket::RedisSubscriberService.clients.delete(client)
       ws = nil
     end
   end

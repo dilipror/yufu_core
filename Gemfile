@@ -50,6 +50,8 @@ group :test, :development do
   # gem 'spring'
   gem 'mailcatcher'
   gem 'test-unit'
+  gem 'mock_redis'
+   gem "byebug"
 end
 
 
