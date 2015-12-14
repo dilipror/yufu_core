@@ -1,6 +1,7 @@
 class Invoice
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Autoinc
   include Monetizeable
   include Filterable
 
@@ -26,8 +27,9 @@ class Invoice
   field :skype
   field :viber
   field :wechat
+  field :number, type: Integer
 
-  auto_increment :number
+  increments :number
 
   belongs_to :country
   belongs_to :subject,  class_name: 'Order::Base'
