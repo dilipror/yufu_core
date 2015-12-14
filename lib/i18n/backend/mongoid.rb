@@ -57,6 +57,7 @@ module I18n
       protected
       def lookup(locale, key, scope = [], options = {})
         localization = Localization.where(name: locale).first
+        key = I18n.send('normalize_key', key, '.').first
         key = normalize_flat_keys(locale, key, scope, options[:separator])
         return nil if localization.nil?
 

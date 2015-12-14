@@ -74,8 +74,8 @@ class PaymentsMailer < ActionMailer::Base
         }
     )
 
-    pdf.text "同志們！商品看！", :fallback_fonts => fallback_fonts
-    pdf.text "Hello!!!", :fallback_fonts => fallback_fonts
+    # pdf.text "同志們！商品看！", :fallback_fonts => fallback_fonts
+    # pdf.text "Hello!!!", :fallback_fonts => fallback_fonts
 
     attachments['prawn.pdf'] ={
         mime_type: 'application/pdf',
