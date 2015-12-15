@@ -32,6 +32,5 @@ require 'enumerize'
 require 'wicked_pdf'
 
 
-
 module YufuCore
 end
