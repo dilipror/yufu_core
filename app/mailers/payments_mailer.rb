@@ -43,45 +43,7 @@ class PaymentsMailer < ActionMailer::Base
     I18n.locale = invoice.subject.locale
     invoice.regenerate(invoice.subject.locale)
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
-    pdf = Prawn::Document.new
-    kit = PDFKit.new("<p>Hello 同志們！商品看！</p>", :page_size => 'Letter')
 
-    kai = "#{Rails.root}/app/assets/fonts/gkai00mp.ttf"
-    dejavu = "#{Rails.root}/app/assets/fonts/DejaVuSans.ttf"
-
-    pdf.font_families.update("dejavu" => {
-                             :normal      => dejavu,
-                             :italic      => dejavu,
-                             :bold        => dejavu,
-                             :bold_italic => dejavu
-                         })
-
-    #Times is defined in prawn
-    pdf.font_families.update("times" => {
-                             :normal => "Times-Roman",
-                             :italic      => "Times-Italic",
-                             :bold        => "Times-Bold",
-                             :bold_italic => "Times-BoldItalic"
-                         })
-
-
-    pdf.font_families.update(
-        "kai" => {
-            :normal => { :file => kai, :font => "Kai" },
-            :bold   => kai,
-            :italic => kai,
-            :bold_italic => kai
-        }
-    )
-
-    pdf.text "同志們！商品看！", :fallback_fonts => fallback_fonts
-    pdf.text "Hello!!!", :fallback_fonts => fallback_fonts
-
-    attachments['prawn.pdf'] ={
-        mime_type: 'application/pdf',
-        content: pdf.render
-    }
-    attachments['pdfkit.pdf'] = kit.to_pdf
     mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
   end
 
