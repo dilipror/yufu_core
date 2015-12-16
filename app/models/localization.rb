@@ -12,6 +12,7 @@ class Localization
 
   field :name
   field :enable, type: Mongoid::Boolean, default: false
+  field :is_for_chat, type: Mongoid::Boolean, default: false
 
   belongs_to :language
   belongs_to :currency
