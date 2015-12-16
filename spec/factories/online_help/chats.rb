@@ -3,7 +3,7 @@ FactoryGirl.define do
     email 'email@example.com'
     association :localization
 
-    trait :in_active do
+    trait :inactive do
       is_active false
     end
   end
