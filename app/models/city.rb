@@ -51,7 +51,7 @@ class City
 
   def language_ids(include_near_city)
     if include_near_city
-      translator_ids = city_approves.with_surcharge.approved.distinct :translator_id
+      translator_ids = city_approves.approved.distinct :translator_id
     else
       translator_ids = city_approves.without_surcharge.approved.distinct :translator_id
     end
