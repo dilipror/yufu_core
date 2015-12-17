@@ -25,7 +25,7 @@ module OnlineHelp
     private
 
     def assign_operator
-      raw_url = Rails.config.online_help_reassign
+      raw_url = Rails.application.config.online_help_reassign
       url = URI.parse(raw_url)
       req = Net::HTTP::Get.new(url.to_s)
       res = Net::HTTP.start(url.host, url.port) {|http|
