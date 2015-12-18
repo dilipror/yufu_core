@@ -63,7 +63,7 @@ module Order
     validate :attachments_count, if: ->{step > 1}
 
     def attachments_count
-      errors.add(attachments: 'expect at least one') if attachments.count == 0
+      errors.add(:attachments, "expect at least one") if attachments.size == 0
     end
 
     state_machine initial: :new do
