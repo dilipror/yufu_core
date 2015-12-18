@@ -2,7 +2,7 @@ class Notification
   include Mongoid::Document
   include Mongoid::Timestamps::Created
 
-  attr_accessor :mailer
+  attr_accessor :mailer, :sms_mailer
 
   field :message
 
@@ -12,13 +12,23 @@ class Notification
   default_scope -> {desc :created_at}
   index({created_at: 1}, {expire_after_seconds: 1.month})
 
-  after_create do
-    mail = self.mailer.is_a?(Proc) ? mailer.call(self.user, self.object) : (self.mailer || UsersMailer.new_notification(self))
-    mail.deliver if user.send_notification_on_email? || user.duplicate_notifications_on_additional_email?
-    # SmsGate.send_sms user.phone, message if user.send_notification_on_sms? && user.phone.present?
-  end
+  after_create :send_mail, :send_sms
 
   def message
     I18n.t(super)
+  end
+
+  private
+  def send_mail
+    if user.send_notification_on_email? || user.duplicate_notifications_on_additional_email?
+      mail = self.mailer.is_a?(Proc) ? mailer.call(self.user.id.to_s, self.object.id.to_s) : (self.mailer || UsersMailer.new_notification(user.id.to_s, self.id.to_s))
+      mail.deliver_later if mail.present?
+    end
+  end
+
+  def send_sms
+    if self.sms_mailer.is_a?(Proc) && user.send_notification_on_sms?
+      sms_mailer.call(self.user, self.object).try(:deliver)
+    end
   end
 end

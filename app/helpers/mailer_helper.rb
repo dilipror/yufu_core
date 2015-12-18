@@ -1,5 +1,10 @@
 module MailerHelper
 
+  include ActionView::Helpers::UrlHelper
+  include Devise::Controllers::UrlHelpers
+
+
+
   class MailPage
     include ActionView::Helpers::TagHelper
     include ActionView::Helpers::UrlHelper
@@ -16,6 +21,7 @@ module MailerHelper
     def h1(text )
       content_tag :h1, text, style: "color: #c65aa2; font-size: 25px; font-family: 'Open Sans', sans-serif;"
     end
+
 
     def p(text)
       content_tag :p, text, style: "font-size: 17px; font-family: 'Open Sans', sans-serif;"

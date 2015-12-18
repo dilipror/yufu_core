@@ -1,5 +1,20 @@
 en:
   notifications:
+    offers:
+      confirm_primary_offer_for_client: Your main interpreter has been approved
+      confirm_primary_offer_for_translator: You have become a main interpreter on order
+      confirm_secondary_offer_for_client: Your backup interpreter has been approved
+      confirm_secondary_offer_for_translator: You have become a back-up interpreter on order
+      create_offer_for_owner: New offer has been created
+    order_details:
+      location: Location
+      language: language
+      greeted_at: greeted at
+    dashboard_link: My dashboard
+    become_main_int_17: You have become main interpreter for offer
+    become_back_up_int_18: You have become back up interpreter for offer
+    back_up_for_client: Your order have main translator
+    back_up_for_client: Your order have back up translator
     new_messages: New message
     processing_order: Your order is processed by an interpreter
     ready_for_processing: New order is available to you
@@ -10,3 +25,20 @@ en:
     done_order: Order is finished
     change_status_main_intrp: change status
     appointment_with_interpreter: Appointment with interpreter
+    order_details_4: Found translator for your order
+    looking_for_int: We are looking for interpreter for your order
+    re_confirm_main_19: "Please re-confirm your confirmation"
+    re_confirm_back_up_20: "Please re-confirm your confirmation"
+    looking_for_int_before_24: "We are still looking for interpreter for your order"
+    cancel_12: Your order is cancelled
+    re_confirmed_translator_21: "Your confirmation has been re-confirmed"
+    re_confirmed_client_6: "Interpreter for your offer has been changed"
+    cancel_by_yufu: Your order has been cancelled by yufu
+    check_dates_5: Please, check dates
+    cancel_delayed_order: Your order is cancelled
+    cancel_by_owner: Your order is cancelled
+    remind_billing_info_2: You still have not paid order
+    cancel_not_paid_3: Your order was canceled after 7 days, have not been paid
+
+  tickets:
+    new_comment: New comment

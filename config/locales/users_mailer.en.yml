@@ -1,0 +1,23 @@
+en:
+  users_mailer:
+    confirmation_reminder_23:
+      subject: Sign up reminder
+      body: "Dear %{client}, \n
+
+             We kindly inform that you haven’t confirmed your registration in Yufu.net website (log in as a registered\n
+
+             user).\n
+
+             To complete your registration in YUFU.NET, please follow the link below:\n
+
+             %{confirmation_url}\n
+
+             Thank you for choosing Yufu.net!\n
+
+             Sincerely Yours,\n
+
+             YUFU.NET community\n
+
+             Translation & Advisory services all over China\n"
+    invitation:
+      subject: Welcome to My Awesome Site                                                                                  We do it professionally!"

@@ -1,6 +1,7 @@
 en:
   mongoid:
-
+    paypal:
+      interpretation_service: Interpretation service
     surcharge: Surcharge
 
     main_menu:
@@ -10,6 +11,7 @@ en:
       city_approves: City approves
       service_approves: Service approves
       languages: Languages
+      financial_department: Financial department
 
     state_machine_human_name:
       open: open
@@ -173,17 +175,22 @@ en:
         identification_number: Identification number
         surname_in_pinyin: Surname in pinyin
         years_out_of_China: Years out of China
+        years_in_China: Years in China
+
+
         avatar: Avatar
         service:
           services: Services
           language: Language
           level: Level
+          to: To
           verbal_approve: Verbal approve
           written_approve: Written approve
           email: Translator's email
           receive_local_expert: Receive order for local expert
           want_be_a_senior: Want be a senior
           is_senior: Is senior
+          level_up_request: Level up request
         city_approve:
           city_approves: City approves
           city: City
@@ -204,6 +211,7 @@ en:
           step_contact: Step contact
           step_education: Step education
           educations: Educations
+          education: Education
           grade: Grade
           university: University
           country: Country
@@ -251,6 +259,7 @@ en:
         role: Role
         groups: Groups
         permissions: Permissions
+        actions: Actions
         remember_me: Remember me
         duplicate_messages_on_email: Duplicate messages by Email
         duplicate_messages_on_sms: Duplicate messages by SMS
@@ -308,19 +317,46 @@ en:
 
 
 
-  state_machines:
-    support/ticket:
-      state:
-        open: open
-        in_progress: in progress
-        closed: closed
-        reopen: reopen
-        paing: paing
-        wait_offer: wait offer
-        additional_paying: additional paying
-        in_progress: in progress
-        close: close
-        rated: rated
-        correcting: correcting
-        quality_control: quality control
-        sent_to_client: sent to client
+    state_machines:
+      support/ticket:
+        state:
+          open: open
+          in_progress: in progress
+          closed: closed
+          reopen: reopen
+          paing: paing
+          wait_offer: wait offer
+          additional_paying: additional paying
+          in_progress: in progress
+          close: close
+          rated: rated
+          correcting: correcting
+          quality_control: quality control
+          sent_to_client: sent to client
+      order/base:
+        states:
+          new: new
+          need_reconfirm: need reconfirm
+          paying: paying
+          wait_offer: wait offer
+          additional_paying: additional paying
+          in_progress: in progress
+          close: close
+          rated: rated
+          rejected: rejected
+          confirmed: confirmed
+          confirmation_delay: confirmation delay
+          translator_not_found: translator not found
+          need_reconfirm: need reconfirm
+          main_reconfirm_delay: main reconfirm delay
+          reconfirm_delay: reconfirm delay
+          ready_for_close: Ready for close
+          in_progress: in progress
+          done: done
+          canceled_not_paid: cancele not paid
+          canceled_by_client: cancele by client
+          canceled_by_yufu: cancele by yufu
+          correcting: correcting
+          quality_control: quality control
+          sent_to_client: sent to client
+          wait_corrector: wait corrector

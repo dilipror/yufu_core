@@ -26,6 +26,23 @@ FactoryGirl.define do
       create_list(:order_language_criterion, evaluator.reserve_language_criterions_count,
                   reserve_socket: order) if order.reserve_language_criterions.blank?
     end
+
+    trait :confirmed do
+      state 'confirmed'
+    end
+
+    trait :need_reconfirm do
+      state 'need_reconfirm'
+    end
+
+    trait :main_reconfirm_delay do
+      state 'main_reconfirm_delay'
+    end
+
+    trait :reconfirm_delay do
+      state 'reconfirm_delay'
+    end
+
   end
 
   factory :wait_offers_order, parent: :order_verbal do
@@ -40,6 +57,10 @@ FactoryGirl.define do
     association :translation_language, factory: :language
     quantity_for_translate 1200
     order_type {create(:written_type)}
+  end
+
+  factory :wait_assignee_order, parent: :order_written do
+    state 'wait_offer'
   end
 
   factory :order_local_expert, class: Order::LocalExpert do

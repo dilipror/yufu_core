@@ -24,6 +24,7 @@ FactoryGirl.define do
 
   factory :profile_steps_contact, :class => 'Profile::Steps::Contact' do
     association :translator, factory: :profile_translator
+    sequence(:phone) {|n| "91111#{n}"}
 
   end
 

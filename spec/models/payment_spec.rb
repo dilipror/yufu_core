@@ -4,17 +4,15 @@ RSpec.describe Order::Payment, :type => :model do
 
   describe '#pay' do
     let(:bank) {create :payment_bank}
-    let(:invoice) {create :invoice, state: 'paying', pay_way: bank, cost: 10}
+    let(:order) {create :order_verbal}
+    let(:invoice) {create :invoice, state: 'paying', pay_way: bank, cost: 10, subject: order}
     let(:payment) {invoice.payments.last}
-
-    # before(:each) {invoice.client_info.update_attributes wechat: 's'}
-
 
     before(:each) do
       Currency.create iso_code: 'USD'
       Currency.create iso_code: 'CNY'
       Currency.create iso_code: 'EUR'
-      invoice.client_info.update_attributes wechat: 's'
+      payment.invoice.user.update_attributes balance: 0
     end
 
     subject{payment.pay}

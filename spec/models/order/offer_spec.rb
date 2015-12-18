@@ -2,106 +2,268 @@ require 'rails_helper'
 
 RSpec.describe Order::Offer, :type => :model do
 
-  describe 'notifications' do
-    describe 'after confirm' do
-      subject{offer.update! is_confirmed: true}
+  describe '#can_confirm?' do
 
-      context 'offer is secondary' do
-        let(:offer){create :order_offer, status: 'secondary'}
+    let(:translator){create :profile_translator}
 
-        it {expect{subject}.to change{offer.translator.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{offer.order.owner.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{NotificationMailer.deliveries.count}.by(2)}
+    let(:order){create :order_verbal, offers: [], state: state}
+    let(:offer){create :order_offer, order: order, translator: translator}
+    before(:each){order.stub(:process).and_return(true)}
+
+    subject{offer.confirm}
+
+    context 'can confirm primary' do
+
+      let(:state){'need_reconfirm'}
+
+      it{is_expected.to be_truthy}
+      it{ expect{subject}.to change{offer.state}.from('new').to('confirmed')}
+    end
+
+    context 'can confirm backup' do
+
+      before(:each) do
+        offer.stub(:primary?).and_return(false)
+        offer.stub(:back_up?).and_return(true)
       end
 
-      context 'offer is primary' do
-        let(:offer){create :order_offer, status: 'primary'}
+      let(:state){'main_reconfirm_delay'}
 
-        it {expect{subject}.to change{offer.translator.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{offer.order.owner.user.notifications.count}.by(1)}
-        it {expect{subject}.to change{NotificationMailer.deliveries.count}}
+      it{is_expected.to be_truthy}
+      it{expect{subject}.to change{offer.state}.from('new').to('confirmed')}
+    end
+
+    context 'can not confirm primary' do
+
+      before(:each) do
+        offer.stub(:primary?).and_return(true)
+        offer.stub(:back_up?).and_return(false)
+        offer.update state: 'new'
       end
+
+      let(:state){'confirmed'}
+
+      it{is_expected.to be_falsey}
+      it{ expect{subject}.not_to change{offer.state}.from('new')}
+    end
+
+    context 'can not confirm backup' do
+
+      let(:state){'need_reconfirm'}
+
+      before(:each) do
+        offer.stub(:primary?).and_return(false)
+        offer.stub(:back_up?).and_return(true)
+        offer.update state: 'new'
+      end
+
+      it{is_expected.to be_falsey}
+      it{ expect{subject}.not_to change{offer.state}.from('new')}
+    end
+
+    context 'can confirm any' do
+
+      let(:state){'reconfirm_delay'}
+
+      before(:each) do
+        offer.stub(:primary?).and_return(false)
+        offer.stub(:back_up?).and_return(false)
+        offer.update state: 'new'
+      end
+
+      it{is_expected.to be_truthy}
+      it{ expect{subject}.to change{offer.state}.from('new').to('confirmed')}
+    end
+
+
+  end
+
+  describe 'become main or back_up' do
+
+    let(:translator){create :profile_translator}
+
+    subject{order.offers.create translator: translator}
+
+    context 'main offer' do
+
+      before(:each){Order::Offer.any_instance.stub(:primary?).and_return(true)}
+
+      let(:order){create :order_verbal, offers: []}
+
+      it{expect{subject}.to change{translator.user.reload.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+
+    end
+
+    context 'back_up offer' do
+      let(:order){create :order_verbal, offers: []}
+
+      before(:each){create :order_offer, translator: translator, order: order}
+
+      let(:translator_back_up){create :profile_translator}
+
+      subject{order.offers.create translator: translator_back_up}
+
+      it{expect{subject}.not_to change{translator.user.notifications.count}}
+      it{expect{subject}.to change{translator_back_up.user.notifications.count}.by(1)}
+      it{expect{subject}.to change{order.owner.user.notifications.count}.by(1)}
+
     end
   end
 
-  describe '#process_order' do
-    let(:order){create :wait_offers_order, offers: []}
-    subject {create :order_offer, status: status, is_confirmed: confirm, order: order}
+  describe '#confirm' do
 
-    context 'create primary offer' do
-      let(:status){'primary'}
+    let(:translator){create :profile_translator}
+    let(:translator_bu){create :profile_translator}
+    let(:translator_other){create :profile_translator}
+    let(:order){create :order_verbal, state: 'need_reconfirm'}
+    let(:offer){create :order_offer, translator: translator, order: order}
+    let(:offer_1){create :order_offer, translator: translator_bu, order: order}
+    let(:offer_2){create :order_offer, translator: translator_other, order: order}
 
-      context 'create confirmed offer' do
-        let(:confirm){true}
+    subject{offer.confirm}
 
-        context 'order has confirmed secondary offer' do
-          before :each do
-            create :order_offer, status: 'secondary', is_confirmed: true, order: order
-          end
+    context 'can confirm' do
 
-          it{expect{subject}.to change{order.state}.to('in_progress')}
-        end
+      before(:each){offer.stub(:can_confirm?).and_return(true)}
 
-        context 'order has not confirmed secondary offer' do
-          it{expect{subject}.not_to change{order.state}}
-        end
+      it{expect{subject}.to change{translator.user.reload.notifications.count}.by(1)}
+      it{expect{subject}.not_to change{translator_bu.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_other.user.notifications.count}}
+
+      context 're-confirmed be main' do
+
+        before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+
       end
-      context 'create not confirmed offer' do
-        let(:confirm){false}
 
-        it{expect{subject}.not_to change{order.state}}
+      context 're-confirmed be main' do
+
+        before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+        before(:each){
+          offer
+          offer_1
+        }
+
+        subject{offer.confirm}
+
+        it{expect{subject}.not_to change{order.owner.user.notifications.count}}
+
       end
+
+      context 're-confirmed other' do
+
+        before(:each){offer.stub(:can_confirm?).and_return(true)}
+
+        subject{offer_2.confirm}
+
+        let(:offer){create :order_offer, translator: translator, order: order, state: 'rejected'}
+        let(:offer_1){create :order_offer, translator: translator_bu, order: order, state: 'rejected'}
+
+
+        before(:each){
+          order.stub(:will_begin_less_than?).with(36.hours).and_return(true)
+          order.stub(:process).and_return(true)
+          order.stub(:before_60)
+          offer
+          offer_1
+          offer_2
+          offer_2.update state: 'new'
+        }
+
+        it{expect{subject}.to change{translator_other.user.notifications.count}.by(1)}
+        it{expect{subject}.to change{order.owner.user.reload.notifications.count}.by(1)}
+        it{expect{subject}.not_to change{translator.user.notifications.count}}
+        it{expect{subject}.not_to change{translator_bu.user.notifications.count}}
+
+      end
+
     end
 
-    context 'create secondary offer' do
-      let(:status){'secondary'}
+    context 'can not confirm' do
 
-      context 'create confirmed offer' do
-        let(:confirm){true}
+      before(:each){offer.stub(:can_reconfirm?).and_return(false)}
 
-        context 'order has confirmed primary offer' do
-          before :each do
-            create :order_offer, status: 'primary', is_confirmed: true, order: order
-          end
+      it{expect{subject}.not_to change{order.state}}
+      it{expect{subject}.not_to change{translator.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_bu.user.notifications.count}}
+      it{expect{subject}.not_to change{translator_other.user.notifications.count}}
+      it{expect{subject}.not_to change{order.owner.user.notifications.count}}
 
-          it{expect{subject}.to change{order.state}.to('in_progress')}
-        end
-
-        context 'order has not confirmed primary offer' do
-          it{expect{subject}.not_to change{order.state}}
-        end
-      end
-      context 'create not confirmed offer' do
-        let(:confirm){false}
-
-        it{expect{subject}.not_to change{order.state}}
-      end
     end
+
+    context '#confirm_after_create' do
+
+      let(:order){create :order_verbal, offers: [], state: state}
+
+      subject{create :order_offer, translator: translator, order: order}
+
+      context 'before 36' do
+
+       let(:state){'reconfirm_delay'}
+
+        it{expect(subject.state).to eq('confirmed')}
+
+      end
+
+      context 'out of time frames' do
+
+        let(:state){'main_reconfirm_delay'}
+
+        it{expect(subject.state).not_to eq('confirmed')}
+      end
+
+    end
+
   end
 
-  specify 'cannot create 2 primary application for one order' do
-    order = create :order_verbal
-    order.offers << (create :order_offer, status: 'primary')
-    application = build :order_offer, status: 'primary', order: order
-    expect(application.valid?).to be_falsey
+  describe '#reject' do
+
+    let(:translator){create :profile_translator}
+    let(:offer){create :order_offer, translator: translator}
+
+    subject{offer.reject}
+
+    it{expect{subject}.to change{translator.is_banned}.to true}
+
   end
 
-  describe 'validate no secondary before primary' do
+  describe '#only_one_new_offer' do
 
-    let(:order){create :order_verbal}
-    subject{Order::Offer.new(order: order, status: 'secondary').valid?}
+    let(:translator){create :profile_translator}
 
-    context 'no primary offer' do
-      it {is_expected.to be_truthy}
+    let(:order){create :order_verbal, offers: []}
+
+    subject do
+      offer = (build :order_offer, translator: translator, order: order)
+      order.offers << offer
+      offer.valid?
     end
 
-    context 'has primary offer' do
+    before(:each){order.stub(:will_begin_less_than?).with(36.hours).and_return(false)}
 
-      before(:each) {create :order_offer, order: order, status: 'primary' }
+    context 'no offers' do
 
-      it {is_expected.to be_truthy}
+      it{is_expected.to be_truthy}
+
     end
+
+    context 'only rejected offer' do
+      before(:each){offer = create :order_offer, translator: translator, order: order, state: 'rejected'; order.offers << offer}
+
+      it{is_expected.to be_truthy}
+
+    end
+
+    context 'has offer' do
+      before(:each){offer = create :order_offer, translator: translator, order: order; ; order.offers << offer}
+
+      it{is_expected.to be_falsey}
+    end
+
   end
-
 
 end

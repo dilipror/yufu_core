@@ -1,27 +1,30 @@
 module YufuHelper
+  def root_with_locale
+    "#{Rails.application.config.host}/#{I18n.locale}"
+  end
 
   def root_url
-    Rails.application.config.host
+    root_with_locale
   end
 
   def change_password_url
-    "#{Rails.application.config.host}/#/office"
+    "#{root_with_locale}/office"
   end
 
   def login_url
-    "#{Rails.application.config.host}/login"
+    "#{root_with_locale}/login"
   end
 
   def new_verbal_order_url
-    "#{Rails.application.config.host}verbals/new"
+    "#{root_with_locale}/verbals/new"
   end
 
   def balance_url
-    "#{Rails.application.config.host}/office/agent/billing/payments"
+    "#{root_with_locale}/office/agent/billing/payments"
   end
 
   def dashboard_url
-    "#{Rails.application.config.host}/office"
+    "#{root_with_locale}/office"
   end
 
   def ts(key, options = {})

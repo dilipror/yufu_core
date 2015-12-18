@@ -41,6 +41,48 @@ RSpec.describe User, :type => :model do
     end
   end
 
+  describe 'invites to user not come from link' do
+
+    subject{user.invitation}
+
+    let(:email){'email@example.com'}
+
+    let(:user){create :user, invitation: invite, email: email}
+
+    context 'invite expired' do
+
+      before(:each){create :invite, email: email, expired: true}
+
+      let(:invite){nil}
+
+      it{is_expected.to be_nil}
+
+    end
+
+    context 'invite not expired' do
+
+      let(:new_invite){ create :invite, email: email, expired: false}
+
+      before(:each){new_invite}
+
+      let(:invite){nil}
+
+      it{is_expected.to eq(new_invite)}
+
+    end
+
+    context 'has already invite' do
+
+      before(:each){create :invite, email: email, expired: true}
+
+      let(:invite){create :invite, email: email}
+
+      it{is_expected.to eq(invite)}
+
+    end
+
+  end
+
   # describe 'update password'  do
   #   let(:user) {User.first}
   #
@@ -150,15 +192,50 @@ RSpec.describe User, :type => :model do
 
     context 'create with invitation' do
       let(:invite) {create :invite}
-      let(:user) {create :user, invitation: invite}
 
-      it{expect(user.overlord).to eq(invite.overlord)}
+      context "user has not agent's banner or reflink" do
+        let(:user) {create :user, invitation: invite}
+
+        it{expect(user.overlord).to eq(invite.overlord)}
+      end
+
+      context "user has agent's banner or reflink" do
+        let(:banner) {create :banner}
+        let(:user) {create :user, invitation: invite, agent_banner: banner}
+
+        it{expect(user.overlord).to eq(banner.user)}
+      end
     end
 
-    context 'create without invitation' do
+    context 'create with referral link' do
+      let(:referral_link) {create :invite}
+      let(:agent) {create :user}
+      let(:user) {create :user, agent_referral_link: agent.referral_link}
+
+      it{expect(user.overlord).to eq(agent)}
+    end
+
+    context 'create with banner' do
+      let(:invite) {create :invite}
+      let(:user) {create :user, agent_banner: banner}
+      let(:banner) {create :banner}
+
+      it{expect(user.overlord).to eq(banner.user)}
+    end
+
+    context 'create without any promo objects' do
       let(:user) {create :user}
 
       it{expect(user.overlord).to be_nil}
+    end
+  end
+
+  describe 'creation default invitation text' do
+    let(:user) {build :user}
+    subject{user.save}
+    it 'invitation texts should be created' do
+      subject
+      expect(user.invitation_texts.count).to eq 3
     end
   end
 end

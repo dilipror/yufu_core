@@ -8,7 +8,10 @@ class Banner
 
   field :name
 
+  belongs_to :user, inverse_of: :banners
+
   has_many :transactions,  class_name: 'Transaction', as: :is_commission_from
+  has_many :invited_users, class_name: 'User', inverse_of: :agent_banner, dependent: :nullify
 
   has_mongoid_attached_file :image, default_url: "/images/default_banner.jpg"
   validates_attachment_content_type :image, content_type: /\Aimage\/.*\Z/

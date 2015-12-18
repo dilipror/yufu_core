@@ -8,12 +8,13 @@ class Transaction
   belongs_to :debit,              polymorphic: true
   belongs_to :credit,             polymorphic: true
   belongs_to :is_commission_from, polymorphic: true
+  belongs_to :subject,            polymorphic: true
   belongs_to :invoice
 
   validates_presence_of :debit, :credit
   validates :sum, numericality: { greater_than_or_equal_to: 0 }
 
-  scope :commissions, -> { where is_commission?: true}
+  scope :commissions, -> { where :is_commission_from.ne => nil}
   scope :for_user, -> (user) do
     any_of({ debit: user }, { credit: user })
   end

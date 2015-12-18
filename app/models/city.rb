@@ -31,6 +31,14 @@ class City
     City.where :id.in => city_ids
   }
 
+  scope :available_for_order, -> {
+    translator_ids = Profile::Service.where(is_approved: true).distinct :translator_id
+    city_ids = []
+    translator_ids.each do |translator_id|
+      city_ids += Profile::Translator.find(translator_id).city_approves.distinct(:city_id)
+    end
+    City.where :id.in => city_ids
+  }
   def supported?
     city_approves.approved.without_surcharge.count > 0
   end
@@ -43,6 +51,6 @@ class City
 
   def language_ids
     translator_ids = city_approves.approved.distinct :translator_id
-    Profile::Service.approved.where(:translator_id.in => translator_ids).distinct :language_id
+    Profile::Service.approved.where(:translator_id.in => translator_ids, only_written: false).distinct :language_id
   end
 end

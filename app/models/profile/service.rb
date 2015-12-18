@@ -3,9 +3,8 @@ module Profile
     include Mongoid::Document
     include Approvable
     include Filterable
+    include VerbalLevel
 
-
-    field :level,                  default: 'guide'
     field :verbal_price,           type: BigDecimal
     field :written_price,          type: BigDecimal
     field :corrector,              type: Mongoid::Boolean
@@ -15,17 +14,38 @@ module Profile
     field :only_written,           type: Mongoid::Boolean, default: false
     field :written_translate_type
     field :additions
+    field :certificate
 
     belongs_to :language
     belongs_to :translator, class_name: 'Profile::Translator'
 
+    has_one :level_up_request, class_name: 'Profile::LevelUpRequest', dependent: :destroy
 
-    validates_inclusion_of :level, in: Order::Verbal::TRANSLATION_LEVELS
     validates_presence_of :language
     validate :present_written_translate_type
 
     scope :only_written, -> {where only_written: true}
     scope :not_only_written, -> {where :only_written.ne => true}
+    scope :written_approved, -> {where :written_approves => true}
+
+    after_save :change_translator_state, if: -> { (level_changed? || written_translate_type_changed?) &&
+                                           translator.try(:state) == 'approved' }
+
+
+    after_destroy :change_translator_state, if: -> {translator.try(:state) == 'approved'}
+    after_create  :change_translator_state, if: -> {translator.try(:state) == 'approved'}
+
+    def self.support_cooperation(type)
+      types = ['From-To Chinese']
+      types << 'From Chinese' if type.include?('From')
+      types << 'From Chinese + Corrector' if type.include?('From')
+      types << 'To Chinese' if type.include?('To')
+      where :written_translate_type.in => types
+    end
+
+    def change_translator_state
+      translator.approving if translator.can_approving?
+    end
 
     #filtering
     def self.filter_language(language_id)
@@ -42,7 +62,7 @@ module Profile
       Profile::Service.where :translator_id.in => translator_ids
     end
 
-    
+
 
     def present_written_translate_type
       if written_approves && written_translate_type.blank?
@@ -66,6 +86,11 @@ module Profile
     def name
       "#{language.try(:name)} | lvl: #{level}"
     end
+
+    def senior?
+      language.try(:senior) == translator
+    end
+    alias :is_senior :senior?
 
     def owner?(user)
       false if translator.nil?

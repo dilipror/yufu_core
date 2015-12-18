@@ -15,6 +15,33 @@ module Order
 
     delegate :name, to: :services_pack, prefix: true
 
+    has_notification_about :finish,
+                           observers: :owner,
+                           message: 'notifications.done_order',
+                           mailer: ->(user, order) do
+                             NotificationMailer.order_completed_8 user
+                           end
+
+    state_machine initial: :new do
+
+      state :in_progress
+      state :close
+      state :reject
+
+      event :paid_expert do
+        transition [:new] => :in_progress
+      end
+
+      before_transition on: :reject do |order|
+        order.notify_about_cancel_by_owner
+      end
+
+      before_transition on: :close do |order|
+        order.notify_about_finish
+      end
+    end
+
+
     def original_price
       BigDecimal.new (service_orders.inject(0) {|sum, service_order| service_order.cost + sum }*100).round(2) / 100, 2
     end
@@ -32,18 +59,6 @@ module Order
       if self.required_data.blank? && !services_pack.req_data_class_name.blank?
         self.required_data = services_pack.req_data_class_name.constantize.new
       end
-    end
-
-    def primary_supported_translators
-      []
-    end
-
-    def secondary_supported_translators
-      []
-    end
-
-    def paid_cash_flow
-      # self.create_and_execute_transaction owner.user, Office.head, price
     end
 
     def create_invoice

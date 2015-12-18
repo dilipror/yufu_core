@@ -1,10 +1,11 @@
 class User
   include Mongoid::Document
+  include Mongoid::Timestamps::Created
   include Personalized
   include Mongoid::Paperclip
-  include Mongoid::Token
   include Monetizeable
   include Accountable
+  include AgentSystem
   extend Enumerize
 
   # Include default devise modules. Others available are:
@@ -67,8 +68,6 @@ class User
   field :phone
 
   # Settings
-  field :duplicate_messages_on_email,                    type: Mongoid::Boolean, default: true
-  field :duplicate_messages_on_sms,                      type: Mongoid::Boolean, default: false
   field :send_notification_on_email,                     type: Mongoid::Boolean, default: true
   field :send_notification_on_sms,                       type: Mongoid::Boolean, default: true
   field :duplicate_messages_on_additional_email,         type: Mongoid::Boolean, default: false
@@ -80,18 +79,10 @@ class User
   enumerize :registered_as, in: [:translator, :client, :agent, :supplier]
   enumerize :role, in: [:translator, :client]
 
-  #agent's system
-  has_many :invitation_texts
-  belongs_to :invitation, class_name: 'Invite', inverse_of: :vassal
-  belongs_to :overlord, class_name: 'User'
-  has_one :referral_link, dependent: :destroy
-  has_many :vassals,  class_name: 'User', dependent: :nullify
-  has_many :banners,  dependent: :destroy
-  has_many :invites, class_name: 'Invite', dependent: :nullify, inverse_of: :overlord
+  has_many :managed_profiles, class_name: 'Profile::Translator', inverse_of: :operator, dependent: :nullify
 
   has_one :profile_client,     class_name: 'Profile::Client',     dependent: :destroy, validate: false
   has_one :profile_translator, class_name: 'Profile::Translator', dependent: :destroy, validate: false
-
 
   # billing
   has_one :billing, dependent: :destroy
@@ -103,8 +94,6 @@ class User
   has_many :assigned_tickets, class_name: 'Support::Ticket', inverse_of: :assigned_to
   has_many :expert_tickets,   class_name: 'Support::Ticket', inverse_of: :expert
   has_and_belongs_to_many :watched_tickets, class_name: 'Support::Ticket', inverse_of: :watchers
-
-  has_many :orders, class_name: 'Order::Base', inverse_of: :partner
 
   has_and_belongs_to_many :localizations
   has_and_belongs_to_many :groups
@@ -122,25 +111,26 @@ class User
   #check that new  password is not equals to old
   # validate :new_password, if: -> {password.present? && encrypted_password_was.present?}
   validates_format_of :email, :with => /(\A[^-][\w+\-.]*)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,  if: -> {email.present?}
+  #validates_uniqueness_of :phone,  if: -> {phone.present?}
 
   before_save :set_avatar_extension, :after_role_changed, :ensure_authentication_token
   before_create :role_changed_first_time
-  before_create :set_overlord,  if: 'invitation.present?'
-  after_create :create_referral_link, :create_banners, :create_billing
-  after_create :create_profile_client,     if: 'profile_client.nil?'
-  after_create :create_profile_translator, if: 'profile_translator.nil?'
-  after_create :create_default_invitation_texts
+  after_create :create_default_profiles
+  after_create ->(user) {ConfirmationReminderJob.set(wait: 3.days).perform_later(user.id.to_s)}
+  # before_save :downcase_email
 
-
-  token length: 9, contains: :alphanumeric
-
-  delegate :url, to: :referral_link, prefix: true, allow_nil: true
+  delegate :href, to: :referral_link, prefix: true, allow_nil: true
 
   def authorized_translator?
     role.translator? ? profile_translator.try(:authorized?) : false
   end
 
   alias :is_authorized_translator :authorized_translator?
+
+  def create_default_profiles
+    create_profile_client if profile_client.nil?
+    create_profile_translator if profile_translator.nil?
+  end
 
   def can_manage_localizations?
     localizations.count > 0
@@ -172,30 +162,7 @@ class User
     first_name.blank? && last_name.blank? ? email : "#{first_name} #{last_name}"
   end
 
-  def promoted_get?(order)
-    order.agents.include? self
-  end
-
-
-  def create_default_invitation_texts
-    invitation_texts << InvitationText.create(text: I18n.t('mailer.invitation_email.invite_text_client'),
-                                              name: I18n.t('mailer.invitation_email.name_invite_text_client'))
-
-    invitation_texts << InvitationText.create(text: I18n.t('mailer.invitation_email.invite_text_translator'),
-                                              name: I18n.t('mailer.invitation_email.name_invite_text_translator'))
-
-    invitation_texts << InvitationText.create(text: I18n.t('mailer.invitation_email.invite_text_partner'),
-                                              name: I18n.t('mailer.invitation_email.name_invite_text_partner'))
-
-  end
-
   private
-  def create_banners
-    banners.create name: 'default_banner_one'
-    banners.create name: 'default_banner_two'
-    banners.create name: 'default_banner_three'
-  end
-
   def generate_authentication_token
     loop do
       token = Devise.friendly_token
@@ -232,7 +199,7 @@ class User
     false
   end
 
-  def set_overlord
-    self.overlord = invitation.overlord
+  def downcase_email
+    self.email = self.email.downcase
   end
 end

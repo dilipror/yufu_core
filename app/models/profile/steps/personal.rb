@@ -5,7 +5,7 @@ module Profile
       include Mongoid::Timestamps
       extend Enumerize
 
-      field :years_out_of_china, type: Integer
+      field :years_out_of_china
 
       belongs_to :status, class_name: 'Profile::Ocupation'
 

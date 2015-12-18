@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'mongoid/criteria'
 
 RSpec.describe City, type: :model do
   describe '.available_for' do
@@ -53,6 +54,26 @@ RSpec.describe City, type: :model do
     end
   end
 
+  describe '.available_for_order' do
+    let(:city_1){create :city}
+    let(:city_2){create :city}
+    let(:city_3){create :city}
+    let(:city_4){create :city}
+    let(:city_5){create :city}
+
+    let!(:translator_1){create :profile_translator, city_approves: [(create :city_approve, city: city_1)]}
+    let!(:translator_2){create :profile_translator, city_approves: [(create :city_approve, city: city_2)]}
+    let!(:translator_3){create :profile_translator, city_approves: [(create :city_approve, city: city_2)],
+                               services: [(create :service, is_approved: false)]}
+    let!(:translator_4){create :profile_translator, city_approves: [(create :city_approve, city: city_2)], services:[]}
+
+    subject{City.available_for_order}
+    it{expect(subject.count).to eq(2)}
+    it{is_expected.to include(city_1)}
+    it{is_expected.to include(city_2)}
+
+  end
+
   describe '.supported' do
     let(:approved_approve) {create :city_approve}
     let(:approved_with_surcharge) {create :city_approve, with_surcharge: true}
@@ -69,5 +90,32 @@ RSpec.describe City, type: :model do
     it{is_expected.to include(approved_city)}
     it{is_expected.to include(approved_city_with_surcharge)}
     it{is_expected.not_to include(not_approved_city)}
+  end
+
+  describe '#languages_ids' do
+
+    # let(:city_approve){(create :city_approve, is_approved: true)}
+
+    let(:city){create :city}
+
+
+    let(:translator){create :profile_translator, city: city, services: []}
+
+    let(:language_1){create :language}
+    let(:language_2){create :language}
+
+    let(:service_1){create :service, only_written: true, translator: translator, is_approved: true}
+    let(:service_2){create :service, only_written: false, translator: translator, is_approved: true}
+
+    subject{city.language_ids}
+
+    before(:each) do
+      service_1
+      service_2
+      CityApprove.create city: city, is_approved: true, translator: translator
+    end
+
+    it{ is_expected.to include(service_2.language_id) }
+    it{ expect(subject.length).to eq(1) }
   end
 end

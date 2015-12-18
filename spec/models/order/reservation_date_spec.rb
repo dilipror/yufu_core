@@ -23,6 +23,26 @@ RSpec.describe Order::ReservationDate, :type => :model do
       it {is_expected.to eq day_cost * 8 + day_cost * 2 * 1.5}
     end
 
+    context 'date is not confirmed' do
+      let(:order) {create :order_verbal, reservation_dates: [build(:order_reservation_date, hours: 8, is_confirmed: false)]}
+      let(:reservation_date) {order.reservation_dates.first}
+
+      subject{reservation_date.original_price ignore_confirmation: ignore_confirmation}
+
+      context 'pass ignore confirmation as true' do
+        let(:ignore_confirmation){true}
+
+        it {is_expected.not_to eq 0}
+      end
+
+      context 'pass ignore confirmation as false' do
+        let(:ignore_confirmation){false}
+
+        it {is_expected.to eq 0}
+      end
+    end
+
+
   end
 
   describe '#original_price_without_overtime' do
@@ -38,8 +58,14 @@ RSpec.describe Order::ReservationDate, :type => :model do
     context 'overtime' do
       let(:hours){10}
 
-      it {is_expected.to eq(80)}
+      it {is_expected.to eq(100)}
 
+    end
+
+    context 'hours lt 8' do
+      let(:hours){4}
+
+      it{is_expected.to eq (4 * 10 * 1.5)}
     end
 
     context 'no overtime' do
@@ -59,23 +85,78 @@ RSpec.describe Order::ReservationDate, :type => :model do
     let(:order) {create :order_verbal, reservation_dates: [build(:order_reservation_date, hours: hours)]}
     let(:reservation_date) {order.reservation_dates.first}
 
-    context 'no overtime' do
-      let(:hours){8}
+    RSpec.shared_examples 'standard overtime' do
+      context 'no overtime' do
+        let(:hours){8}
 
-      it{is_expected.to eq(0)}
+        it{is_expected.to eq(0)}
+      end
+
+      context 'overtime' do
+        let(:hours){12}
+
+        it{is_expected.to eq((12 - 8) * 10 * 0.5)}
+      end
     end
 
-    context 'overtime' do
-      let(:hours){12}
+    context 'pass is_first_date as true' do
+      subject{reservation_date.overtime_price is_first_date: true, work_start_at: work_start_at}
 
-      it{is_expected.to eq(60)}
+      context 'all work in work time range' do
+        let(:work_start_at){7}
+        it_behaves_like 'standard overtime'
+      end
+
+      context 'has work after working day' do
+        let(:work_start_at){20}
+
+        context 'hours gt 8' do
+          let(:hours){10}
+          it 'is sum of over hours (10 - 8) and work outside working time multiplied by lang cost and coef 0.5' do
+            is_expected.to eq(((10 - 8) + (20 + 10 - 21)) * 10 * 0.5)
+          end
+        end
+
+        context 'hours lte 8' do
+          let(:hours){8}
+          it 'is work outside working time multiplied by lang cost and coef 0.5' do
+            is_expected.to eq((20 + 8 - 21) * 10 * 0.5)
+          end
+        end
+      end
+
+      context 'has work before working day' do
+        let(:work_start_at){6}
+
+        context 'hours gt 8' do
+          let(:hours){10}
+          it 'is sum of over hours (10 - 8) and work outside working time multiplied by lang cost and coef 0.5' do
+            is_expected.to eq(((10 - 8) + (7 - 6)) * 10 * 0.5)
+          end
+        end
+
+        context 'hours lte 8' do
+          let(:hours){8}
+          it 'is work outside working time multiplied by lang cost and coef 0.5' do
+            is_expected.to eq((7 - 6) * 10 * 0.5)
+          end
+        end
+      end
+
+      context 'has work after and before working day' do
+        let(:work_start_at){6}
+
+        context 'hours gt 8' do
+          let(:hours){16}
+          it 'is sum of over hours (10 - 8) and work outside working time multiplied by lang cost and coef 0.5' do
+            is_expected.to eq(((16 - 8) + (7 - 6) + (16 + 6 - 21)) * 10 * 0.5)
+          end
+        end
+      end
     end
 
-    context 'controll sum' do
-      let(:hours){8}
-
-      it{expect(subject + reservation_date.original_price_without_overtime).to eq(reservation_date.original_price)}
-
+    context 'do not pass is_first_date or pass it as false' do
+      it_behaves_like 'standard overtime'
     end
   end
 
@@ -110,13 +191,17 @@ RSpec.describe Order::ReservationDate, :type => :model do
     context 'pass arguments' do
       let(:reservation_date) {build :order_reservation_date, order_verbal: create(:order_verbal, reservation_dates: [])}
 
-      subject{reservation_date.available? language, location, level}
+      subject do
+        reservation_date.available? language, location, level
+      end
 
       context 'there is translator who support passed lvl and language' do
         let(:language) {service.language}
         let(:level)    {service.level}
 
-        it{is_expected.to be_truthy}
+        it do
+          is_expected.to be_truthy
+        end
       end
 
       context 'there is no translator who support passed lvl and language' do
@@ -128,60 +213,6 @@ RSpec.describe Order::ReservationDate, :type => :model do
     end
 
   end
-
-  # Deprecated
-  describe '#available_level' do
-    subject{reservation_date.available_level}
-    context 'current level is not available' do
-      let(:city) {create :city}
-
-      let(:step) {build :profile_steps_service, hsk_level: 4, cities: [city]}
-      let(:translator) {create :profile_translator, profile_steps_service: step, city: city}
-      # let(:translator) {create :profile_translator }
-      let(:translator_guide) {create :profile_translator,
-                                     services: [(build :service,
-                                                       language: translator.services.first.language, level: 'guide')]}
-
-      let(:reservation_date) do
-        translator_guide
-        language = translator.profile_steps_service.services.first.language
-        lvl = 'business'
-        cr = create :order_language_criterion, language: language, level: lvl
-        build :order_reservation_date,
-              order_verbal: create(:order_verbal, language: language, level: lvl, location: translator.profile_steps_service.cities.first)
-      end
-
-      # it 'returns max available level' do
-      #   is_expected.to eq('expert')
-      # end
-    end
-  end
-
-  # describe '#cost' do
-  #   let(:reservation_date) {order.reservation_dates.first}
-  #
-  #   subject{reservation_date.cost}
-  #
-  #   # RSpec.shared_examples 'checkers' do
-  #   #   it {should == expected}
-  #   #   it {should be_a Money}
-  #   # end
-  #
-  #   context 'hours <= 8' do
-  #     let(:order) {create :order_verbal, reservation_dates: [build(:order_reservation_date)]}
-  #     let(:expected) {reservation_date.order_language_criterion.cost * reservation_date.hours}
-  #
-  #     # include_examples 'checkers'
-  #   end
-  #
-  #   context 'hours > 8' do
-  #     let(:order) {create :order_verbal, reservation_dates: [build(:order_reservation_date, hours: 10)]}
-  #     let(:expected) {reservation_date.order_language_criterion.cost * 8 + 2 * 1.5 * reservation_date.order_language_criterion.cost}
-  #
-  #     # include_examples 'checkers'
-  #   end
-  #
-  # end
 
   describe 'validates a pair of date and order_id' do
     let(:order) {create :order_verbal, reservation_dates: [build(:order_reservation_date, date: Date.parse('01.01.2015'))]}

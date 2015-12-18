@@ -10,6 +10,7 @@ module OrderWorkflow
       state :in_progress
       state :close
       state :rated
+      state :rejected
 
       event :paying do
         transition [:new] => :paying
@@ -28,7 +29,7 @@ module OrderWorkflow
       end
 
       event :reject do
-        transition in_progress: :wait_offer
+        transition all - [:close, :ready_for_close, :rejected, :rated, :in_progress] => :rejected
       end
 
       event :close do
@@ -37,12 +38,8 @@ module OrderWorkflow
 
       # It should be after, but it doesn't work with MongoId https://github.com/pluginaweek/state_machine/issues/277
       before_transition on: :reject do |order|
+        order.try :remove_busy_days
         order.assignee = nil
-      end
-
-      before_transition on: :paid do |order|
-        order.after_paid_cashflow
-        true
       end
 
       before_transition on: :close do |order|
@@ -50,11 +47,6 @@ module OrderWorkflow
         order.after_close_cashflow
         order.notify_about_closing
         true
-      end
-
-
-      def to_param
-        token
       end
     end
   end

@@ -15,8 +15,8 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib}/**/*", "spec/factories/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
-  s.add_dependency "rails"
-  s.add_dependency "mongoid", "~> 4.0.2"
+  s.add_dependency "rails", "> 4.2.0"
+  s.add_dependency "mongoid", "> 4.0.0"
   s.add_dependency "bson"
   s.add_dependency "mongoid-autoinc"
   s.add_dependency "mongoid-paperclip"
@@ -27,11 +27,15 @@ Gem::Specification.new do |s|
   s.add_dependency "iso-639"
   s.add_dependency "active_model_serializers"
   s.add_dependency "oj"
-  s.add_dependency "state_machine"
+  s.add_dependency "state_machines-mongoid"
   s.add_dependency "sidekiq"
   s.add_dependency "money-rails"
   s.add_dependency "eu_central_bank"
   s.add_dependency "slim-rails"
   s.add_dependency "mongoid_auto_increment"
   s.add_dependency "paperclip", "< 4.3"
+  s.add_dependency "wicked_pdf"
+  s.add_dependency "wkhtmltopdf-binary"
+  s.add_dependency "mongoid_paranoia"
+  s.add_dependency "faye-websocket", '0.10.1'
 end

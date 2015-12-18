@@ -8,110 +8,87 @@ PATH
       devise
       enumerize
       eu_central_bank
+      faye-websocket (= 0.10.1)
       iso-639
       money-rails
-      mongoid (~> 4.0.2)
+      mongoid (> 4.0.0)
       mongoid-autoinc
       mongoid-paperclip
       mongoid_auto_increment
+      mongoid_paranoia
       mongoid_token
       oj
       paperclip (< 4.3)
-      rails
+      rails (> 4.2.0)
       sidekiq
       slim-rails
-      state_machine
+      state_machines-mongoid
+      wicked_pdf
+      wkhtmltopdf-binary
 
 GEM
   remote: https://rubygems.org/
   specs:
-    actionmailer (4.0.13)
-      actionpack (= 4.0.13)
+    actionmailer (4.2.5)
+      actionpack (= 4.2.5)
+      actionview (= 4.2.5)
+      activejob (= 4.2.5)
       mail (~> 2.5, >= 2.5.4)
-    actionpack (4.0.13)
-      activesupport (= 4.0.13)
-      builder (~> 3.1.0)
-      erubis (~> 2.7.0)
-      rack (~> 1.5.2)
+      rails-dom-testing (~> 1.0, >= 1.0.5)
+    actionpack (4.2.5)
+      actionview (= 4.2.5)
+      activesupport (= 4.2.5)
+      rack (~> 1.6)
       rack-test (~> 0.6.2)
+      rails-dom-testing (~> 1.0, >= 1.0.5)
+      rails-html-sanitizer (~> 1.0, >= 1.0.2)
+    actionview (4.2.5)
+      activesupport (= 4.2.5)
+      builder (~> 3.1)
+      erubis (~> 2.7.0)
+      rails-dom-testing (~> 1.0, >= 1.0.5)
+      rails-html-sanitizer (~> 1.0, >= 1.0.2)
     active_model_serializers (0.9.3)
       activemodel (>= 3.2)
-    activemodel (4.0.13)
-      activesupport (= 4.0.13)
-      builder (~> 3.1.0)
-    activerecord (4.0.13)
-      activemodel (= 4.0.13)
-      activerecord-deprecated_finders (~> 1.0.2)
-      activesupport (= 4.0.13)
-      arel (~> 4.0.0)
-    activerecord-deprecated_finders (1.0.4)
-    activesupport (4.0.13)
-      i18n (~> 0.6, >= 0.6.9)
-      minitest (~> 4.2)
-      multi_json (~> 1.3)
-      thread_safe (~> 0.1)
-      tzinfo (~> 0.3.37)
+    activejob (4.2.5)
+      activesupport (= 4.2.5)
+      globalid (>= 0.3.0)
+    activemodel (4.2.5)
+      activesupport (= 4.2.5)
+      builder (~> 3.1)
+    activerecord (4.2.5)
+      activemodel (= 4.2.5)
+      activesupport (= 4.2.5)
+      arel (~> 6.0)
+    activesupport (4.2.5)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
     addressable (2.3.8)
-    arel (4.0.2)
+    arel (6.0.3)
     bcrypt (3.1.10)
-    bson (3.2.1)
-    builder (3.1.4)
-    cancancan (1.12.0)
-    celluloid (0.17.1.2)
-      bundler
-      celluloid-essentials
-      celluloid-extras
-      celluloid-fsm
-      celluloid-pool
-      celluloid-supervision
-      dotenv
-      nenv
-      rspec-logsplit (>= 0.1.2)
-      timers (>= 4.1.1)
-    celluloid-essentials (0.20.2.1)
-      bundler
-      dotenv
-      nenv
-      rspec-logsplit (>= 0.1.2)
-      timers (>= 4.1.1)
-    celluloid-extras (0.20.1)
-      bundler
-      dotenv
-      nenv
-      rspec-logsplit (>= 0.1.2)
-      timers (>= 4.1.1)
-    celluloid-fsm (0.20.1)
-      bundler
-      dotenv
-      nenv
-      rspec-logsplit (>= 0.1.2)
-      timers (>= 4.1.1)
-    celluloid-pool (0.20.1)
-      bundler
-      dotenv
-      nenv
-      rspec-logsplit (>= 0.1.2)
-      timers (>= 4.1.1)
-    celluloid-supervision (0.20.1.1)
-      bundler
-      dotenv
-      nenv
-      rspec-logsplit (>= 0.1.2)
-      timers (>= 4.1.1)
+    bson (3.2.6)
+    builder (3.2.2)
+    byebug (8.2.0)
+    cancancan (1.13.1)
     chronic (0.10.2)
     climate_control (0.0.3)
       activesupport (>= 3.0)
     cocaine (0.5.7)
       climate_control (>= 0.0.3, < 1.0)
+    concurrent-ruby (1.0.0)
     connection_pool (2.2.0)
-    coveralls (0.8.2)
+    coveralls (0.8.9)
       json (~> 1.8)
       rest-client (>= 1.6.8, < 2)
       simplecov (~> 0.10.0)
       term-ansicolor (~> 1.3)
       thor (~> 0.19.1)
+      tins (~> 1.6.0)
     daemons (1.2.3)
-    database_cleaner (1.4.1)
+    database_cleaner (1.3.0)
     delorean (2.1.0)
       chronic
     devise (3.5.2)
@@ -123,13 +100,12 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    domain_name (0.5.24)
+    domain_name (0.5.25)
       unf (>= 0.0.5, < 1.0.0)
-    dotenv (2.0.2)
     email_spec (1.6.0)
       launchy (~> 2.1)
       mail (~> 2.2)
-    enumerize (1.0.0)
+    enumerize (1.1.0)
       activesupport (>= 3.2)
     erubis (2.7.0)
     eu_central_bank (0.5.0)
@@ -141,7 +117,11 @@ GEM
     factory_girl_rails (4.5.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
-    hitimes (1.2.2)
+    faye-websocket (0.10.1)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
+    globalid (0.3.6)
+      activesupport (>= 4.1.0)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     i18n (0.7.0)
@@ -149,6 +129,8 @@ GEM
     json (1.8.3)
     launchy (2.4.3)
       addressable (~> 2.3)
+    loofah (2.0.3)
+      nokogiri (>= 1.5.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     mailcatcher (0.6.1)
@@ -159,9 +141,10 @@ GEM
       skinny (~> 0.2.3)
       sqlite3 (~> 1.3)
       thin (~> 1.5.0)
-    mime-types (2.6.1)
+    mime-types (2.6.2)
     mini_portile (0.6.2)
-    minitest (4.7.5)
+    minitest (5.8.3)
+    mock_redis (0.15.4)
     monetize (1.1.0)
       money (~> 6.5.0)
     money (6.5.1)
@@ -178,22 +161,26 @@ GEM
       tzinfo (>= 0.3.37)
     mongoid-autoinc (4.0.0)
       mongoid (~> 4.0)
+    mongoid-compatibility (0.3.1)
+      activesupport
+      mongoid (>= 2.0)
     mongoid-paperclip (0.0.10)
       paperclip (>= 2.3.6, != 4.3.0)
     mongoid_auto_increment (0.1.2)
       mongoid (>= 2.0)
+    mongoid_paranoia (0.2.1)
+      mongoid (>= 4)
+      mongoid-compatibility
     mongoid_token (3.0.0)
       mongoid (~> 4.0.0)
     moped (2.0.7)
       bson (~> 3.0)
       connection_pool (~> 2.0)
       optionable (~> 0.2.0)
-    multi_json (1.11.2)
-    nenv (0.2.0)
-    netrc (0.10.3)
-    nokogiri (1.6.6.2)
+    netrc (0.11.0)
+    nokogiri (1.6.6.3)
       mini_portile (~> 0.6.0)
-    oj (2.12.12)
+    oj (2.13.1)
     optionable (0.2.0)
     origin (2.1.1)
     orm_adapter (0.5.0)
@@ -202,31 +189,40 @@ GEM
       activesupport (>= 3.2.0)
       cocaine (~> 0.5.5)
       mime-types
-    power_assert (0.2.4)
-    rack (1.5.5)
+    power_assert (0.2.6)
+    rack (1.6.4)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
-    rails (4.0.13)
-      actionmailer (= 4.0.13)
-      actionpack (= 4.0.13)
-      activerecord (= 4.0.13)
-      activesupport (= 4.0.13)
+    rails (4.2.5)
+      actionmailer (= 4.2.5)
+      actionpack (= 4.2.5)
+      actionview (= 4.2.5)
+      activejob (= 4.2.5)
+      activemodel (= 4.2.5)
+      activerecord (= 4.2.5)
+      activesupport (= 4.2.5)
       bundler (>= 1.3.0, < 2.0)
-      railties (= 4.0.13)
-      sprockets-rails (~> 2.0)
-    railties (4.0.13)
-      actionpack (= 4.0.13)
-      activesupport (= 4.0.13)
+      railties (= 4.2.5)
+      sprockets-rails
+    rails-deprecated_sanitizer (1.0.3)
+      activesupport (>= 4.2.0.alpha)
+    rails-dom-testing (1.0.7)
+      activesupport (>= 4.2.0.beta, < 5.0)
+      nokogiri (~> 1.6.0)
+      rails-deprecated_sanitizer (>= 1.0.1)
+    rails-html-sanitizer (1.0.2)
+      loofah (~> 2.0)
+    railties (4.2.5)
+      actionpack (= 4.2.5)
+      activesupport (= 4.2.5)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.4.2)
-    redis (3.2.1)
-    redis-namespace (1.5.2)
-      redis (~> 3.0, >= 3.0.4)
-    responders (1.1.2)
-      railties (>= 3.2, < 4.2)
+    redis (3.2.2)
+    responders (2.1.0)
+      railties (>= 4.2.0, < 5)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
@@ -236,7 +232,6 @@ GEM
     rspec-expectations (3.0.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.0.0)
-    rspec-logsplit (0.1.3)
     rspec-mocks (3.0.4)
       rspec-support (~> 3.0.0)
     rspec-rails (3.0.2)
@@ -248,12 +243,11 @@ GEM
       rspec-mocks (~> 3.0.0)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.4)
-    sidekiq (3.5.0)
-      celluloid (~> 0.17.0)
+    sidekiq (4.0.1)
+      concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
       json (~> 1.0)
       redis (~> 3.2, >= 3.2.1)
-      redis-namespace (~> 1.5, >= 1.5.2)
     simplecov (0.10.0)
       docile (~> 1.1.0)
       json (~> 1.8)
@@ -275,18 +269,24 @@ GEM
       activesupport (>= 3.1, < 5.0)
       railties (>= 3.1, < 5.0)
       slim (~> 3.0)
-    sprockets (3.3.3)
-      rack (~> 1.0)
-    sprockets-rails (2.3.2)
+    sprockets (3.4.0)
+      rack (> 1, < 3)
+    sprockets-rails (2.3.3)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
-    sqlite3 (1.3.10)
-    state_machine (1.2.0)
+    sqlite3 (1.3.11)
+    state_machines (0.4.0)
+    state_machines-activemodel (0.3.0)
+      activemodel (~> 4.1)
+      state_machines (>= 0.4.0)
+    state_machines-mongoid (0.1.1)
+      mongoid (>= 4.0.0)
+      state_machines-activemodel
     temple (0.7.6)
     term-ansicolor (1.3.2)
       tins (~> 1.0)
-    test-unit (3.1.3)
+    test-unit (3.1.5)
       power_assert
     thin (1.5.1)
       daemons (>= 1.0.9)
@@ -295,19 +295,23 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.1)
-    timers (4.1.1)
-      hitimes
     tins (1.6.0)
-    tzinfo (0.3.44)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
     warden (1.2.3)
       rack (>= 1.0)
+    websocket-driver (0.6.3)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.2)
+    wicked_pdf (1.0.3)
     will_paginate (3.0.7)
     will_paginate_mongoid (2.0.1)
       mongoid
       will_paginate (~> 3.0)
+    wkhtmltopdf-binary (0.9.9.3)
 
 PLATFORMS
   ruby
@@ -315,33 +319,40 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   bson
+  byebug
   cancancan
   coveralls
-  database_cleaner
+  database_cleaner (= 1.3.0)
   delorean
   devise
   email_spec
   enumerize
   eu_central_bank
   factory_girl_rails
+  faye-websocket (= 0.10.1)
   iso-639
   mailcatcher
+  mock_redis
   money-rails
   mongoid (~> 4.0.2)
   mongoid-autoinc
   mongoid-paperclip
   mongoid_auto_increment
+  mongoid_paranoia
   mongoid_token
   oj
   paperclip (< 4.3)
   rack
-  rails (~> 4.0.2)
+  rails (> 4.2.0)
   rspec-mocks
   rspec-rails (~> 3.0.0)
   sidekiq
   simplecov
   slim-rails
-  state_machine
+  state_machines-mongoid
   test-unit
   will_paginate_mongoid
   yufu_core!
+
+BUNDLED WITH
+   1.10.6

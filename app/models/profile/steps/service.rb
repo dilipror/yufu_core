@@ -21,6 +21,12 @@ module Profile
 
       after_save :hard_resolve_city
 
+      after_save :change_translator_state, if: -> {(city_ids_changed?) &&
+                                             translator.try(:state) == 'approved'}
+
+      def change_translator_state
+        translator.approving if translator.present? && translator.can_approving?
+      end
 
       def hard_resolve_city
         if translator.persisted?

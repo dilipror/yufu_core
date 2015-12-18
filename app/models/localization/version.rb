@@ -1,25 +1,41 @@
 class Localization::Version
   include Mongoid::Document
+  include Mongoid::Paranoia
   include Mongoid::Timestamps
 
-  belongs_to :version_number, class_name: 'Localization::VersionNumber'
+  field :name
+  field :state_before_delete
+
+  belongs_to :parent_version, class_name: 'Localization::Version'
   belongs_to :localization
   has_many :translations, dependent: :destroy
 
   scope :approved, -> {where state: 'approved'}
   scope :not_approved, -> {ne :state =>  'approved'}
+  scope :opened, -> {where state: 'new'}
+  scope :commited, -> {where state: 'commited'}
+  scope :dependent, -> {ne parent_version_id: nil}
+  scope :english, -> {where localization_id: Localization.default.id}
 
-  delegate :name, :number, to: :version_number
+  default_scope -> {desc :id}
 
-  validates_presence_of :version_number, :localization
+  # after_remove :after_remove_action
+  # after_restore :after_restore_action
+
+  validates_presence_of :name, :localization
 
   state_machine initial: :new do
     state :approved
     state :commited
     state :rejected
+    state :deleted
 
     event :commit do
       transition [:new, :rejected] => :commited
+    end
+
+    event :revert_commit do
+      transition :commited => :new
     end
 
     event :reject do
@@ -30,31 +46,67 @@ class Localization::Version
       transition :commited => :approved
     end
 
+    before_transition on: :delete_version do |version|
+      version.state_before_delete = version.state
+      version.destroy
+    end
+
+    before_transition on: :restore_version do |version|
+      version.restore recursive: true
+    end
+
+    after_transition on: :restore_version do |version|
+      version.update_attribute :state, version.state_before_delete || :new
+      version.update_attribute :state_before_delete, nil
+    end
+
     before_transition on: :approve do |version|
       if version.localization.name == 'en'
         pseudo_china = Localization.find_or_create_by name: 'cn-pseudo'
         Localization::Version.find_or_create_by localization_id: pseudo_china.id,
-                                                version_number_id: version.version_number.id
+                                                name: version.name,
+                                                parent_version: version
       elsif version.localization.name == 'cn-pseudo'
         Localization.where(:name.nin => %w(en cn-pseudo zh-CN)).each do |l|
-          Localization::Version.find_or_create_by localization_id: l.id, version_number_id: version.version_number.id
+          Localization::Version.find_or_create_by localization_id: l.id, name: version.name,
+                                                  parent_version: version.parent_version
         end
       end
       version.translations.model_localizers.each &:localize_model
-      I18nJsExportWorker.perform_async
       true
     end
+  end
+
+  def number
+    id.to_s[0..7]
   end
 
   def english?
     localization.name == 'en'
   end
 
+  def independent?
+    parent_version.nil?
+  end
+
   def editable?
-    !(%w(commited approved).include? state)
+    !(%w(commited approved deleted).include? state)
   end
 
   def self.current(localization)
     approved.where(localization_id: localization.id).desc(:version_number_id)
   end
+
+  # private
+  #
+  # def after_restore_action
+  #   version.update_attribute :state, version.state_before_delete || :new
+  #   version.update_attribute :state_before_delete, nil
+  # end
+  #
+  # def after_remove_action
+  #   version.state_before_delete = version.state
+  #   version.update_attribute :state, :deleted
+  # end
+
 end

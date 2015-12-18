@@ -1,11 +1,17 @@
 module Order
   class Written < Base
     include Mongoid::Paperclip
+    include Filterable
 
     before_create :build_relations
 
     TYPES  = %w(text document media)
     LEVELS = %w(translate_and_correct translate)
+    WORDS_PER_DAY_TRANS = 1500.0
+    WORDS_PER_DAY_PROOF = 4500.0
+    CHARS_PER_DAY_TRANS = 2400.0
+    CHARS_PER_DAY_PROOF = 7200.0
+    DOCS_PER_DAY = 8.0
 
     field :translation_type
     field :quantity_for_translate, type: Integer, default: 0
@@ -15,86 +21,97 @@ module Order
     has_mongoid_attached_file :translation
     do_not_validate_attachment_file_type :translation
 
+
+    has_notification_about :processing,
+                           observers: :owner,
+                           message: 'notifications.processing_order',
+                           mailer: ->(user, order) do
+                             NotificationMailer.order_confirmation_7(user)
+                           end
     has_notification_about :correct, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.correcting_order'
     has_notification_about :control, observers: ->(order){[order.owner, order.senior]}, message: 'notifications.control_order'
-    has_notification_about :finish, observers: :owner, message: 'notifications.done_order'
+    has_notification_about :finish,
+                           observers: :owner,
+                           message: 'notifications.done_order',
+                           mailer: ->(user, order) do
+                             NotificationMailer.order_completed_8 user
+                           end
 
     belongs_to :original_language,                   class_name: 'Language'
     belongs_to :translation_language,                class_name: 'Language'
     belongs_to :order_type,                          class_name: 'Order::Written::WrittenType'
     belongs_to :order_subtype,                       class_name: 'Order::Written::WrittenSubtype'
+    belongs_to :proof_reader,                        class_name: 'Profile::Translator'#, inverse_of: :proof_orders
+
+    has_many :translators_queues, class_name: 'Order::Written::TranslatorsQueue', dependent: :destroy
+    has_many :correctors_queues,  class_name: 'Order::Written::CorrectorsQueue', dependent: :destroy
 
     has_and_belongs_to_many :available_languages,    class_name: 'Language'
     has_and_belongs_to_many :attachments, dependent: :destroy
 
     embeds_one :get_translation,                     class_name: 'Order::GetTranslation'
     embeds_one :get_original,                        class_name: 'Order::GetOriginal'
+    embeds_one :events_manager,                      class_name: 'Order::Written::EventsManager', cascade_callbacks: true
+
     embeds_many :work_reports,                       class_name: 'Order::Written::WorkReport', cascade_callbacks: true
     accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments
-
-    scope :open,        -> (profile) { default_scope_for(profile).where state: :wait_offer }
-    scope :paying,      -> (profile) { profile.orders.where :state.in => [:new, :paying] }
-    scope :in_progress, -> (profile) do
-      default_scope_for(profile).where :state.in => [:in_progress, :additional_paying],
-                                       connected_method_for(profile) => profile
-    end
-    scope :correct, ->(profile) {default_scope_for(profile).where state: :correcting}
-    scope :control, ->(profile) {default_scope_for(profile).where state: :quality_control}
-    scope :done, ->(profile) {default_scope_for(profile).where state: :sent_to_client}
-    scope :close,       -> (profile) do
-      default_scope_for(profile).where :state.in => [:close, :rated], connected_method_for(profile) => profile
-    end
 
     validates_presence_of :original_language, :translation_language, :order_subtype, if: ->{step > 0}
     validates_presence_of :translation_type, :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'text'}
     validates_presence_of :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'document'}
+    validates :quantity_for_translate, :numericality => {:greater_than => 0}, if: :persisted?
     validate :attachments_count, if: ->{step > 1}
 
     def attachments_count
       errors.add(attachments: 'expect at least one') if attachments.count == 0
     end
 
-    def senior
-      real_translation_language.senior
-    end
-
-    # def lang_price()
-    #
-    # def cost(currency = nil, curr_level = level)
-    #   (translation_languages.inject(0) {|sum, l| sum + l.written_cost(curr_level, currency) * words_number})
-    # end
-    #
-    # def price(currency = nil, curr_level = level)
-    #   if translation_type == 'translate' or translation_type.nil?
-    #     return Price.with_markup(cost currency, curr_level)
-    #   end
-    #   if translation_type == 'translate_and_correct'
-    #     Price.with_markup(cost currency, curr_level) * (1 + Price.get_increase_percent(translation_languages.first, level) / 100)
-    #   end
-    # end
-
-    #  test--------------------------------------------------------------
-
-
     state_machine initial: :new do
       state :correcting
       state :quality_control
       state :sent_to_client
+      state :wait_corrector
+
+      event :refuse do
+        transition in_progress: :wait_offer
+      end
 
       event :control do
         transition [:in_progress, :correcting] => :quality_control
       end
 
+      event :waiting_correcting do
+        transition in_progress: :wait_corrector
+      end
+
       event :correct do
-        transition in_progress: :correcting
+        transition [:in_progress, :wait_corrector] => :correcting
       end
 
       event :finish do
         transition quality_control: :sent_to_client
       end
 
+      event :reject_translation do
+        transition correcting: :in_progress
+      end
+
+      before_transition on: :reject_translation do
+      #   уведомить переводчика
+      end
+
       before_transition on: :correct do |order|
         order.notify_about_correct
+      end
+
+      before_transition on: :refuse do |order|
+        order.work_reports.delete_all
+        true
+      end
+
+      before_transition on: :waiting_correcting do |order|
+        OrderWrittenCorrectorQueueFactoryWorker.new.perform order.id, I18n.locale
+        true
       end
 
       before_transition on: :control do |order|
@@ -114,22 +131,43 @@ module Order
         end
       end
 
+      before_transition on: :paid do |order|
+        Order::Written::EventsService.new(order).after_paid_order
+        order.update paid_time: Time.now
+      end
+
     end
 
-    def self.available_for(profile)
-      if profile.is_a? Profile::Translator
-        query = []
-        profile.services.where(written_approves: true).each do |s|
-          if /From/.match(s.written_translate_type)
-            query << {translation_language_id: s.language.id}
-          end
-          if /To|to/.match(s.written_translate_type)
-            query << {original_language_id: s.language.id}
-          end
-        end
-        Order::Written.any_of query
+    # DEPRECATED
+    # filtering-------------------------------------------------------
+    def self.filter_state(state)
+      where state: state
+    end
+
+    def self.filter_cooperation(coop)
+      if coop.include? 'From'
+        where :'original_language.is_chinese' => true
+      else
+        where :'translation_language.is_chinese' => true
       end
     end
+
+    def self.filter_owner(owner_email)
+      client_ids = User.where(email: /.*#{owner_email}.*/).distinct :profile_client_id
+      where :owner_id.in => client_ids
+    end
+
+    def self.filter_assignee(assignee_email)
+      translators_ids = User.where(email: /.*#{assignee_email}.*/).distinct :profile_translator_id
+      where :assignee_id.in => translators_ids
+    end
+
+    def self.filter_proof_reader(proof_reader_email)
+      reader_ids = User.where(email: /.*#{proof_reader_email}.*/).distinct :profile_translator_id
+      where :proof_reader_id.in => reader_ids
+    end
+    # filtering-------------------------------------------------------
+
 
     def self.surcharge_for_postage(currency = nil)
       default = 30
@@ -138,6 +176,10 @@ module Order
       else
         default
       end
+    end
+
+    def need_proof_reading?
+      translation_type == 'translate_and_correct'
     end
 
     def original_price(currency = nil)
@@ -192,28 +234,39 @@ module Order
       base_price
     end
 
-    def border_quantity_for_translate
-      original_language.is_chinese ? 800 : 500
+    def quantity_for_translate
+      read_attribute(:quantity_for_translate) || 0
     end
 
-    def close_cash_flow
-      price_to_members = self.price * 0.95
-      if translation_type == 'translate'
-        self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7
-        self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
+    def days_for_translate
+      days_for_work('translate')
+    end
+
+    def days_for_translate_and_correct
+      days_for_work('translate_and_correct')
+    end
+
+    def days_for_work(type = nil)
+      translate_type = type || translation_type
+      if order_type.type_name == 'document'
+        return (quantity_for_translate / DOCS_PER_DAY).ceil
       else
-        self.create_and_execute_transaction Office.head, assignee.user, price_to_members*0.7*0.7
-        self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.7*0.3
-        self.create_and_execute_transaction Office.head, real_translation_language.senior.user, price_to_members*0.03
+        if order_type.type_name == 'text'
+          days =  original_language.is_hieroglyph ? (quantity_for_translate / CHARS_PER_DAY_TRANS).ceil : (quantity_for_translate / WORDS_PER_DAY_TRANS).ceil
+          if translate_type == 'translate_and_correct'
+            days +=  original_language.is_hieroglyph ? (quantity_for_translate / CHARS_PER_DAY_PROOF).ceil : (quantity_for_translate / WORDS_PER_DAY_PROOF).ceil
+          end
+          return days
+        end
       end
     end
 
-    def primary_supported_translators
-      []
+    def border_quantity_for_translate
+      original_language.is_hieroglyph ? 800 : 500
     end
 
-    def secondary_supported_translators
-      []
+    def senior
+      real_translation_language.try :senior
     end
 
     def real_translation_language
@@ -224,7 +277,7 @@ module Order
 
     def base_lang_cost(lang)
       group = lang.languages_group
-      value_name = original_language.is_chinese && count_on_words? ? :value_ch : :value
+      value_name = original_language.is_hieroglyph && count_on_words? ? :value_ch : :value
       group.written_prices.find_by(written_type_id: order_type.id).send(value_name) || 0
     end
 
@@ -242,6 +295,19 @@ module Order
     end
 
     private
+
+    def charge_translator_commission
+      unless is_private
+        if translation_language.is_chinese
+          if assignee.chinese?
+            charge_commission_to assignee.try(:user), :to_translator
+          else
+            charge_commission_to assignee.try(:user), 0.6
+          end
+        end
+      end
+    end
+
     def build_relations
       build_get_original
       build_get_translation

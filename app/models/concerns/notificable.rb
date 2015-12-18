@@ -26,11 +26,11 @@ module Notificable
     if scope.is_a? Enumerable
       scope.each do |u|
         user = u.is_a?(User) ? u : u.try(:user)
-        user.notifications.create message: msg, object: self, mailer: event[:mailer] if user.is_a?(User)
+        user.notifications.create! message: msg, object: self, mailer: event[:mailer], sms_mailer: event[:sms] if user.is_a?(User)
       end
     else
       user = scope.is_a?(User) ? scope : (scope.try(:user) || scope.try(:translator).try(:user))
-      user.notifications.create message: msg, object: self, mailer: event[:mailer] if user.is_a?(User)
+      user.notifications.create! message: msg, object: self, mailer: event[:mailer], sms_mailer: event[:sms]  if user.is_a?(User)
     end
   end
 
@@ -40,6 +40,7 @@ module Notificable
       event[:observers] = options[:observers] unless options[:observers].nil?
       event[:message]   = options[:message]   unless options[:message].nil?
       event[:mailer]    = options[:mailer]   unless options[:mailer].nil?
+      event[:sms]       = options[:sms]   unless options[:sms].nil?
       events = self.events || {}
       events[event_name] = event
       self.events = events

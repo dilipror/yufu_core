@@ -11,23 +11,36 @@ module I18n
 
       def init_translations; end
 
-      def translations
+      def translations(version = nil)
         trans = {}
-        Translation.not_model_localizers.each do |t|
+
+        if version.nil?
+          query = Translation.active
+        else
+          query = Translation.not_model_localizers.all_translation_by_version(version)
+          preset_locale = version.localization.name
+        end
+
+        query.each do |t|
           trans_pointer = trans
-          locale = t.version.localization.name
+          locale = preset_locale.nil? ? t.version.localization.name : preset_locale
           k = "#{locale}.#{t.key.to_s}"
           key_array = k.split(".")
           last_key = key_array.delete_at(key_array.length - 1)
           key_array.each do |current|
-            unless trans_pointer.has_key?(current.to_sym)
-              trans_pointer[current.to_sym] = {}
+            begin
+              unless trans_pointer.has_key?(current.to_sym)
+                trans_pointer[current.to_sym] = {}
+              end
+              trans_pointer = trans_pointer[current.to_sym]
+            rescue => e
+              puts "Key: #{t.key} is deprecated. Remove it"
+              t.destroy
             end
-            trans_pointer = trans_pointer[current.to_sym]
           end
           begin
-            key = k.gsub "#{locale}.", ''
-            trans_pointer[last_key.to_sym] = I18n.t key, locale: locale
+            key = k.sub "#{locale}.", ''
+            trans_pointer[last_key.to_sym] = t.value
           rescue => e
             puts 'Fail of get all translations'
             puts e.message
@@ -67,7 +80,7 @@ module I18n
         key = key.gsub('_', '::')
         decoded_key = key.split('.')
         klass = decoded_key[0]
-        field = decoded_key[1]
+        field = decoded_key[1].gsub('::', '_')
         id    = decoded_key[2]
         if Object.const_defined?(klass)
           klass.constantize.where(id: id).first.try field
