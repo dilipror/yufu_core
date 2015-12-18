@@ -1,6 +1,7 @@
 module OnlineHelp
   class Message
     include Mongoid::Document
+    include Mongoid::Timestamps::Created
     extend Enumerize
 
     field :text
