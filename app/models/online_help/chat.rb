@@ -17,20 +17,7 @@ module OnlineHelp
     scope :in_active, -> {where :is_active.ne => true}
     scope :free, -> {active.where operator_id: nil}
 
-    after_create :assign_operator
-
     validates_presence_of :localization, :email
     validates_format_of :email, :with => /(\A[^-][\w+\-.]*)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
-
-    private
-
-    def assign_operator
-      raw_url = Rails.application.config.online_help_reassign
-      url = URI.parse(raw_url)
-      req = Net::HTTP::Get.new(url.to_s)
-      res = Net::HTTP.start(url.host, url.port) {|http|
-        http.request(req)
-      }
-    end
   end
 end
