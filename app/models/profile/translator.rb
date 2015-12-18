@@ -11,11 +11,13 @@ module Profile
     field :passport_country
     field :is_banned, type: Mongoid::Boolean, default: false
     field :custom_city
-
+    field :activate_translator_to_ready_for_approval_job_id , default: nil
+    
     # field :state
     field :last_sent_to_approvement, type: DateTime, default: DateTime.yesterday
     field :date_of_approvement, type: Date
     field :posponed_till, type: DateTime
+
     # field :one_day_passed, type: Boolean, default: nil
 
     # field :test, default: nil
@@ -96,8 +98,14 @@ module Profile
         translator.operator = nil
       end
 
-      before_transition :on => :translator_posponed do |translator|
-        translator.posponed_till = DateTime.now + 1.hour
+      #TODO: Remove once datetime picker working for getting posponed_till
+      # before_transition :on => :translator_posponed do |translator|
+      #   translator.posponed_till = DateTime.now + 1.hour
+      # end
+
+      before_transition :on => :translator_ready do |translator|
+        translator.posponed_till = nil
+        translator.activate_translator_to_ready_for_approval_job_id = nil
       end
 
       event :approve do
@@ -121,7 +129,7 @@ module Profile
       end
 
       event :translator_posponed do
-        transition :ready_for_approvement => :posponed
+        transition [:ready_for_approvement,:posponed] => :posponed
       end
 
     end

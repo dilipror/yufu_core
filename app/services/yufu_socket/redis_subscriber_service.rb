@@ -7,26 +7,21 @@ module YufuSocket
       attr_accessor :clients
     end
 
-    attr_reader :redis_sub,:messages,:base_channel
+    attr_reader :base_channel
 
-    def initialize clients,base_channel,redis_sub = connection
+    def initialize clients,base_channel
       self.class.clients = clients
       @base_channel = base_channel
-      @redis_sub = redis_sub
-      @messages = []
     end
 
     def process
         # Create a new pattern-based subscription that will listen for new messages on any channel
         # that matches the pattern "websockets.*".
-        redis_sub.psubscribe("#{base_channel}.*") do |on|
+        connection.psubscribe("#{base_channel}.*") do |on|
           # When a message is received, execute the send_message method
           on.pmessage do |pattern, channel, msg|
-            # messages.unshift msg
-            # Thread.current[:messages] = messages
             send_message(channel, msg)
           end
-
         end
     end
 
