@@ -18,7 +18,7 @@ module OrderVerbalWorkflow
       end
 
       event :confirmation_delay do
-        transition paid: :confirmation_delay
+        transition wait_offer: :confirmation_delay
       end
 
       event :translator_not_found do
