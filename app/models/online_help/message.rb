@@ -7,7 +7,7 @@ module OnlineHelp
     field :text
     field :owner
 
-    embedded_in :helpdesk_chat
+    embedded_in :chat, class_name: 'OnlineHelp::Chat'
 
     enumerize :owner, in: [:client, :operator]
 
