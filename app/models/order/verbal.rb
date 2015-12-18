@@ -207,7 +207,10 @@ module Order
     end
 
     def set_main_language_criterion
-      build_main_language_criterion if main_language_criterion.nil?
+      if main_language_criterion.nil?
+        crit = Order::LanguageCriterion.new main_socket: self
+        crit.save validate: false
+      end
     end
 
     def set_private
