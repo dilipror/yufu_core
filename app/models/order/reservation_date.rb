@@ -25,13 +25,22 @@ module Order
     end
     alias :available_for? :available?
 
-    def original_price_without_overtime
-      price =  order_verbal.language.verbal_price(level) * hours
+    def original_price_without_overtime(language_id: nil)
+      if language_id.present?
+        price =  Language.find(language_id).verbal_price(level) * hours
+      else
+        price =  order_verbal.language.verbal_price(level) * hours
+      end
       hours < 8 ? price * 1.5 : price
     end
 
-    def overtime_price(is_first_date: false, work_start_at: nil)
-      hour_cost = order_verbal.language.verbal_price(level)
+    def overtime_price(is_first_date: false, work_start_at: nil, language_id: nil)
+      if language_id.present?
+        hour_cost = Language.find(language_id).verbal_price(level)
+      else
+        hour_cost = order_verbal.language.verbal_price(level)
+      end
+
 
       standard_overtime = hours > 8 ? (hours - 8) * hour_cost * 0.5 : 0
 
@@ -44,10 +53,10 @@ module Order
       end
     end
 
-    def original_price(is_first_date: false, work_start_at: nil, ignore_confirmation: false)
+    def original_price(is_first_date: false, work_start_at: nil, ignore_confirmation: false, language_id: nil)
       return 0 unless is_confirmed || ignore_confirmation
       return 0 if order_verbal.language.nil? || order_verbal.level.nil?
-      original_price_without_overtime + overtime_price(is_first_date: is_first_date, work_start_at: work_start_at)
+      original_price_without_overtime(language_id: language_id) + overtime_price(is_first_date: is_first_date, work_start_at: work_start_at, language_id: language_id)
     end
   end
 end

@@ -13,7 +13,8 @@ RSpec.describe Order::Written, type: :model do
   describe '#original_price' do
 
     before(:each) do
-      ExchangeBank.update_rates
+      EuBank = EuCentralBank.new
+      EuBank.update_rates
     end
 
     let(:language){create :language}

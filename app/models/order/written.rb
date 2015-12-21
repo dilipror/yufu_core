@@ -54,7 +54,7 @@ module Order
     embeds_one :events_manager,                      class_name: 'Order::Written::EventsManager', cascade_callbacks: true
 
     embeds_many :work_reports,                       class_name: 'Order::Written::WorkReport', cascade_callbacks: true
-    accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments
+    accepts_nested_attributes_for :get_original, :get_translation, :work_reports, :attachments, allow_destroy: true
 
     validates_presence_of :original_language, :translation_language, :order_subtype, if: ->{step > 0}
     validates_presence_of :translation_type, :quantity_for_translate, if: ->{step > 0 && order_type.type_name == 'text'}
@@ -63,7 +63,7 @@ module Order
     validate :attachments_count, if: ->{step > 1}
 
     def attachments_count
-      errors.add(attachments: 'expect at least one') if attachments.count == 0
+      errors.add(:attachments, "expect at least one") if attachments.size == 0
     end
 
     state_machine initial: :new do
@@ -293,6 +293,7 @@ module Order
       end
         res
     end
+
 
     private
 

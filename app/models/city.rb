@@ -40,17 +40,22 @@ class City
     City.where :id.in => city_ids
   }
   def supported?
-    city_approves.approved.without_surcharge.count > 0
+    language_ids(false).length > 0
   end
   alias :is_supported :supported?
 
   def supported_with_surcharge?
-    city_approves.approved.with_surcharge.count > 0
+    language_ids(true).length > 0
   end
   alias :is_supported_with_surcharge :supported_with_surcharge?
 
-  def language_ids
-    translator_ids = city_approves.approved.distinct :translator_id
+  def language_ids(include_near_city)
+    if include_near_city
+      translator_ids = city_approves.approved.distinct :translator_id
+    else
+      translator_ids = city_approves.without_surcharge.approved.distinct :translator_id
+    end
+
     Profile::Service.approved.where(:translator_id.in => translator_ids, only_written: false).distinct :language_id
   end
 end

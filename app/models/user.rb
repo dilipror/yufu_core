@@ -13,7 +13,7 @@ class User
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
-  has_mongoid_attached_file :avatar, default_url: "/no-avatar.png", styles: {thumb: '50x50#'}
+  has_mongoid_attached_file :avatar, default_url: "/no-avatar.png", styles: {thumb: '250x250#'}
   validates_attachment_content_type :avatar, content_type: %w(image/jpg image/jpeg image/png)
 
   ## Database authenticatable
@@ -95,7 +95,10 @@ class User
   has_many :expert_tickets,   class_name: 'Support::Ticket', inverse_of: :expert
   has_and_belongs_to_many :watched_tickets, class_name: 'Support::Ticket', inverse_of: :watchers
 
-  has_and_belongs_to_many :localizations
+  # From registration
+  belongs_to :localization, inverse_of: :registred_user
+  # Managed localizations
+  has_and_belongs_to_many :localizations, inverse_of: :users
   has_and_belongs_to_many :groups
 
   embeds_many :permissions
@@ -115,6 +118,7 @@ class User
 
   before_save :set_avatar_extension, :after_role_changed, :ensure_authentication_token
   before_create :role_changed_first_time
+  before_create :set_localization, if: -> {localization.blank?}
   after_create :create_default_profiles
   after_create ->(user) {ConfirmationReminderJob.set(wait: 3.days).perform_later(user.id.to_s)}
   # before_save :downcase_email
@@ -163,6 +167,10 @@ class User
   end
 
   private
+  def set_localization
+    self.localization = Localization.where(name: I18n.locale).first || Localization.default
+  end
+
   def generate_authentication_token
     loop do
       token = Devise.friendly_token

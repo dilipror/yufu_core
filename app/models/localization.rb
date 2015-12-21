@@ -12,11 +12,14 @@ class Localization
 
   field :name
   field :enable, type: Mongoid::Boolean, default: false
+  field :is_for_chat, type: Mongoid::Boolean, default: false
+
 
   belongs_to :language
   belongs_to :currency
   has_many :localization_versions, class_name: 'Localization::Version'
-  has_and_belongs_to_many :users
+  has_many :registred_user, class_name: 'User', inverse_of: :localization
+  has_and_belongs_to_many :users, inverse_of: :localizations
 
   scope :enabled, -> {where enable: true}
 

@@ -11,16 +11,14 @@ module OrderVerbalWorkflow
       state :reconfirm_delay
       state :in_progress
       state :ready_for_close
-      state :canceled_not_paid
-      state :canceled_by_client
-      state :canceled_by_yufu
+
 
       event :confirm do
         transition [:wait_offer, :confirmation_delay, :translator_not_found] => :confirmed
       end
 
       event :confirmation_delay do
-        transition paid: :confirmation_delay
+        transition wait_offer: :confirmation_delay
       end
 
       event :translator_not_found do
@@ -53,14 +51,6 @@ module OrderVerbalWorkflow
 
       event :cancel_by_yufu do
         transition [:reconfirm_delay, :confirmation_delay, :paying, :new] => :canceled_by_yufu
-      end
-
-      event :cancel_by_client do
-        transition all - [:canceled_by_yufu, :canceled_not_paid, :canceled_by_client] => :cancel_by_client
-      end
-
-      event :cancel_not_paid do
-        transition [:new, :paying] => :canceled_not_paid
       end
 
       event :finish_order do

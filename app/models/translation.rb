@@ -3,7 +3,7 @@ class Translation
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
-  EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array errors.messages. ransack.
+  EXCEPTED_KEYS = /#{%w(mongoid.errors.messages. number. time. date.formats. support.array ransack.
                     flash. will_paginate. activemodel. views. admin.js. errors.format helpers. admin.loading
                     admin.misc.filter_date_format ckeditor. admin.).join('|')}/
 
@@ -46,6 +46,7 @@ class Translation
   scope :simple_texts, -> {Translation.not :value => /\[|\]|\%\{.*\}|<|>|\[|\]/}
   scope :not_array_value, -> {where :value_is_array.ne => true}
   scope :terms_and_agree, ->{where key: Translation.terms_and_agree_regexp}
+  # default_scope -> {asc :key}
 
   validates_presence_of :version
   validate :only_authorised_attributes

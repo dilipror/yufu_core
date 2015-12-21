@@ -1,12 +1,14 @@
 class Invoice::Item
   include Mongoid::Document
   include Monetizeable
+  include Mongoid::Autoinc
   extend Enumerize
 
   field :description, type: String
   field :cost, type: BigDecimal
-  auto_increment :number
+  field :number, type: Integer
 
+  increments :number
 
   validates_presence_of :description, :cost
 

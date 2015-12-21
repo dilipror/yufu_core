@@ -11,7 +11,8 @@ module Order
     belongs_to :reserve_socket, class_name: 'Order::Verbal', inverse_of: :reserve_language_criterions
 
     validate :only_one_socket_present
-    validates_presence_of :language_id, if: :persisted?
+    validates_presence_of :language_id, :level
+    # , if: :persisted?
     # validates_presence_of :language
 
     def original_price

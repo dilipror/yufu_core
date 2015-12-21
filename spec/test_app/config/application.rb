@@ -30,6 +30,7 @@ module TestApp
                                      'zh-CN', 'zh-HK', 'zh-TW', 'zh-YUE', 'cn-pseudo']
 
     config.host = 'localhost:3000'
+    config.front_app_host = 'localhost:3000'
     config.action_mailer.default_url_options = { host: config.host }
     config.action_mailer.asset_host = 'http://localhost:3000'
 

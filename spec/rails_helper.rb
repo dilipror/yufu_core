@@ -55,6 +55,7 @@ RSpec.configure do |config|
 
   config.after(:each) do
     DatabaseCleaner.clean
+    ::Mongoid::Sessions.default.drop # DatabaseCleaner.clean not working with mongodb 3.2 and mongoid 4.x. need migrate to mongoid 5
     ActionMailer::Base.deliveries.clear
   end
 

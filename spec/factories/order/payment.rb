@@ -2,10 +2,6 @@
 
 FactoryGirl.define do
   factory :payment, :class => 'Order::Payment' do
-    # payment.sum 100
-    partial_sum 0
-    association invoice
-    association country
-    association order, class: 'Order::Base'
+    association :invoice
   end
 end

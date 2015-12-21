@@ -28,7 +28,6 @@ module Order
     belongs_to :language
 
     embeds_one :airport_pick_up, class_name: 'Order::AirportPickUp'
-    embeds_one :events_manager, class_name: 'Order::Verbal::EventsManager', cascade_callbacks: true
 
     embeds_many :reservation_dates,  class_name: 'Order::ReservationDate'
     has_many :translators_queues, class_name: 'Order::Verbal::TranslatorsQueue', dependent: :destroy
@@ -88,7 +87,7 @@ module Order
     validates_length_of :offers, maximum: 2, unless: ->(order) {order.will_begin_less_than?(36.hours)}
 
     before_save :set_update_time, :update_notification, :check_dates, :set_private, :set_langvel
-    before_create :set_main_language_criterion, :build_events_manager
+    before_create :set_main_language_criterion
     after_save :create_additional_services
     # after_save :notify_about_updated, if: :persisted?
 
@@ -100,9 +99,7 @@ module Order
     scope :reconfirm_delay, -> {where state: 'reconfirm_delay'}
     scope :confirmation_delay, -> {where state: 'confirmation_delay'}
     scope :translator_not_found, -> {where state: 'translator_not_found'}
-    scope :canceled_by_client, -> {where state: 'canceled_by_client'}
-    scope :canceled_not_paid, -> {where state: 'canceled_not_paid'}
-    scope :canceled_by_yufu, -> {where state: 'canceled_by_yufu'}
+    scope :ready_for_close, -> {where state: 'ready_for_close'}
 
     def can_send_primary_offer?
       can_confirm? && primary_offer.nil?
@@ -210,7 +207,10 @@ module Order
     end
 
     def set_main_language_criterion
-      build_main_language_criterion if main_language_criterion.nil?
+      if main_language_criterion.nil?
+        crit = Order::LanguageCriterion.new main_socket: self
+        crit.save validate: false
+      end
     end
 
     def set_private
@@ -233,7 +233,7 @@ module Order
 
     def can_update?
       return true if in_progress? || ready_for_close?
-      close? ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
+      close? || rejected? ? false : (update_time.nil? ? true : (Time.now - update_time) >= 1.day)
     end
     alias :can_update :can_update?
 
@@ -317,11 +317,14 @@ module Order
 
     def surcharge_paying_items
       if include_near_city && there_are_translator_with_surcharge?
-        eu_bank = ExchangeBank.instance
-        [{cost: eu_bank.exchange(DEFAULT_SURCHARGE_NEAR_CITY * 100, 'CNY', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
+        # eu_bank = ExchangeBank.instance
+        [{cost: EuBank.exchange(DEFAULT_SURCHARGE_NEAR_CITY * 100, 'CNY', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
       else
         []
       end
+    rescue
+      EuBank.update_rates Rails.application.config.eu_bank_exchange_rates
+      [{cost: EuBank.exchange(DEFAULT_SURCHARGE_NEAR_CITY * 100, 'CNY', Currency.current_currency), description: I18n.t('mongoid.surcharge')}]
     end
   end
 end

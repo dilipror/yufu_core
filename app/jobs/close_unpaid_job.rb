@@ -7,7 +7,7 @@ class CloseUnpaidJob < ActiveJob::Base
       order.notify_about_cancel_not_paid_3
       klass = "::#{order._type}::RejectService"
       service = klass.constantize.new(order)
-      service.reject_order :yufu
+      service.reject_order :not_paid
     end
   end
 end

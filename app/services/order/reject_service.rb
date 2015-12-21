@@ -2,17 +2,18 @@ module Order
   class RejectService
     def initialize(order)
       @order = order
+      @state = order.state
     end
 
     def reject_order(inner = :client)
-      if @order.can_reject?
+      if @order.can_reject? inner
         refund inner
-        @order.reject
+        @order.reject inner
       end
     end
 
     def refund(inner = :client)
-      if @order.paid? && @order.owner.present?
+      if @state != 'new' && @state != 'paying' && @order.owner.present?
         sum = calculate_sum inner
         if sum > 0
           tr = Transaction.create debit: Office.head,

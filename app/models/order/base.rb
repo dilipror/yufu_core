@@ -15,9 +15,11 @@ module Order
     # field :pay_way
     # Private orders is available only main office. Translators should not see these
     field :is_private, type: Mongoid::Boolean, default: false
-    field :paid_time,         type: Time
+    field :paid_time,  type: Time
+    field :locale,     default: 'en'
+    field :number, type: Integer
 
-    auto_increment :number
+    increments :number
 
     belongs_to :owner,           class_name: 'Profile::Base'
     belongs_to :assignee,        class_name: 'Profile::Translator'
@@ -37,6 +39,7 @@ module Order
     after_save :check_pay_way
     before_save :check_close
     after_create ->(order) {CloseUnpaidJob.set(wait: 1.week).perform_later(order.id.to_s)}
+    before_save ->(order) {order.write_attributes locale: I18n.locale}
 
     scope :writtens,      -> {where _type: 'Order::Written'}
     scope :verbals,       -> {where _type: 'Order::Verbal'}
@@ -45,12 +48,15 @@ module Order
     scope :for_everyone, -> { where is_private: false }
     scope :private,      -> { where is_private: true }
 
-    scope :rejected,    -> { where state: :rejected }
+    scope :rejected,    -> { where :state.in => [:canceled_by_not_paid, :canceled_by_client, :canceled_by_yufu]}
     scope :closed,      -> { where state: :close }
     scope :in_progress, -> { where state: :in_progress }
     scope :wait_offer,  -> { where :state.in => [:wait_offer, :paid, :confirmation_delay, :translator_not_found] }
     # scope :paid_orders, -> { where state: :in_progress}
     scope :unpaid,      -> { where :state.in => [:new, :paying] }
+    scope :canceled_by_client, -> {where state: 'canceled_by_client'}
+    scope :canceled_by_not_paid, -> {where state: 'canceled_by_not_paid'}
+    scope :canceled_by_yufu, -> {where state: 'canceled_by_yufu'}
 
     default_scope -> {desc :id}
 
@@ -142,6 +148,22 @@ module Order
 
     def custom_human_state_name
       I18n.t "mongoid.state_machines.order/base.states.#{state}"
+    end
+
+    def can_reject? inner
+      send "can_cancel_by_#{inner}?"
+    end
+
+    def rejected?
+      canceled_by_client? || canceled_by_yufu? || canceled_by_not_paid?
+    end
+
+    def reject(inner)
+      self.send "cancel_by_#{inner}"
+    end
+
+    def paying_items
+      []
     end
 
     private

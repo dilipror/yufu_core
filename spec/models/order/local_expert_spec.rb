@@ -12,9 +12,9 @@ RSpec.describe Order::LocalExpert, :type => :model do
 
   describe '#reject' do
     let(:order) {create :order_local_expert, state: 'wait_offer'}
-    subject{order.reject}
+    subject{order.cancel_by_client}
 
-    it{expect{subject}.to change{order.state}.to 'rejected'}
+    it{expect{subject}.to change{order.state}.to 'canceled_by_client'}
     it{expect{subject}.to change{order.owner.user.notifications.count}.by 1}
 
   end

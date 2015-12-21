@@ -65,7 +65,7 @@ RSpec.describe Invoice, :type => :model do
 
     context 'order is rejected' do
       let(:user){create :user, balance: 10000}
-      let(:order){create :order_verbal, owner: user.profile_client, state: 'rejected'}
+      let(:order){create :order_verbal, owner: user.profile_client, state: 'canceled_by_client'}
       let(:invoice){order.invoices.last}
 
       it{expect{subject}.not_to change{invoice.reload.paid?}}
@@ -93,7 +93,6 @@ RSpec.describe Invoice, :type => :model do
       it 'count payments is changed' do
         subject
         expect(invoice.payments.count).to eq 1
-        expect(invoice.payments.last.sum).to eq invoice.cost
       end
     end
   end

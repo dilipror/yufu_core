@@ -1,5 +1,6 @@
 module Notificable
   extend ActiveSupport::Concern
+  include DoWithLocale
 
   included do
     cattr_accessor :events
@@ -26,13 +27,20 @@ module Notificable
     if scope.is_a? Enumerable
       scope.each do |u|
         user = u.is_a?(User) ? u : u.try(:user)
-        user.notifications.create! message: msg, object: self, mailer: event[:mailer], sms_mailer: event[:sms] if user.is_a?(User)
+        create_notification! user, msg, self, event[:mailer], event[:sms]
       end
     else
       user = scope.is_a?(User) ? scope : (scope.try(:user) || scope.try(:translator).try(:user))
-      user.notifications.create! message: msg, object: self, mailer: event[:mailer], sms_mailer: event[:sms]  if user.is_a?(User)
+      create_notification! user, msg, self, event[:mailer], event[:sms]
     end
   end
+
+  def create_notification!(user, message, object, mailer, sms_mailer)
+    do_with_locale user.localization.try(:name) || I18n.locale do
+      user.notifications.create! message: message, object: object, mailer: mailer, sms_mailer: sms_mailer if user.is_a?(User)
+    end
+  end
+
 
   module ClassMethods
     def has_notification_about(event_name = :default, options = {})

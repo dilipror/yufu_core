@@ -1,6 +1,7 @@
 class Invoice
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Autoinc
   include Monetizeable
   include Filterable
 
@@ -26,8 +27,9 @@ class Invoice
   field :skype
   field :viber
   field :wechat
+  field :number, type: Integer
 
-  auto_increment :number
+  increments :number
 
   belongs_to :country
   belongs_to :subject,  class_name: 'Order::Base'
@@ -80,7 +82,7 @@ class Invoice
     before_transition on: :paid do |invoice, transition|
       # cost = invoice.cost.to_f
       # cost = invoice.exchanged_cost(invoice.pay_company.currency.iso_code).to_f if invoice.pay_way.gateway_type == :paypal
-      if invoice.subject.rejected?
+      if invoice.subject.try(:rejected?)
         false
       else
         can_execute = invoice.user.balance.to_f >= invoice.cost.to_f
@@ -147,7 +149,7 @@ class Invoice
       if pay_way.gateway_type == 'bank'
         if paying?
           send_to_mail
-          payments.create gateway_class: 'Order::Gateway::Bank', sum: cost, pay_way: pay_way, order: subject
+          payments.create gateway_class: 'Order::Gateway::Bank', pay_way: pay_way, invoice: subject
         end
       else
         if paid?
@@ -181,7 +183,10 @@ class Invoice
     cost_without_taxes + amount_tax
   end
 
-  def regenerate
+  def regenerate(locale = nil)
+    if locale.present?
+      I18n.locale = locale
+    end
     items.delete_all
     unless subject.nil?
       subject.paying_items.each do |it|
