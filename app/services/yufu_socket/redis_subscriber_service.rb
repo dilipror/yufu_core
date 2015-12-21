@@ -9,7 +9,7 @@ module YufuSocket
 
     attr_reader :base_channel
 
-    def initialize clients,base_channel
+    def initialize(clients,base_channel)
       self.class.clients = clients
       @base_channel = base_channel
     end
