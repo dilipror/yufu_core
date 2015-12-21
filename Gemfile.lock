@@ -329,7 +329,7 @@ DEPENDENCIES
   enumerize
   eu_central_bank
   factory_girl_rails
-  faye-websocket (= 0.10.1)
+  faye-websocket (~> 0.10.0)
   iso-639
   mailcatcher
   mock_redis
