@@ -489,9 +489,8 @@ RSpec.describe Order::Verbal, :type => :model do
 
 
         before(:each)do
-          current_time = Time.parse('11:33 03.11.2015')
-          Time.stub(:now).and_return(current_time - 61.hours)
-          order.stub(:first_date_time).and_return(current_time)
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 61.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
         end
 
         it{is_expected.to be_falsey}
@@ -503,9 +502,8 @@ RSpec.describe Order::Verbal, :type => :model do
 
 
         before(:each)do
-          current_time = Time.parse('11:33 03.11.2015')
-          Time.stub(:now).and_return(current_time - 60.hours)
-          order.stub(:first_date_time).and_return(current_time)
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 60.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
         end
 
         it{is_expected.to be_truthy}
@@ -518,9 +516,8 @@ RSpec.describe Order::Verbal, :type => :model do
 
 
         before(:each)do
-          current_time = Time.parse('11:33 03.11.2015')
-          Time.stub(:now).and_return(current_time - 59.hours)
-          order.stub(:first_date_time).and_return(current_time)
+          Time.stub(:now).and_return(Time.parse('11:33 03.11.2015') - 59.hours)
+          order.stub(:first_date_time).and_return(Time.parse('11:33 03.11.2015'))
         end
 
         it{is_expected.to be_truthy}

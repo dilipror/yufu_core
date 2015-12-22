@@ -140,14 +140,13 @@ RSpec.describe Order::Base, :type => :model do
   describe '#paid_ago?' do
     subject{order.paid_ago?(12.hours)}
     let(:order){create :order_base}
-    let(:current_time){Time.parse('11:33 03.11.2015')}
 
     context 'before time' do
 
 
       before(:each)do
-        order.stub(:paid_time).and_return(current_time - 14.hours)
-        Time.stub(:now).and_return(current_time)
+        order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 14.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
       end
 
       it{is_expected.to be_truthy}
@@ -156,8 +155,8 @@ RSpec.describe Order::Base, :type => :model do
 
     context 'just in time' do
       before(:each)do
-        order.stub(:paid_time).and_return(current_time - 12.hours)
-        Time.stub(:now).and_return(current_time)
+        order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 12.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
       end
 
       it{is_expected.to be_truthy}
@@ -166,8 +165,8 @@ RSpec.describe Order::Base, :type => :model do
     context 'after time'do
 
       before(:each)do
-        order.stub(:paid_time).and_return(current_time - 10.hours)
-        Time.stub(:now).and_return(current_time)
+        order.stub(:paid_time).and_return(Time.parse('11:33 03.11.2015') - 10.hours)
+        Time.stub(:now).and_return(Time.parse('11:33 03.11.2015'))
       end
 
       it{is_expected.to be_falsey}
