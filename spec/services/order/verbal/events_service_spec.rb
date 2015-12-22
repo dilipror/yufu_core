@@ -16,9 +16,9 @@ RSpec.describe Order::Verbal::EventsService do
 
     let(:order){create :order_verbal, state: state}
 
-    context 'state paid' do
+    context 'state wait_offer' do
 
-      let(:state){'paid'}
+      let(:state){'wait_offer'}
 
       it{expect{subject}.to change{Support::Ticket.count}.by(1)}
       it{expect{subject}.to change{order.state}.to 'confirmation_delay'}

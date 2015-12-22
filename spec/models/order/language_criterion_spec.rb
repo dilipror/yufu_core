@@ -11,10 +11,10 @@ RSpec.describe Order::LanguageCriterion, :type => :model do
       it {is_expected.to eq(1000)}
     end
 
-    context 'should return 0' do
-      let(:main_language) {create :order_language_criterion, language: nil}
-      it {is_expected.to eq(0)}
-    end
+    # context 'should return 0' do
+    #   let(:main_language) {create :order_language_criterion, language: nil}
+    #   it {is_expected.to eq(0)}
+    # end
 
     context 'should return INFINITY' do
       let(:main_language) {create :order_language_criterion, level: 'business'}
