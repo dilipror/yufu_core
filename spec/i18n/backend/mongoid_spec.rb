@@ -30,22 +30,44 @@ RSpec.describe I18n::Backend::Mongoid do
 
       it{is_expected.to eq translation_in_old_version.value}
     end
+
+
   end
 
   describe 'I18n.t' do
-    let(:localization){Localization.default}
-    let(:locale){localization.name}
-    let(:key){'key'}
-    let(:version)  {create :localization_version, :approved, localization: localization}
-    let(:translation){Translation.create key: key, version: version, value: 'value'}
+    context 'without scope' do
+      let(:localization){Localization.default}
+      let(:locale){localization.name}
+      let(:key){'key'}
+      let(:version)  {create :localization_version, :approved, localization: localization}
+      let(:translation){Translation.create key: key, version: version, value: 'value'}
 
-    before :each do
-      translation
-      I18n.backend = I18n::Backend::Chain.new(I18n::Backend::Mongoid.new, I18n.backend)
+      before :each do
+        translation
+        I18n.backend = I18n::Backend::Chain.new(I18n::Backend::Mongoid.new, I18n.backend)
+      end
+
+      subject{I18n.t key}
+
+      it{is_expected.to eq translation.value}
     end
 
-    subject{I18n.t key}
+    context 'pass scope' do
+      let(:key){'frontend.key'}
+      let!(:translation){create :translation,
+                                version: (create :localization_version, :approved, localization: Localization.default),
+                                value: 'value',
+                                key: key}
 
-    it{is_expected.to eq translation.value}
+      context 'dot is first char' do
+        subject{I18n.t '.key', scope: ['frontend']}
+        it{is_expected.not_to eq 'value'}
+      end
+
+      context 'without first dot' do
+        subject{I18n.t 'key', scope: ['frontend']}
+        it{is_expected.to eq 'value'}
+      end
+    end
   end
 end

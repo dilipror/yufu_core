@@ -28,7 +28,7 @@ class UsersMailer < ActionMailer::Base
   end
 
   def confirmation_reminder_23(user)
-    mail to: user.email, body: I18n.t('.body', mailer_attrs(client: user.email,  confirmation_url: (confirmation_url(user, confirmation_token: user.confirmation_token))))
+    mail to: user.email, body: I18n.t('body', mailer_attrs(client: user.email,  confirmation_url: (confirmation_url(user, confirmation_token: user.confirmation_token))))
   end
 
   def mailer_attrs(params)
