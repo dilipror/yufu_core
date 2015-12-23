@@ -92,6 +92,20 @@ RSpec.describe Translation, :type => :model do
     end
   end
 
+  describe '#original' do
+    let(:key) { 'key' }
+    let(:original_localization){Localization.default}
+    let(:approved_original_version) {create :localization_version, :approved, localization: original_localization}
+    let!(:original_translation) {create :translation, version: approved_original_version, key: key, value: 'original'}
+    let(:translation){create :translation, value: 'override', key: key}
+
+    before(:each) {I18n.locale = original_localization.name}
+
+    subject{translation.original}
+
+    it{is_expected.to eq original_translation.value}
+  end
+
   # describe  '#localize_model' do
   #   let(:language){create :language}
   #   let(:translation){create :translation, key: "Language.name.#{language.id}", is_model_localization: true}

@@ -57,22 +57,20 @@ module I18n
       protected
       def lookup(locale, key, scope = [], options = {})
         localization = Localization.where(name: locale).first
-        key = I18n.send('normalize_key', key, '.').first
-        key = normalize_flat_keys(locale, key, scope, options[:separator])
+        normalized_key = normalize_flat_keys(locale, key, scope, options[:separator])
         return nil if localization.nil?
 
-        from_models = try_from_models(key, locale)
+        from_models = try_from_models(normalized_key, locale)
         return from_models if from_models.present?
 
         value = nil
 
         if I18n.config.try(:locale_version).present?
-          value = Translation.where(key: key, version_id: I18n.config.locale_version.id).first.try(:value)
+          value = Translation.where(key: normalized_key, version_id: I18n.config.locale_version.id).first.try(:value)
         end
 
         if value.nil?
-          approved_version_ids = Localization::Version.approved.where(localization: localization).distinct :id
-          value = Translation.where(key: key, :version_id.in => approved_version_ids).desc(:version_id).first.try(:value)
+          value = Translation.active_in(localization).where(key: normalized_key).first.try(:value)
         end
         value
       end

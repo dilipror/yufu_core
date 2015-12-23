@@ -266,4 +266,22 @@ RSpec.describe Order::Offer, :type => :model do
 
   end
 
+  describe 'mails' do
+    before(:each) do
+      ActionMailer::Base.delivery_method = :test
+      ActionMailer::Base.perform_deliveries = true
+      ActionMailer::Base.deliveries = []
+    end
+
+    context 'notify_about_order_details_4' do
+      subject{create :order_offer}
+
+      it 'mail about_order_details_4 should be sent' do
+        subject
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+      end
+    end
+
+  end
+
 end

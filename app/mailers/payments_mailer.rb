@@ -27,7 +27,7 @@ class PaymentsMailer < ActionMailer::Base
     I18n.locale = invoice.subject.locale
     invoice.regenerate
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
-    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
+    mail to: user.email, body: I18n.t('body', mailer_attrs(user: user))
   end
 
   def fallback_fonts
@@ -44,7 +44,7 @@ class PaymentsMailer < ActionMailer::Base
     invoice.regenerate(invoice.subject.locale)
     attachments['invoice.pdf'] = pdf_invoice(user, invoice)
 
-    mail to: user.email, body: I18n.t('.body', mailer_attrs(user: user))
+    mail to: user.email, body: I18n.t('body', mailer_attrs(user: user))
   end
 
   private
