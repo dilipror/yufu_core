@@ -10,6 +10,7 @@ require 'email_spec'
 require 'sidekiq/testing'
 require 'benchmark'
 require 'factory_girl_rails'
+require 'mock_redis'
 
 Coveralls.wear_merged!
 
