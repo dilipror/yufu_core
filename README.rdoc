@@ -2,9 +2,12 @@
 
 This project rocks and uses MIT-LICENSE.
 
-# For setting configuration variables
+# For setting configuration variables.
+# Set in initializer.
 
 YufuCore.configure do |config|
-  config.redis_host  = "127.0.0.1"
-  config.redis_port  = "9292"
+  config.redis_url  = ENV['REDIS_URL'] || 'redis://localhost:6379'
+  config.redis_host  = ENV['REDIS_HOST'] || 'localhost'
+  config.redis_port  = ENV['REDIS_PORT'] || 6379
+  config.redis_db  = ENV['REDIS_DB'] || 1
 end
