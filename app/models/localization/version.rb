@@ -17,6 +17,8 @@ class Localization::Version
   scope :dependent, -> {ne parent_version_id: nil}
   scope :english, -> {where localization_id: Localization.default.id}
 
+  default_scope -> {desc :id}
+
   # after_remove :after_remove_action
   # after_restore :after_restore_action
 
