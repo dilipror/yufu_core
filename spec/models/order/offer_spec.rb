@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Order::Offer, :type => :model do
+  include ActiveJob::TestHelper
 
   describe '#can_confirm?' do
 
@@ -266,22 +267,48 @@ RSpec.describe Order::Offer, :type => :model do
 
   end
 
-  # describe 'mails' do
-  #   before(:each) do
-  #     ActionMailer::Base.delivery_method = :test
-  #     ActionMailer::Base.perform_deliveries = true
-  #     ActionMailer::Base.deliveries = []
-  #   end
-  #
-  #   context 'notify_about_order_details_4' do
-  #     subject{create :order_offer}
-  #
-  #     it 'mail about_order_details_4 should be sent' do
-  #       subject
-  #       expect(ActionMailer::Base.deliveries.count).to eq(1)
-  #     end
-  #   end
-  #
-  # end
+  describe 'mails' do
+    before(:each) do
+      ActionMailer::Base.delivery_method = :test
+      ActionMailer::Base.perform_deliveries = true
+      ActionMailer::Base.deliveries = []
+    end
+
+    context 'notify_about_order_details_4' do
+      it 'mail about_order_details_4 should be sent' do
+        perform_enqueued_jobs do
+          offer = build :order_offer
+          offer.stub(:primary?).and_return(false)
+          offer.stub(:back_up?).and_return(false)
+          offer.save
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(3)
+        # 1 about_order_details_4; 2 от ордера cancel_not_paid_3 & cancel_by_user_13
+      end
+
+      it 'mail notify_about_become_back_up_int_18 should be sent' do
+        perform_enqueued_jobs do
+          offer = build :order_offer
+          offer.stub(:primary?).and_return(false)
+          offer.stub(:back_up?).and_return(true)
+          offer.save
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(4)
+        # 1 about_order_details_4; 1 notify_about_become_back_up_int_18 ; 2 от ордера cancel_not_paid_3 & cancel_by_user_13
+      end
+
+      it 'mail notify_about_become_main_int_17 should be sent' do
+        perform_enqueued_jobs do
+          offer = build :order_offer
+          offer.stub(:primary?).and_return(true)
+          offer.stub(:back_up?).and_return(false)
+          offer.save
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(4)
+        # 1 about_order_details_4; 1 notify_about_become_main_int_17 ; 2 от ордера cancel_not_paid_3 & cancel_by_user_13
+      end
+    end
+
+  end
 
 end
