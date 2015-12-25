@@ -209,10 +209,10 @@ RSpec.describe Profile::Translator, :type => :model do
     describe '#translator_ready' do
       subject{translator.translator_ready}
 
-      context 'when translator is posponed' do
-        let(:translator) {create :profile_translator, state: :posponed, posponed_till: DateTime.now + 1.hour}
+      context 'when translator is postponed' do
+        let(:translator) {create :profile_translator, state: :postponed, posponed_till: DateTime.now + 1.hour}
         it{expect{subject}.to change{translator.posponed_till}.to nil}
-        it{expect{subject}.to change{translator.state}.from('posponed').to('ready_for_approvement')}
+        it{expect{subject}.to change{translator.state}.from('postponed').to('ready_for_approvement')}
       end
 
     end
