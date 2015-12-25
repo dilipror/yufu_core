@@ -83,7 +83,7 @@ module Profile
       state :ready_for_approvement
       state :approving_in_progress
       state :approved
-      state :posponed
+      state :postponed
 
       before_transition :on => :approve do |translator|
         translator.update_attributes date_of_approvement: Date.today
@@ -97,11 +97,6 @@ module Profile
       before_transition :on => :refuse do |translator|
         translator.operator = nil
       end
-
-      #TODO: Remove once datetime picker working for getting posponed_till
-      # before_transition :on => :translator_posponed do |translator|
-      #   translator.posponed_till = DateTime.now + 1.hour
-      # end
 
       before_transition :on => :translator_ready do |translator|
         translator.posponed_till = nil
@@ -124,12 +119,12 @@ module Profile
         transition [:new, :approved] => :ready_for_approvement#, if: :one_day_passed?
       end
 
-      event :translator_ready do
-        transition :posponed => :ready_for_approvement
+      event :ready do
+        transition :postponed => :ready_for_approvement
       end
 
-      event :translator_posponed do
-        transition [:ready_for_approvement,:posponed] => :posponed
+      event :postponed do
+        transition [:ready_for_approvement,:postponed] => :postponed
       end
 
     end
