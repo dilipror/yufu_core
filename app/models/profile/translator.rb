@@ -98,7 +98,7 @@ module Profile
         translator.operator = nil
       end
 
-      before_transition :on => :translator_ready do |translator|
+      before_transition :on => :ready do |translator|
         translator.posponed_till = nil
         translator.activate_translator_to_ready_for_approval_job_id = nil
       end
